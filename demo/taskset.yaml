@@ -1,0 +1,15 @@
+tasks:
+- t: 10
+  d: 10
+  vetices:
+    - id: 0
+      c: 2
+    - id: 1
+      c: 3
+    - id: 2
+      c: 1
+  edges:
+    - from: 0
+      to: 1
+    - from: 1
+      to: 2
