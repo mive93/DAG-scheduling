@@ -8,6 +8,8 @@ tasks:
       c: 3
     - id: 2
       c: 1
+    - id: 3
+      c: 5
   edges:
     - from: 0
       to: 1

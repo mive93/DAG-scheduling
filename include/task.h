@@ -38,6 +38,9 @@ class DAGTask{
     ~DAGTask(){};
     void readTaskFromYaml(const std::string& params_path);
 
+
+    void saveAsDot(const std::string &filename);
+
     friend std::ostream& operator<<(std::ostream& os, const DAGTask& t);
 
 };

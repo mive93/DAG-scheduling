@@ -1,6 +1,7 @@
 #include "task.h"
 
 #include <iostream>
+#include <fstream>
 
 std::ostream& operator<<(std::ostream& os, const DAGTask& t)
 {
@@ -59,4 +60,20 @@ void DAGTask::readTaskFromYaml(const std::string& params_path){
     }
 }
 
+void DAGTask::saveAsDot(const std::string &filename){
+    std::ofstream of(filename);
 
+    of<<"digraph Task {\n";
+
+    of<<"i [shape=box, label=\"D="<<d<<" T="<<t<<"\"]; \n";
+    for (const auto &v: V)
+        of<<v.id<<" [label=\""<<v.c<<"\"];\n";
+
+    for (const auto &v: V){
+        for(auto s: v.succ)
+            of<<v.id<<" -> "<<s->id<<";\n";
+    }
+    of<<"}";
+
+    of.close();
+}
