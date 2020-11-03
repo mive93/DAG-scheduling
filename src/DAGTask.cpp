@@ -1,4 +1,4 @@
-#include "task.h"
+#include "DAGTask.h"
 
 #include <iostream>
 #include <fstream>
@@ -11,11 +11,11 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
     os<< "period :" << t.t <<std::endl;
     os<< "vertices :"<<std::endl;
     for(auto v: t.V){
-        os<< "\t v_" << v.id << " - c: "<<v.c <<" \tsucc: ";
-        for(auto s:v.succ)
+        os<< "\t v_" << v->id << " - c: "<<v->c <<" \tsucc: ";
+        for(auto s:v->succ)
             os<< s->id << " ";
         os<<" \tprec: ";
-        for(auto p:v.prec)
+        for(auto p:v->prec)
             os<< p->id << " ";
         os<<" \n";
     }
@@ -37,11 +37,11 @@ void DAGTask::readTaskFromYaml(const std::string& params_path){
         std::map<int, int> id_pos;
 
         for(int j=0; j<vert.size(); j++){
-            SubTask v;
-            v.id = vert[j]["id"].as<int>();
-            v.c = vert[j]["c"].as<int>();
+            SubTask *v = new SubTask;
+            v->id = vert[j]["id"].as<int>();
+            v->c = vert[j]["c"].as<int>();
 
-            id_pos[v.id] = j;
+            id_pos[v->id] = j;
 
             V.push_back(v);
         }
@@ -54,8 +54,8 @@ void DAGTask::readTaskFromYaml(const std::string& params_path){
             form_id = id_pos[edges[j]["from"].as<int>()];
             to_id = id_pos[edges[j]["to"].as<int>()];
 
-            V[form_id].succ.push_back(&V[to_id]);
-            V[to_id].prec.push_back(&V[form_id]);
+            V[form_id]->succ.push_back(V[to_id]);
+            V[to_id]->prec.push_back(V[form_id]);
         }
     }
 }
@@ -66,12 +66,16 @@ void DAGTask::saveAsDot(const std::string &filename){
     of<<"digraph Task {\n";
 
     of<<"i [shape=box, label=\"D="<<d<<" T="<<t<<"\"]; \n";
-    for (const auto &v: V)
-        of<<v.id<<" [label=\""<<v.c<<"\"];\n";
+    for (const auto &v: V){
+        of<<v->id<<" [label=\""<<v->depth<<"\"";
+        if(v->mode == C_SOURCE_T) of<<",shape=diamond";
+        else if(v->mode == C_SINK_T) of<<",shape=box";
+        of<<"];\n";
+    }
 
     for (const auto &v: V){
-        for(auto s: v.succ)
-            of<<v.id<<" -> "<<s->id<<";\n";
+        for(auto s: v->succ)
+            of<<v->id<<" -> "<<s->id<<";\n";
     }
     of<<"}";
 
