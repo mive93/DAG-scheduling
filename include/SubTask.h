@@ -16,6 +16,7 @@ class SubTask{
     int depth = 0;
     std::vector<SubTask*> succ;
     std::vector<SubTask*> prec;
+    int accWorkload = 0;
 
     int accWork = 0; // accumulated workload
 
