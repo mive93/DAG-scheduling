@@ -8,8 +8,9 @@ void DAGTask::configureParams(){
     p_term          = 0.8;
     rec_depth       = 2;
     Cmin            = 1;
-    Cmax            = 100;
+    Cmax            = 10;
     addProb         = 0.1;
+    probSCond       = 0.5;
 
     weights.push_back(p_cond);
     weights.push_back(p_par);
@@ -43,7 +44,7 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
         V.push_back(si);
 
         double r = ((double) rand() / (RAND_MAX));
-        if (r < 0.5){ //make it conditional
+        if (r < probSCond){ //make it conditional
             int cond_branches = rand() % maxCondBranches + 2;
             expandTaskSeriesParallel(V[0], V[1], depth - 1, cond_branches, true);
         }
@@ -151,13 +152,37 @@ void DAGTask::makeItDag(float prob){
     }
 }
 
+void DAGTask::computeAccWorkload(){
+    auto ordIDs = topologicalSort();
+    if(!checkIndexAndIdsAreEqual())
+        FatalError("Ids and Indexes do not correspond, can't use computed topological order!");
+    if(ordIDs.size() != V.size())
+        FatalError("Ids and V sizes differ!");
+
+    int max_acc_prec;
+    for(size_t i=0; i<ordIDs.size();++i){
+        max_acc_prec = 0;
+        for(size_t j=0; j<V[ordIDs[i]]->prec.size();++j){
+            if(V[ordIDs[i]]->prec[j]->accWork > max_acc_prec)
+                max_acc_prec = V[ordIDs[i]]->prec[j]->accWork;
+        }
+
+        V[ordIDs[i]]->accWork = V[ordIDs[i]]->c + max_acc_prec;
+    }
+}
+
 DAGTask DAGTask::generateTaskMelani(){
     configureParams();
     expandTaskSeriesParallel(nullptr, nullptr,rec_depth,0,false);
     assignWCET(Cmin, Cmax);
     makeItDag(addProb);
-    topologicalSort();
+    computeAccWorkload();
 
-    std::cout<<checkIndexAndIdsAreEqual()<<std::endl;
+    for(const auto&v :V)
+        if(v->accWork > L)
+            L = v->accWork;
+
+    std::cout<<"length = "<<L<<std::endl;
+    
     return *this;
 }

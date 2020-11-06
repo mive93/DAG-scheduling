@@ -29,7 +29,7 @@ bool DAGTask::allPrecAdded(std::vector<SubTask*> prec, std::vector<int> ids){
     return true;
 }
 
-void DAGTask::topologicalSort (){
+std::vector<int> DAGTask::topologicalSort (){
     std::vector<SubTask> V_copy;
     std::vector<int> ordered_ids;
 
@@ -54,6 +54,8 @@ void DAGTask::topologicalSort (){
     for(auto id:ordered_ids)
         std::cout<<id<< " ";
     std::cout<<std::endl;
+
+    return ordered_ids;
 
 }
 

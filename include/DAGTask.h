@@ -12,6 +12,7 @@
 
 #include <yaml-cpp/yaml.h>
 #include "SubTask.h"
+#include "utils.h"
    
 enum creationStates {CONDITIONAL_T=0, PARALLEL_T=1, TERMINAL_T=2};
 
@@ -33,6 +34,7 @@ class DAGTask{
     int Cmin                = 1; // minimum WCET for subtasks (MelaniGen)
     int Cmax                = 100; //maximum WCET for subtasks (MelaniGen)
     float addProb           = 0.1; //probability to add an edge between 2 nodes, if possible (MelaniGen)
+    float probSCond         = 0.5; //probability that the source is conditional (MelaniGen)
 
     //distribution to add branches (MelaniGen)
     std::discrete_distribution<int> dist;
@@ -52,7 +54,7 @@ class DAGTask{
     //operation on DAG
     void isSuccessor(SubTask* v, SubTask *w, bool &is_succ);
     bool allPrecAdded(std::vector<SubTask*> prec, std::vector<int> ids);
-    void topologicalSort();
+    std::vector<int> topologicalSort();
     bool checkIndexAndIdsAreEqual();
     
 
@@ -61,6 +63,7 @@ class DAGTask{
     void assignWCET(const int minC, const int maxC);
     void expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond);
     void makeItDag(float prob);
+    void computeAccWorkload();
     DAGTask generateTaskMelani();
 
 };
