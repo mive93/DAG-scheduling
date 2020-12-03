@@ -21,12 +21,12 @@ class Taskset{
         double r;
         if(i < n_tasks-1){
             r = ((double) rand() / (RAND_MAX));
-            next_sum_U = sum_U * std::pow(r, 1/(n_tasks-i-1));
+            next_sum_U = sum_U * std::pow(r, 1./(n_tasks-i-1));
             U_part = sum_U - next_sum_U;
 
             while(t.getLenght() > std::ceil(t.getWCW() / U_part)){
                 r = ((double) rand() / (RAND_MAX));
-                next_sum_U = sum_U * std::pow(r, 1/(n_tasks-i-1));
+                next_sum_U = sum_U * std::pow(r, 1./(n_tasks-i-1));
                 U_part = sum_U - next_sum_U;
             }
             sum_U = next_sum_U;

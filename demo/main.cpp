@@ -10,7 +10,7 @@ int main(int argc, char **argv){
     srand (1);
 
 
-    std::cout<<"This is a DAG!"<<std::endl;
+    // std::cout<<"This is a DAG!"<<std::endl;
 
     // DAGTask t;
     // t.generateTaskMelani();
@@ -19,9 +19,15 @@ int main(int argc, char **argv){
 
     // std::cout<<t<<std::endl;
 
+    int n_tasks = 6;
+    int U_tot = 4;
+    int n_proc = 4;
+
     Taskset taskset;
-    taskset.generate_taskset_Melani(2,2,4);
-    for(int i=0; i<taskset.tasks.size();++i)
+    taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc);
+    for(int i=0; i<taskset.tasks.size();++i){
+        std::cout<<taskset.tasks[i]<<std::endl;
         taskset.tasks[i].saveAsDot("test"+std::to_string(i)+".dot");
+    }
 
 }
