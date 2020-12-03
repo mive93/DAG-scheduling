@@ -64,7 +64,7 @@ void DAGTask::saveAsDot(const std::string &filename){
 
     of<<"i [shape=box, label=\"D="<<d<<" T="<<t<<"\"]; \n";
     for (const auto &v: V){
-        of<<v->id<<" [label=\""<<v->c<<","<<v->accWork<<"\"";
+        of<<v->id<<" [label=\""<<v->c<<","<<v->accWork<<"("<<v->id<<")"<<"\"";
         if(v->mode == C_SOURCE_T) of<<",shape=diamond";
         else if(v->mode == C_SINK_T) of<<",shape=box";
         of<<"];\n";

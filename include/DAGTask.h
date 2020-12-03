@@ -24,6 +24,7 @@ class DAGTask{
     int d = 0;      //deadline
     int L = 0;      // longest chain
     int vol  = 0;   //volume
+    int wcw = 0;    // worst case workload (= to volume if no conditional branch exist)
 
     int maxCondBranches     = 2; //max conditional branches allowed (MelaniGen)
     int maxParBranches      = 6; //max parallel branches allowed (MelaniGen)
@@ -38,6 +39,7 @@ class DAGTask{
 
     //distribution to add branches (MelaniGen)
     std::discrete_distribution<int> dist;
+    std::vector<int> ordIDs; // ids in topological order
     std::vector<double> weights;
     std::mt19937 gen;       
 
@@ -56,6 +58,10 @@ class DAGTask{
     bool allPrecAdded(std::vector<SubTask*> prec, std::vector<int> ids);
     std::vector<int> topologicalSort();
     bool checkIndexAndIdsAreEqual();
+    void computeVolume();
+    int getLenght() const {return L;};
+    int getWCW() const {return wcw;};
+    int getPeriod() const {return t;};
     
 
     //Melani generation methods
@@ -64,7 +70,13 @@ class DAGTask{
     void expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond);
     void makeItDag(float prob);
     void computeAccWorkload();
+    void computeWorstCaseWorkload();
+    int computeZk(const int n_proc);
+    void maximazieMakespan(const SubTask* v, const std::vector<int>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc);
+    int computeMakespanUB(const int n_proc);
     DAGTask generateTaskMelani();
+    void assignSchedParametersUUniFast(const float U);
+    void computeTopologicalOrder();
 
 };
 

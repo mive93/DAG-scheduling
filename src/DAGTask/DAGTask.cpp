@@ -65,3 +65,9 @@ bool DAGTask::checkIndexAndIdsAreEqual(){
             return false;
     return true;
 }
+
+void DAGTask::computeVolume(){
+    vol = 0;
+    for(size_t i=0; i<V.size();++i)
+        vol += V[i]->c;
+}
