@@ -1,17 +1,51 @@
 tasks:
-- t: 10
-  d: 10
+- t: 20
+  d: 20
   vetices:
     - id: 0
       c: 2
     - id: 1
-      c: 3
+      c: 4
     - id: 2
-      c: 1
+      c: 3
     - id: 3
-      c: 5
+      c: 2
   edges:
     - from: 0
       to: 1
-    - from: 1
+    - from: 0
       to: 2
+    - from: 1
+      to: 3
+    - from: 2
+      to: 3
+- t: 30
+  d: 30
+  vetices:
+    - id: 0
+      c: 5
+    - id: 1
+      c: 3
+    - id: 2
+      c: 4
+    - id: 3
+      c: 5
+    - id: 4
+      c: 3
+    - id: 5
+      c: 1
+  edges:
+    - from: 0
+      to: 1
+    - from: 0
+      to: 2
+    - from: 1
+      to: 3
+    - from: 1
+      to: 4
+    - from: 2
+      to: 5
+    - from: 3
+      to: 5
+    - from: 4
+      to: 5

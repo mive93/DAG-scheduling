@@ -152,21 +152,11 @@ void DAGTask::makeItDag(float prob){
     }
 }
 
-void DAGTask::computeAccWorkload(){
-    int max_acc_prec;
-    for(size_t i=0; i<ordIDs.size();++i){
-        max_acc_prec = 0;
-        for(size_t j=0; j<V[ordIDs[i]]->prec.size();++j){
-            if(V[ordIDs[i]]->prec[j]->accWork > max_acc_prec)
-                max_acc_prec = V[ordIDs[i]]->prec[j]->accWork;
-        }
-
-        V[ordIDs[i]]->accWork = V[ordIDs[i]]->c + max_acc_prec;
-    }
-}
-
 void DAGTask::computeWorstCaseWorkload(){
     // Algorithm 1, Melani et al. "Response-Time Analysis of Conditional DAG Tasks in Multiprocessor Systems"
+    if(!ordIDs.size())
+        topologicalSort();
+
     std::vector<std::set<int>> paths (V.size());
     paths[ordIDs[ordIDs.size()-1]].insert(ordIDs[ordIDs.size()-1]);
     int idx;
@@ -204,6 +194,10 @@ void DAGTask::computeWorstCaseWorkload(){
 
 int DAGTask::computeZk(const int n_proc){
     // Algorithm 2, Melani et al. "Response-Time Analysis of Conditional DAG Tasks in Multiprocessor Systems"
+
+    if(!ordIDs.size())
+        topologicalSort();
+
     std::vector<std::set<int>> S (V.size());
     std::vector<std::set<int>> T (V.size());
     std::vector<int> f (V.size());
@@ -273,7 +267,7 @@ int DAGTask::computeZk(const int n_proc){
     return f[ordIDs[0]];
 }
 
-void DAGTask::maximazieMakespan(const SubTask* v, const std::vector<int>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc){
+void DAGTask::maximizeMakespan(const SubTask* v, const std::vector<int>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc){
     max_mksp = 0;
     for(int j=0; j<v->succ.size(); ++j){
         int sum_w = 0;
@@ -301,12 +295,13 @@ void DAGTask::maximazieMakespan(const SubTask* v, const std::vector<int>& mksp, 
             mkspset_tmp.insert(mksp_set[v->succ[j]->id].begin(), mksp_set[v->succ[j]->id].end());
             mkspset_tmp.insert(wset_tmp.begin(), wset_tmp.end());
         }
-
-
     }
 }
 
 int DAGTask::computeMakespanUB(const int n_proc){
+    if(!ordIDs.size())
+        topologicalSort();
+
     std::vector<std::set<int>> mksp_set (V.size());
     std::vector<std::set<int>> w_set (V.size());
     std::vector<int> w (V.size());
@@ -334,7 +329,7 @@ int DAGTask::computeMakespanUB(const int n_proc){
             float max_mksp = 0;
             int w_tmp = 0;
             std::set<int> wset_tmp, mkspset_tmp;
-            maximazieMakespan(V[idx], mksp, mksp_set, w_set, mkspset_tmp, max_mksp, n_proc);
+            maximizeMakespan(V[idx], mksp, mksp_set, w_set, mkspset_tmp, max_mksp, n_proc);
 
             mksp[idx] = max_mksp + V[idx]->c;
             mksp_set[idx].insert(idx);
@@ -382,39 +377,6 @@ int DAGTask::computeMakespanUB(const int n_proc){
     }
 
     return mksp[ordIDs[0]];
-}
-
-void DAGTask::computeTopologicalOrder(){
-    if (!ordIDs.size()){
-        ordIDs = topologicalSort();
-        if(!checkIndexAndIdsAreEqual())
-            FatalError("Ids and Indexes do not correspond, can't use computed topological order!");
-        if(ordIDs.size() != V.size())
-            FatalError("Ids and V sizes differ!");
-    }
-}
-
-DAGTask DAGTask::generateTaskMelani(){
-    configureParams();
-    expandTaskSeriesParallel(nullptr, nullptr,rec_depth,0,false);
-    assignWCET(Cmin, Cmax);
-    makeItDag(addProb);
-
-    computeTopologicalOrder(); 
-
-    computeAccWorkload();
-    computeWorstCaseWorkload();
-    computeVolume();
-
-    for(const auto&v :V)
-        if(v->accWork > L)
-            L = v->accWork;
-
-    std::cout<<"length = "<<L<<std::endl;
-    std::cout<<"wcw = "<<wcw<<std::endl;
-    std::cout<<"volume = "<<vol<<std::endl;
-    
-    return *this;
 }
 
 void DAGTask::assignSchedParametersUUniFast(const float U){

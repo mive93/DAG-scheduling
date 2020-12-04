@@ -6,6 +6,9 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
     os<<"----------------------------------------------------\n";
     os<< "deadline :" << t.d <<std::endl;
     os<< "period :" << t.t <<std::endl;
+    os<< "length :" << t.L <<std::endl;
+    os<< "volume :" << t.vol <<std::endl;
+    os<< "wcw :" << t.wcw <<std::endl;
     os<< "vertices :"<<std::endl;
     for(auto v: t.V){
         os<< "\t v_" << v->id << " - c: "<<v->c <<" \tsucc: ";
@@ -16,45 +19,49 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
             os<< p->id << " ";
         os<<" \n";
     }
+    if(t.ordIDs.size()){
+        std::cout<<"Topological order: ";
+        for(auto id:t.ordIDs)
+            std::cout<<id<< " ";
+        std::cout<<std::endl;
+    }
+
     os<<"----------------------------------------------------\n";
     return os;
 
 }
 
-void DAGTask::readTaskFromYaml(const std::string& params_path){
-    YAML::Node config   = YAML::LoadFile(params_path);
-    YAML::Node tasks = config["tasks"];
+void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
+    // TODO check ids!!!
+    t = tasks[i]["t"].as<int>();
+    d = tasks[i]["d"].as<int>();
 
-    for(int i=0; i<tasks.size(); i++){
-        t = tasks[i]["t"].as<int>();
-        d = tasks[i]["d"].as<int>();
+    YAML::Node vert = tasks[i]["vetices"];
 
-        YAML::Node vert = tasks[i]["vetices"];
+    std::map<int, int> id_pos;
 
-        std::map<int, int> id_pos;
+    for(int j=0; j<vert.size(); j++){
+        SubTask *v = new SubTask;
+        v->id = vert[j]["id"].as<int>();
+        v->c = vert[j]["c"].as<int>();
 
-        for(int j=0; j<vert.size(); j++){
-            SubTask *v = new SubTask;
-            v->id = vert[j]["id"].as<int>();
-            v->c = vert[j]["c"].as<int>();
+        id_pos[v->id] = j;
 
-            id_pos[v->id] = j;
-
-            V.push_back(v);
-        }
-
-        YAML::Node edges = tasks[i]["edges"];
-        int form_id, to_id;
-        for(int j=0; j<edges.size(); j++){
-
-            //add check
-            form_id = id_pos[edges[j]["from"].as<int>()];
-            to_id = id_pos[edges[j]["to"].as<int>()];
-
-            V[form_id]->succ.push_back(V[to_id]);
-            V[to_id]->prec.push_back(V[form_id]);
-        }
+        V.push_back(v);
     }
+
+    YAML::Node edges = tasks[i]["edges"];
+    int form_id, to_id;
+    for(int j=0; j<edges.size(); j++){
+
+        //add check
+        form_id = id_pos[edges[j]["from"].as<int>()];
+        to_id = id_pos[edges[j]["to"].as<int>()];
+
+        V[form_id]->succ.push_back(V[to_id]);
+        V[to_id]->prec.push_back(V[form_id]);
+    }
+    
 }
 
 void DAGTask::saveAsDot(const std::string &filename){

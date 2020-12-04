@@ -29,9 +29,9 @@ bool DAGTask::allPrecAdded(std::vector<SubTask*> prec, std::vector<int> ids){
     return true;
 }
 
-std::vector<int> DAGTask::topologicalSort (){
+void DAGTask::topologicalSort (){
     std::vector<SubTask> V_copy;
-    std::vector<int> ordered_ids;
+    ordIDs.clear();
 
     for(const auto &v: V)
         V_copy.push_back(*v);
@@ -40,9 +40,9 @@ std::vector<int> DAGTask::topologicalSort (){
     while(nodes_to_add){
         nodes_to_add = false;
         for(auto &v: V_copy){
-            if((v.prec.empty() || allPrecAdded(v.prec, ordered_ids))){
+            if((v.prec.empty() || allPrecAdded(v.prec, ordIDs))){
                 if(v.id != -1 ){
-                    ordered_ids.push_back(v.id);
+                    ordIDs.push_back(v.id);
                     v.id = -1;
                 }                    
             }
@@ -51,12 +51,10 @@ std::vector<int> DAGTask::topologicalSort (){
         }
     }
 
-    for(auto id:ordered_ids)
-        std::cout<<id<< " ";
-    std::cout<<std::endl;
-
-    return ordered_ids;
-
+    if(!checkIndexAndIdsAreEqual())
+        FatalError("Ids and Indexes do not correspond, can't use computed topological order!");
+    if(ordIDs.size() != V.size())
+        FatalError("Ids and V sizes differ!");
 }
 
 bool DAGTask::checkIndexAndIdsAreEqual(){
@@ -70,4 +68,27 @@ void DAGTask::computeVolume(){
     vol = 0;
     for(size_t i=0; i<V.size();++i)
         vol += V[i]->c;
+}
+
+void DAGTask::computeAccWorkload(){
+    int max_acc_prec;
+    for(size_t i=0; i<ordIDs.size();++i){
+        max_acc_prec = 0;
+        for(size_t j=0; j<V[ordIDs[i]]->prec.size();++j){
+            if(V[ordIDs[i]]->prec[j]->accWork > max_acc_prec)
+                max_acc_prec = V[ordIDs[i]]->prec[j]->accWork;
+        }
+
+        V[ordIDs[i]]->accWork = V[ordIDs[i]]->c + max_acc_prec;
+    }
+}
+
+void DAGTask::computeLength(){
+    if(!ordIDs.size())
+        topologicalSort();
+        
+    computeAccWorkload();
+    for(const auto&v :V)
+        if(v->accWork > L)
+            L = v->accWork;
 }
