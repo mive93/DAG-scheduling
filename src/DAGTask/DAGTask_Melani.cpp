@@ -17,8 +17,9 @@ void DAGTask::configureParams(){
     weights.push_back(p_term);
     dist.param(std::discrete_distribution<int> ::param_type(std::begin(weights), std::end(weights)));
 
-    // gen.seed(time(0));
-    gen.seed(1);
+    if(REPRODUCIBLE) gen.seed(1);
+    else gen.seed(time(0));
+    
 }
 
 void DAGTask::assignWCET(const int minC, const int maxC){

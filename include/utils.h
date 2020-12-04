@@ -4,6 +4,8 @@
 #include<set>
 #include<algorithm>
 
+#define REPRODUCIBLE 1
+
 #define FatalError(s) {                                                \
     std::stringstream _where, _message;                                \
     _where << __FILE__ << ':' << __LINE__;                             \

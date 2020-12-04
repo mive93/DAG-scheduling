@@ -7,7 +7,7 @@
 
 class Taskset{
 
-    float U = 0; //utlization
+    float U = 0; //utilization
 
     public:
 

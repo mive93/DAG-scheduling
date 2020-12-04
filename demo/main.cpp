@@ -6,9 +6,9 @@
 
 int main(int argc, char **argv){
 
-   // srand (time(NULL));
-    srand (1);
-
+    if(REPRODUCIBLE) srand (1);
+    else srand (time(NULL));
+    
     bool random_creation = true;
 
     int n_proc = 4;
