@@ -51,7 +51,6 @@ class DAGTask{
     ~DAGTask(){};
 
     //input - output
-    // void readTaskFromYaml(const std::string& params_path); //TODO fixme!! id and index should always match
     void readTaskFromYamlNode(YAML::Node tasks, const int i);
     void saveAsDot(const std::string &filename);
     friend std::ostream& operator<<(std::ostream& os, const DAGTask& t);

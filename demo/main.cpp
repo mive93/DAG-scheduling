@@ -9,7 +9,7 @@ int main(int argc, char **argv){
     if(REPRODUCIBLE) srand (1);
     else srand (time(NULL));
     
-    bool random_creation = true;
+    bool random_creation = false;
 
     int n_proc = 4;
     Taskset taskset;

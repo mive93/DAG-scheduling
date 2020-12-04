@@ -32,7 +32,6 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
 }
 
 void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
-    // TODO check ids!!!
     t = tasks[i]["t"].as<int>();
     d = tasks[i]["d"].as<int>();
 
@@ -42,10 +41,10 @@ void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
 
     for(int j=0; j<vert.size(); j++){
         SubTask *v = new SubTask;
-        v->id = vert[j]["id"].as<int>();
+        v->id = j;
         v->c = vert[j]["c"].as<int>();
 
-        id_pos[v->id] = j;
+        id_pos[vert[j]["id"].as<int>()] = j;
 
         V.push_back(v);
     }
