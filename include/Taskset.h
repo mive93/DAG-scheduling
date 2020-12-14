@@ -16,7 +16,7 @@ class Taskset{
     Taskset(){};
     ~Taskset(){};
 
-    float getUtilization() {return U;}
+    float getUtilization() const {return U;}
     
 
     void readTasksetFromYaml(const std::string& params_path){

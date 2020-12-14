@@ -37,17 +37,24 @@ int main(int argc, char **argv){
     //single DAG tests
     std::cout<<"Single task tests: \n";
     bool constrained_taskset = true;
+    bool implicit_taskset = true;
     for(int i=0; i<taskset.tasks.size();++i){
         std::cout<<"\tTask "<<i<<std::endl;
         //constrained
-        if(taskset.tasks[i].getDeadline() < taskset.tasks[i].getPeriod())
+        if(taskset.tasks[i].getDeadline() < taskset.tasks[i].getPeriod()){
             std::cout<< "\t\tBaruah 2012 constrained (G-EDF): " <<G_EDF_Baruah2012_C(taskset.tasks[i], n_proc)<<std::endl;
+            implicit_taskset = false;
+        }
         std::cout<< "\t\tBaruah 2012 arbitrary (G-EDF): "   <<G_EDF_Baruah2012_A(taskset.tasks[i], n_proc)<<std::endl;
 
-        if(taskset.tasks[i].getDeadline() > taskset.tasks[i].getPeriod())
+        if(taskset.tasks[i].getDeadline() > taskset.tasks[i].getPeriod()){
             constrained_taskset = false;
+            implicit_taskset = false;
+        }
+        
     }
 
+    //taskset tests
     std::cout<<"Taskset tests: \n";
 
     //arbitrary
@@ -59,6 +66,10 @@ int main(int argc, char **argv){
         std::cout<< "\tBonifaci 2013 constrained (G-DM): "   <<G_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
     }
 
-    //taskset tests
+    //implicit
+    if(implicit_taskset){
+        std::cout<< "\tLi 2013 implicit (G-EDF): "   <<G_EDF_Li2013_I(taskset, n_proc)<<std::endl;
+    }
+    
 
 }

@@ -64,7 +64,7 @@ class DAGTask{
     void computeLength();
     void computeVolume();
     int getLenght() const {return L;};
-    int getVolume() const {return L;};
+    int getVolume() const {return vol;};
     int getWCW() const {return wcw;};
     int getPeriod() const {return t;};
     int getDeadline() const {return d;};

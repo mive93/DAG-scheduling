@@ -43,7 +43,7 @@ bool G_DM_Bonifaci2013_C(const Taskset& taskset, const int m){
     float constr_contrib = 0, unconstr_contrib = 0;
     for(const auto& task:taskset.tasks){
         if(!(task.getDeadline() <= task.getPeriod()))
-            FatalError("This test requires a constrained deadline task");
+            FatalError("This test requires constrained deadline tasks");
 
         if(task.getPeriod() <= 2 * task.getDeadline())
             unconstr_contrib += (float) task.getVolume() / (float) task.getPeriod();
