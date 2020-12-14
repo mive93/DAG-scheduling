@@ -35,7 +35,7 @@ void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
     t = tasks[i]["t"].as<int>();
     d = tasks[i]["d"].as<int>();
 
-    YAML::Node vert = tasks[i]["vetices"];
+    YAML::Node vert = tasks[i]["vertices"];
 
     std::map<int, int> id_pos;
 

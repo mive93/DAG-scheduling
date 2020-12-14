@@ -1,7 +1,7 @@
 tasks:
 - t: 20
   d: 20
-  vetices:
+  vertices:
     - id: 0
       c: 2
     - id: 1
@@ -21,7 +21,7 @@ tasks:
       to: 3
 - t: 30
   d: 30
-  vetices:
+  vertices:
     - id: 0
       c: 5
     - id: 1

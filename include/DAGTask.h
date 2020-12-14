@@ -67,6 +67,7 @@ class DAGTask{
     int getVolume() const {return L;};
     int getWCW() const {return wcw;};
     int getPeriod() const {return t;};
+    int getDeadline() const {return d;};
     
 
     //Melani generation methods
