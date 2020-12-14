@@ -12,7 +12,7 @@ int main(int argc, char **argv){
     
     bool random_creation = false;
 
-    int n_proc = 4;
+    int n_proc = 8;
     Taskset taskset;
     if(random_creation){
         int n_tasks = 6;
@@ -58,6 +58,7 @@ int main(int argc, char **argv){
     std::cout<<"Taskset tests: \n";
 
     //arbitrary
+    std::cout<< "\tGraham 1969 : "   <<Graham1969(taskset, n_proc)<<std::endl;
     std::cout<< "\tBonifaci 2013 arbitrary (G-EDF): "   <<G_EDF_Bonifaci2013_A(taskset, n_proc)<<std::endl;
     std::cout<< "\tBonifaci 2013 arbitrary (G-DM): "   <<G_DM_Bonifaci2013_A(taskset, n_proc)<<std::endl;
 

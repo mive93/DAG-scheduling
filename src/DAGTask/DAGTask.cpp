@@ -2,23 +2,23 @@
 
 void DAGTask::isSuccessor(SubTask* v, SubTask *w, bool &is_succ){
 
-    for(size_t i=0; i<w->succ.size(); ++i){
-        if(w->succ[i] == v){
+    for(size_t i=0; i<w->desc.size(); ++i){
+        if(w->desc[i] == v){
             is_succ = true;
             return;
         }
         else
-            isSuccessor(v, w->succ[i], is_succ);
+            isSuccessor(v, w->desc[i], is_succ);
     }
     return;
 }
 
-bool DAGTask::allPrecAdded(std::vector<SubTask*> prec, std::vector<int> ids){
+bool DAGTask::allPrecAdded(std::vector<SubTask*> ancst, std::vector<int> ids){
     bool prec_present;
-    for(int i=0; i<prec.size();++i){
+    for(int i=0; i<ancst.size();++i){
         prec_present = false;
         for(int j=0; j<ids.size();++j){
-            if(prec[i]->id == ids[j]){
+            if(ancst[i]->id == ids[j]){
                 prec_present = true;
                 break;
             }
@@ -40,7 +40,7 @@ void DAGTask::topologicalSort (){
     while(nodes_to_add){
         nodes_to_add = false;
         for(auto &v: V_copy){
-            if((v.prec.empty() || allPrecAdded(v.prec, ordIDs))){
+            if((v.ancst.empty() || allPrecAdded(v.ancst, ordIDs))){
                 if(v.id != -1 ){
                     ordIDs.push_back(v.id);
                     v.id = -1;
@@ -74,9 +74,9 @@ void DAGTask::computeAccWorkload(){
     int max_acc_prec;
     for(size_t i=0; i<ordIDs.size();++i){
         max_acc_prec = 0;
-        for(size_t j=0; j<V[ordIDs[i]]->prec.size();++j){
-            if(V[ordIDs[i]]->prec[j]->accWork > max_acc_prec)
-                max_acc_prec = V[ordIDs[i]]->prec[j]->accWork;
+        for(size_t j=0; j<V[ordIDs[i]]->ancst.size();++j){
+            if(V[ordIDs[i]]->ancst[j]->accWork > max_acc_prec)
+                max_acc_prec = V[ordIDs[i]]->ancst[j]->accWork;
         }
 
         V[ordIDs[i]]->accWork = V[ordIDs[i]]->c + max_acc_prec;

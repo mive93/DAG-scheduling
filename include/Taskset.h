@@ -23,7 +23,7 @@ class Taskset{
         YAML::Node config   = YAML::LoadFile(params_path);
         YAML::Node tasks_node = config["tasks"];
 
-        for(int i=0; i<tasks_node.size(); i++){
+        for(size_t i=0; i<tasks_node.size(); i++){
             DAGTask t;
             t.readTaskFromYamlNode(tasks_node, i);
 
@@ -52,7 +52,7 @@ class Taskset{
             next_sum_U = sum_U * std::pow(r, 1./(n_tasks-i-1));
             U_part = sum_U - next_sum_U;
 
-            while(t.getLenght() > std::ceil(t.getWCW() / U_part)){
+            while(t.getLength() > std::ceil(t.getWCW() / U_part)){
                 r = ((double) rand() / (RAND_MAX));
                 next_sum_U = sum_U * std::pow(r, 1./(n_tasks-i-1));
                 U_part = sum_U - next_sum_U;

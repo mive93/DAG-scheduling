@@ -57,13 +57,13 @@ class DAGTask{
 
     //operation on DAG
     void isSuccessor(SubTask* v, SubTask *w, bool &is_succ);
-    bool allPrecAdded(std::vector<SubTask*> prec, std::vector<int> ids);
+    bool allPrecAdded(std::vector<SubTask*> ancst, std::vector<int> ids);
     void topologicalSort();
     bool checkIndexAndIdsAreEqual();
     void computeAccWorkload();
     void computeLength();
     void computeVolume();
-    int getLenght() const {return L;};
+    int getLength() const {return L;};
     int getVolume() const {return vol;};
     int getWCW() const {return wcw;};
     int getPeriod() const {return t;};

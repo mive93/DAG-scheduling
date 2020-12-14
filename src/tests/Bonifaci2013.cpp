@@ -11,7 +11,7 @@ bool G_EDF_Bonifaci2013_A(const Taskset& taskset, const int m){
         else
             constr_contrib += (float) task.getVolume() / (float) task.getDeadline();
 
-        if(task.getLenght() > float (task.getDeadline()) / 3. )
+        if(task.getLength() > float (task.getDeadline()) / 3. )
             return false;
     }
 
@@ -29,7 +29,7 @@ bool G_DM_Bonifaci2013_A(const Taskset& taskset, const int m){
         else
             constr_contrib += (float) task.getVolume() / (4. * (float) task.getDeadline());
 
-        if(task.getLenght() > float (task.getDeadline()) / 5. )
+        if(task.getLength() > float (task.getDeadline()) / 5. )
             return false;
     }
 
@@ -50,7 +50,7 @@ bool G_DM_Bonifaci2013_C(const Taskset& taskset, const int m){
         else
             constr_contrib += (float) task.getVolume() / (float) task.getDeadline();
 
-        if(task.getLenght() > float (task.getDeadline()) / 4. )
+        if(task.getLength() > float (task.getDeadline()) / 4. )
             return false;
     }
 
