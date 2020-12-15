@@ -20,11 +20,13 @@ class DAGTask{
 
     std::vector<SubTask*> V;
 
-    int t = 0;      //period
-    int d = 0;      //deadline
-    int L = 0;      // longest chain
-    int vol  = 0;   //volume
-    int wcw = 0;    // worst case workload (= to volume if no conditional branch exist)
+    float t = 0;          //period
+    float d = 0;          //deadline
+    float L = 0;          // longest chain
+    float vol  = 0;       //volume
+    float wcw = 0;        // worst case workload (= to volume if no conditional branch exist)
+    float delta = 0;    // density
+    float u = 0;         //utilization
 
     
     //distribution to add branches (MelaniGen)
@@ -41,13 +43,13 @@ class DAGTask{
     float p_par             = 0.2; //probability of generating a parallel branch (MelaniGen)
     float p_term            = 0.8; //probability of generating a terminal vertex (MelaniGen)
     int rec_depth           = 2; // maximum recursion depth for the generation of the task graphs (MelaniGen)
-    int Cmin                = 1; // minimum WCET for subtasks (MelaniGen)
-    int Cmax                = 100; //maximum WCET for subtasks (MelaniGen)
+    float Cmin                = 1; // minimum WCET for subtasks (MelaniGen)
+    float Cmax                = 100; //maximum WCET for subtasks (MelaniGen)
     float addProb           = 0.1; //probability to add an edge between 2 nodes, if possible (MelaniGen)
     float probSCond         = 0.5; //probability that the source is conditional (MelaniGen)
 
     DAGTask(){};
-    DAGTask(const int T, const int D): t(T), d(D) {};
+    DAGTask(const float T, const float D): t(T), d(D) {};
     ~DAGTask(){};
 
     //input - output
@@ -63,17 +65,21 @@ class DAGTask{
     void computeAccWorkload();
     void computeLength();
     void computeVolume();
+    void computeUtilization();
+    void computeDensity();
 
     void localDeadline(SubTask *task, const int i);
     void localOffset(SubTask *task, const int i);
     void computeLocalOffsets();
     void computeLocalDeadlines();
 
-    int getLength() const {return L;};
-    int getVolume() const {return vol;};
-    int getWCW() const {return wcw;};
-    int getPeriod() const {return t;};
-    int getDeadline() const {return d;};
+    float getLength() const {return L;};
+    float getVolume() const {return vol;};
+    float getWCW() const {return wcw;};
+    float getPeriod() const {return t;};
+    float getDeadline() const {return d;};
+    float getUtilization() const {return u;};
+    float getDensity() const {return delta;};
     std::vector<SubTask*> getVertices() const {return V;};
     
 
@@ -84,7 +90,7 @@ class DAGTask{
     void makeItDag(float prob);
     void computeWorstCaseWorkload();
     int computeZk(const int n_proc);
-    void maximizeMakespan(const SubTask* v, const std::vector<int>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc);
+    void maximizeMakespan(const SubTask* v, const std::vector<float>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc);
     int computeMakespanUB(const int n_proc);
     void assignSchedParametersUUniFast(const float U);
 

@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.5)
 project(dag-sched CXX)
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11 -fPIC -Wno-deprecated-declarations -Wno-unused-variable")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC -Wno-deprecated-declarations -Wno-unused-variable")
 
 #-------------------------------------------------------------------------------
 # External Libraries

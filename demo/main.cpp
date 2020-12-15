@@ -16,7 +16,7 @@ int main(int argc, char **argv){
     Taskset taskset;
     if(random_creation){
         int n_tasks = 6;
-        int U_tot = 4;
+        float U_tot = 4;
         taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc);
     }
     else
@@ -32,6 +32,8 @@ int main(int argc, char **argv){
         system(dot_command.c_str());
     }
     std::cout<<"Taskset utilization: "<<taskset.getUtilization()<<std::endl;
+    std::cout<<"Taskset Hyper-Period: "<<taskset.getHyperPeriod()<<std::endl;
+    std::cout<<"Taskset max Density: "<<taskset.getMaxDensity()<<std::endl<<std::endl;
 
 
     //single DAG tests
@@ -66,6 +68,7 @@ int main(int argc, char **argv){
     if(constrained_taskset){
         std::cout<< "\tBonifaci 2013 constrained (G-DM): "   <<G_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tQamhieh 2013 constrained (G-EDF): "   <<G_EDF_Qamhieh2013_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tBaruah 2014 constrained (G-EDF): "   <<G_EDF_Baruah2014_C(taskset, n_proc)<<std::endl;
     }
 
     //implicit

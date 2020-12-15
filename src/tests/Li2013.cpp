@@ -8,7 +8,7 @@ bool G_EDF_Li2013_I(const Taskset& taskset, const int m){
         if(!(task.getDeadline() == task.getPeriod()))
             FatalError("This test requires implicit deadline tasks");
 
-        if(task.getLength() > 1. / ( 4. - 2. / m) * (float) task.getPeriod())
+        if(task.getLength() > 1. / ( 4. - 2. / m) * task.getPeriod())
             return false;
     }
 

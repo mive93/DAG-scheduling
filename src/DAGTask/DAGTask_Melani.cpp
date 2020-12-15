@@ -173,7 +173,7 @@ void DAGTask::computeWorstCaseWorkload(){
             else{
                 std::vector<int> sum (V[idx]->desc.size(), 0);
                 int max_id = 0;
-                int max_sum = 0;
+                float max_sum = 0;
                 for(int j=0; j<V[idx]->desc.size(); ++j){
                     for(auto k: paths[V[idx]->desc[j]->id])
                         sum[j] += V[k]->c;
@@ -201,13 +201,13 @@ int DAGTask::computeZk(const int n_proc){
 
     std::vector<std::set<int>> S (V.size());
     std::vector<std::set<int>> T (V.size());
-    std::vector<int> f (V.size());
+    std::vector<float> f (V.size());
     S[ordIDs[ordIDs.size()-1]].insert(ordIDs[ordIDs.size()-1]);
     T[ordIDs[ordIDs.size()-1]].insert(ordIDs[ordIDs.size()-1]);
     f[ordIDs[ordIDs.size()-1]] = V[ordIDs[ordIDs.size()-1]]->c;
     
     int idx;
-    int C = 0;
+    float C = 0;
     std::set<int> D;
     for(int i = ordIDs.size()-2; i >= 0; --i ){
         idx = ordIDs[i];
@@ -242,8 +242,8 @@ int DAGTask::computeZk(const int n_proc){
                 f[idx] = V[idx]->c + U[max_U_idx];
             }
             else{
-                std::vector<int> C (V[idx]->desc.size(),0);
-                std::vector<int> ff (V[idx]->desc.size(),0);
+                std::vector<float> C (V[idx]->desc.size(),0);
+                std::vector<float> ff (V[idx]->desc.size(),0);
 
                 for(int j=0; j<V[idx]->desc.size(); ++j){
                     for(auto k: S[V[idx]->desc[j]->id]){
@@ -268,10 +268,10 @@ int DAGTask::computeZk(const int n_proc){
     return f[ordIDs[0]];
 }
 
-void DAGTask::maximizeMakespan(const SubTask* v, const std::vector<int>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc){
+void DAGTask::maximizeMakespan(const SubTask* v, const std::vector<float>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc){
     max_mksp = 0;
     for(int j=0; j<v->desc.size(); ++j){
-        int sum_w = 0;
+        float sum_w = 0;
         std::set<int> wset_tmp;
 
         for(int k=0; k<v->desc.size(); ++k){
@@ -291,8 +291,8 @@ void DAGTask::maximizeMakespan(const SubTask* v, const std::vector<int>& mksp, c
             }
         }
 
-        if(mksp[v->desc[j]->id] + float(sum_w) / n_proc > max_mksp){
-            max_mksp = mksp[v->desc[j]->id] + float(sum_w) / n_proc;
+        if(mksp[v->desc[j]->id] + sum_w / n_proc > max_mksp){
+            max_mksp = mksp[v->desc[j]->id] + sum_w / n_proc;
             mkspset_tmp.insert(mksp_set[v->desc[j]->id].begin(), mksp_set[v->desc[j]->id].end());
             mkspset_tmp.insert(wset_tmp.begin(), wset_tmp.end());
         }
@@ -305,8 +305,8 @@ int DAGTask::computeMakespanUB(const int n_proc){
 
     std::vector<std::set<int>> mksp_set (V.size());
     std::vector<std::set<int>> w_set (V.size());
-    std::vector<int> w (V.size());
-    std::vector<int> mksp (V.size());
+    std::vector<float> w (V.size());
+    std::vector<float> mksp (V.size());
     
     mksp_set[ordIDs[ordIDs.size()-1]].insert(ordIDs[ordIDs.size()-1]);
     w_set[ordIDs[ordIDs.size()-1]].insert(ordIDs[ordIDs.size()-1]);
@@ -314,7 +314,7 @@ int DAGTask::computeMakespanUB(const int n_proc){
     w[ordIDs[ordIDs.size()-1]] = V[ordIDs[ordIDs.size()-1]]->c;
     
     int idx;
-    int C = 0;
+    float C = 0;
     std::set<int> D;
     for(int i = ordIDs.size()-2; i >= 0; --i ){
         idx = ordIDs[i];
@@ -354,7 +354,8 @@ int DAGTask::computeMakespanUB(const int n_proc){
 
             }
             else{
-                int max_mksp = 0, max_w = 0, max_idx = 0;
+                float max_mksp = 0, max_w = 0;
+                int max_idx = 0;
                 for(int j=0; j<V[idx]->desc.size(); ++j){
                     if(mksp[V[idx]->desc[j]->id] > max_mksp){
                         max_mksp = mksp[V[idx]->desc[j]->id];
@@ -381,6 +382,6 @@ int DAGTask::computeMakespanUB(const int n_proc){
 }
 
 void DAGTask::assignSchedParametersUUniFast(const float U){
-    t = std::ceil(float(wcw) / U);
+    t = std::ceil(wcw / U);
     d = t;    
 }

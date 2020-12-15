@@ -7,11 +7,11 @@ bool G_EDF_Bonifaci2013_A(const Taskset& taskset, const int m){
     float constr_contrib = 0, unconstr_contrib = 0;
     for(const auto& task:taskset.tasks){
         if(task.getPeriod() <= task.getDeadline())
-            unconstr_contrib += (float) task.getVolume() / (float) task.getPeriod();
+            unconstr_contrib +=  task.getVolume() /  task.getPeriod();
         else
-            constr_contrib += (float) task.getVolume() / (float) task.getDeadline();
+            constr_contrib +=  task.getVolume() /  task.getDeadline();
 
-        if(task.getLength() > float (task.getDeadline()) / 3. )
+        if(task.getLength() > task.getDeadline() / 3. )
             return false;
     }
 
@@ -25,11 +25,11 @@ bool G_DM_Bonifaci2013_A(const Taskset& taskset, const int m){
     float constr_contrib = 0, unconstr_contrib = 0;
     for(const auto& task:taskset.tasks){
         if(task.getPeriod() <= 2 * task.getDeadline())
-            unconstr_contrib += (float) task.getVolume() / (float) task.getPeriod();
+            unconstr_contrib +=  task.getVolume() /  task.getPeriod();
         else
-            constr_contrib += (float) task.getVolume() / (4. * (float) task.getDeadline());
+            constr_contrib +=  task.getVolume() / (4. *  task.getDeadline());
 
-        if(task.getLength() > float (task.getDeadline()) / 5. )
+        if(task.getLength() > task.getDeadline() / 5. )
             return false;
     }
 
@@ -46,11 +46,11 @@ bool G_DM_Bonifaci2013_C(const Taskset& taskset, const int m){
             FatalError("This test requires constrained deadline tasks");
 
         if(task.getPeriod() <= 2 * task.getDeadline())
-            unconstr_contrib += (float) task.getVolume() / (float) task.getPeriod();
+            unconstr_contrib +=  task.getVolume() /  task.getPeriod();
         else
-            constr_contrib += (float) task.getVolume() / (float) task.getDeadline();
+            constr_contrib +=  task.getVolume() /  task.getDeadline();
 
-        if(task.getLength() > float (task.getDeadline()) / 4. )
+        if(task.getLength() > task.getDeadline() / 4. )
             return false;
     }
 

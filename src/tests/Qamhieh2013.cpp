@@ -6,8 +6,8 @@
 /* Theorem 6 in the paper */
 bool G_EDF_Qamhieh2013_C(Taskset taskset, const int m){
 
-    int cumulativeDBF = 0;
-    int cumulativeCarryIn = 0;
+    float cumulativeDBF = 0;
+    float cumulativeCarryIn = 0;
     
     for(auto& task:taskset.tasks){
         if(!(task.getDeadline() <= task.getPeriod()))
@@ -20,14 +20,14 @@ bool G_EDF_Qamhieh2013_C(Taskset taskset, const int m){
     for(int x=0; x<taskset.tasks.size(); ++x){
         for(int y=0; y<taskset.tasks.size(); ++y){
             for(const auto& v: taskset.tasks[y].getVertices())
-                cumulativeDBF += std::max(0, demandBoundFunction((float) taskset.tasks[x].getDeadline(), 
-                                                                 (float) v->localD, 
-                                                                 (float) taskset.tasks[y].getPeriod(), 
-                                                                 (float) v->c ));
+                cumulativeDBF += std::max(0, demandBoundFunction(taskset.tasks[x].getDeadline(), 
+                                                                 v->localD, 
+                                                                 taskset.tasks[y].getPeriod(), 
+                                                                 v->c ));
 
             if(x != y){
                 for(const auto& v: taskset.tasks[y].getVertices())
-                    cumulativeCarryIn += std::min(v->c, std::max(0, v->localD));
+                    cumulativeCarryIn += std::fmin(v->c, std::fmax(0, v->localD));
             }
         }
 

@@ -9,14 +9,14 @@ class SubTask{
 
     public:
 
-    int id      = 0; // sub-task id
-    int c       = 0; // WCET
-    int width   = 0; // width in the graph
-    int depth   = 0; // depth in the graph
-    int accWork = 0; // accumulated workload
+    int id          = 0; // sub-task id
+    float c         = 0; // WCET
+    int width       = 0; // width in the graph
+    int depth       = 0; // depth in the graph
+    float accWork   = 0; // accumulated workload
 
-    int localO = 0; // local offset
-    int localD = 0; // local deadline
+    float localO = 0; // local offset
+    float localD = 0; // local deadline
 
     subTaskMode mode = NORMAL_T;    // type of node
 
@@ -37,7 +37,7 @@ class SubTask{
             localO = 0;
         else{
             localO = 0;
-            int temp_local_o = 0;
+            float temp_local_o = 0;
             for(int i=0; i<ancst.size();++i){
                 temp_local_o = ancst[i]->localO + ancst[i]->c;
                 if(temp_local_o > localO) localO = temp_local_o;
@@ -45,12 +45,12 @@ class SubTask{
         }
     }
 
-    void localDeadline(const int task_deadline){
+    void localDeadline(const float task_deadline){
         if(desc.size() == 0)
             localD = task_deadline;
         else{
             localD = 99999;
-            int temp_local_d = 0;
+            float temp_local_d = 0;
             for(int i=0; i<desc.size();++i){
                 temp_local_d = desc[i]->localD - desc[i]->c;
                 if(temp_local_d < localD) localD = temp_local_d;

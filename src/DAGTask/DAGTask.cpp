@@ -93,6 +93,17 @@ void DAGTask::computeLength(){
             L = v->accWork;
 }
 
+void DAGTask::computeUtilization(){
+    if(vol == 0)
+        computeWorstCaseWorkload();
+    u =  wcw /  t; 
+}
+
+void DAGTask::computeDensity(){
+    if(L == 0)
+        computeLength();
+    delta =  L /  d; 
+}
 
 void DAGTask::computeLocalOffsets(){
     if(!ordIDs.size())

@@ -9,6 +9,8 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
     os<< "length :" << t.L <<std::endl;
     os<< "volume :" << t.vol <<std::endl;
     os<< "wcw :" << t.wcw <<std::endl;
+    os<< "utilization :" << t.u <<std::endl;
+    os<< "density :" << t.delta <<std::endl;
     os<< "vertices :"<<std::endl;
     for(auto v: t.V){
         os<< "\t v_" << v->id << " - c: "<<v->c <<" \tsucc: ";
