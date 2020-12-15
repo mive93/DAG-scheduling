@@ -65,6 +65,7 @@ int main(int argc, char **argv){
     //constrained
     if(constrained_taskset){
         std::cout<< "\tBonifaci 2013 constrained (G-DM): "   <<G_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tQamhieh 2013 constrained (G-EDF): "   <<G_EDF_Qamhieh2013_C(taskset, n_proc)<<std::endl;
     }
 
     //implicit

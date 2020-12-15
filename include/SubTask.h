@@ -31,6 +31,32 @@ class SubTask{
         }
         return cond_pred;
     }
+
+    void localOffset(){
+        if(ancst.size() == 0)
+            localO = 0;
+        else{
+            localO = 0;
+            int temp_local_o = 0;
+            for(int i=0; i<ancst.size();++i){
+                temp_local_o = ancst[i]->localO + ancst[i]->c;
+                if(temp_local_o > localO) localO = temp_local_o;
+            }
+        }
+    }
+
+    void localDeadline(const int task_deadline){
+        if(desc.size() == 0)
+            localD = task_deadline;
+        else{
+            localD = 99999;
+            int temp_local_d = 0;
+            for(int i=0; i<desc.size();++i){
+                temp_local_d = desc[i]->localD - desc[i]->c;
+                if(temp_local_d < localD) localD = temp_local_d;
+            }
+        }
+    }
    
 };
 

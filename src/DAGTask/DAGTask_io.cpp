@@ -17,6 +17,9 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
         os<<" \tprec: ";
         for(auto p:v->ancst)
             os<< p->id << " ";
+
+        os<<" \tlocal O: " << v->localO;
+        os<<" \tlocal D: " << v->localD;
         os<<" \n";
     }
     if(t.ordIDs.size()){

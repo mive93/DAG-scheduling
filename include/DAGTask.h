@@ -63,11 +63,18 @@ class DAGTask{
     void computeAccWorkload();
     void computeLength();
     void computeVolume();
+
+    void localDeadline(SubTask *task, const int i);
+    void localOffset(SubTask *task, const int i);
+    void computeLocalOffsets();
+    void computeLocalDeadlines();
+
     int getLength() const {return L;};
     int getVolume() const {return vol;};
     int getWCW() const {return wcw;};
     int getPeriod() const {return t;};
     int getDeadline() const {return d;};
+    std::vector<SubTask*> getVertices() const {return V;};
     
 
     //Melani generation methods

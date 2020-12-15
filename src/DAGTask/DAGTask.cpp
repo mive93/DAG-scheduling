@@ -92,3 +92,22 @@ void DAGTask::computeLength(){
         if(v->accWork > L)
             L = v->accWork;
 }
+
+
+void DAGTask::computeLocalOffsets(){
+    if(!ordIDs.size())
+        topologicalSort();
+
+    for(int i=0; i<ordIDs.size();++i){
+        V[ordIDs[i]]->localOffset();
+    }
+}
+
+void DAGTask::computeLocalDeadlines(){
+    if(!ordIDs.size())
+        topologicalSort();
+
+    for(int i=ordIDs.size()-1; i>=0;--i){
+        V[ordIDs[i]]->localDeadline(d);
+    }
+}
