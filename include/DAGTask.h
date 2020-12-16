@@ -58,6 +58,8 @@ class DAGTask{
     friend std::ostream& operator<<(std::ostream& os, const DAGTask& t);
 
     //operation on DAG
+    void cloneVertices(const std::vector<SubTask*>& to_clone_V);
+    void destroyVerices();
     void isSuccessor(SubTask* v, SubTask *w, bool &is_succ);
     bool allPrecAdded(std::vector<SubTask*> ancst, std::vector<int> ids);
     void topologicalSort();

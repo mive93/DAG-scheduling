@@ -42,4 +42,12 @@ void set_difference_inplace(std::set<T>& a, const std::set<T>& b)
     a = c;
 }
 
+template<typename T>
+void printVector(const std::vector<T>& v, const std::string name){
+    std::cout<<name<<": ";
+    for(const auto &val:v)
+        std::cout<<val<<" ";
+    std::cout<<std::endl;
+}
+
 #endif /*UTILS_H*/

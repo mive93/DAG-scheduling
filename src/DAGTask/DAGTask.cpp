@@ -1,5 +1,33 @@
 #include "DAGTask.h"
 
+void DAGTask::cloneVertices(const std::vector<SubTask*>& to_clone_V){
+    V.clear();
+    std::vector<SubTask*> cloned_V;
+    for(int i=0; i<to_clone_V.size();++i){
+        SubTask * v = new SubTask;
+        *v = *to_clone_V[i];
+        cloned_V.push_back(v);
+    }
+
+    for(int i=0; i<to_clone_V.size();++i){
+        cloned_V[i]->ancst.clear();
+        cloned_V[i]->desc.clear();
+
+        for(int j=0; j<to_clone_V[i]->desc.size();++j)
+            cloned_V[i]->desc.push_back(cloned_V[to_clone_V[i]->desc[j]->id]);
+
+        for(int j=0; j<to_clone_V[i]->ancst.size();++j)
+            cloned_V[i]->ancst.push_back(cloned_V[to_clone_V[i]->ancst[j]->id]);
+    }
+
+    V = cloned_V;
+}
+
+void DAGTask::destroyVerices(){
+    for(int i=0; i<V.size();++i)
+        delete V[i];
+}
+
 void DAGTask::isSuccessor(SubTask* v, SubTask *w, bool &is_succ){
 
     for(size_t i=0; i<w->desc.size(); ++i){

@@ -4,6 +4,8 @@
 
 float work(const DAGTask& t, const float interval, const float sigma){
     DAGTask t1 = t;
+    t1.cloneVertices(t.getVertices());
+
     for(auto& v:t1.getVertices())
         v->c /= sigma;
 
@@ -39,15 +41,174 @@ float work(const DAGTask& t, const float interval, const float sigma){
         }
     }
 
-    std::cout<<work_full<<" "<<work_part<<std::endl;
-
+    t1.destroyVerices();
     return work_part + work_full;
 }
 
-bool G_EDF_Baruah2014_C(const Taskset& taskset, const int m){
+float work(const Taskset& taskset, const float interval, const float sigma ){
+    float w = 0;
 
-    float cwork = work(taskset.tasks[0], 23, 0.46);
+    for(auto& t:taskset.tasks)
+        w += work(t, interval, sigma);
 
-    std::cout<<cwork<<std::endl;
+    return w;
+}
 
+std::vector<float> getTestingSet(const Taskset& taskset, const float sigma, const float bound ){
+    std::set<float> interval_set;
+
+    for(const auto&task: taskset.tasks){
+        
+        std::vector<float> lambda_set;
+        std::vector<float> t_lambda_up;
+        std::vector<float> t_lambda_down;
+        std::vector<std::pair<float, int>> l_table;
+        for(const auto&v: task.getVertices()){
+            t_lambda_up.push_back(v->localO);
+            t_lambda_down.push_back(v->localO + v->c);
+        }
+
+        std::sort(t_lambda_up.begin(), t_lambda_up.end());
+        std::sort(t_lambda_down.begin(), t_lambda_down.end());
+
+        bool pres = false;
+        int pres_idx = -1;
+
+        l_table.push_back(std::make_pair<float, int>(0.,1));
+
+        for(int i=1; i<t_lambda_up.size();++i){
+            pres = false;
+            for(int j=0; j< l_table.size(); ++j){
+                if(t_lambda_up[i] == l_table[j].first){
+                    pres = true;
+                    pres_idx = j;
+                }
+            }
+
+            if(pres)
+                l_table[pres_idx].second++;
+            else
+                l_table.push_back(std::make_pair<float, int>(float(t_lambda_up[i]),1));
+        }
+
+        for(int i=1; i<l_table.size();++i){
+            l_table[i].second += l_table[i-1].second;
+        }
+  
+        for(int i=0; i<t_lambda_down.size();++i){
+            pres = false;
+            for(int j=0; j< l_table.size(); ++j){
+                if(t_lambda_down[i] == l_table[j].first){
+                    pres = true;
+                    pres_idx = j;
+                }
+            }
+
+            if(pres){
+                l_table[pres_idx].second--;
+                for(int j=pres_idx +1 ; j<l_table.size();++j)
+                    l_table[j].second--;
+            }
+            else
+            {
+                int lev = 0;
+                for(int j=0; j<l_table.size();++j){
+                    if(t_lambda_down[i] >= l_table[j].first)
+                        lev = j;
+                }
+
+                for(int j=lev +1 ; j<l_table.size();++j)
+                    l_table[j].second--;
+
+                l_table.push_back(std::make_pair<float, int>(float(t_lambda_down[i]),l_table[lev].second -1));
+
+                std::sort(l_table.begin(), l_table.end());
+            }
+        }
+
+        lambda_set.push_back(l_table[0].first);
+        for(int i=1; i<l_table.size();++i){
+            if(l_table[i].second != l_table[i-1].second)
+                lambda_set.push_back(l_table[i].first);
+        }
+
+        bool exit = false;
+
+        std::vector<float> new_V;
+
+        for(int n=0; true; n++){
+            for(int i=0; i<lambda_set.size();++i){            
+                new_V.push_back(lambda_set[i]/sigma + n*task.getPeriod());
+            }
+
+            for(int i=0; i<new_V.size();++i){
+                if( std::fabs(new_V[i] - bound) <=  std::numeric_limits<float>::epsilon() ||  new_V[i] < bound)
+                    interval_set.insert(new_V[i]);
+                else
+                {
+                    exit = true;
+                    break;
+                }
+            }
+
+            if(exit) break;
+        }
+    }
+
+    std::vector<float> intervals;
+
+    for(const auto& i:interval_set)
+        intervals.push_back(i);
+
+    std::sort(intervals.begin(), intervals.end());
+    return intervals;
+}
+
+bool G_EDF_Baruah2014_C(Taskset taskset, const int m){
+
+    for(auto& task:taskset.tasks){
+        if(!(task.getDeadline() <= task.getPeriod()))
+            FatalError("This test requires constrained deadline tasks");
+
+        task.computeLocalOffsets();
+    }
+
+    bool sched = true;
+    float sigma_tmp = taskset.getMaxDensity();
+    float sigma_inc = 0.025;
+    float eps = 5e-8;
+    float interval_tmp = 0;
+    float U = taskset.getUtilization();
+    float HP = taskset.getHyperPeriod();
+
+    float b1 = 0, b2 = 0;
+
+    float tot_vol = 0;
+
+    for(auto& t:taskset.tasks)
+        tot_vol += t.getVolume();
+
+    while(true){
+        if (sigma_tmp > ( m - U - eps ) / ( m - 1 ))
+            return false;
+            
+        b2 = tot_vol / ( m - (m-1) * sigma_tmp - U);
+
+        b1 = std::fmin(HP, b2);
+
+
+        std::vector<float> ts = getTestingSet(taskset, sigma_tmp, b1);
+
+        for(int i=0; i< ts.size(); ++i){
+            if (ts[i] >= interval_tmp && 
+                work(taskset, ts[i], sigma_tmp) > ts[i] * ( m - (m-1) * sigma_tmp) ){
+                interval_tmp = ts[i];
+                sched = false;
+                break;
+            }
+        }
+
+        if(sched) return true;
+        sigma_tmp += sigma_inc;
+    }
 }

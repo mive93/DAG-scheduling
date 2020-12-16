@@ -12,7 +12,7 @@ int main(int argc, char **argv){
     
     bool random_creation = false;
 
-    int n_proc = 8;
+    int n_proc = 4;
     Taskset taskset;
     if(random_creation){
         int n_tasks = 6;
