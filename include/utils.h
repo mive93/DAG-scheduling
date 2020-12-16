@@ -43,7 +43,15 @@ void set_difference_inplace(std::set<T>& a, const std::set<T>& b)
 }
 
 template<typename T>
-void printVector(const std::vector<T>& v, const std::string name){
+void printVector(const std::vector<T>& v, const std::string& name){
+    std::cout<<name<<": ";
+    for(const auto &val:v)
+        std::cout<<val<<" ";
+    std::cout<<std::endl;
+}
+
+template<typename T>
+void printSet(const std::set<T>& v, const std::string& name){
     std::cout<<name<<": ";
     for(const auto &val:v)
         std::cout<<val<<" ";

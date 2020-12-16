@@ -193,7 +193,7 @@ void DAGTask::computeWorstCaseWorkload(){
     }
 }
 
-int DAGTask::computeZk(const int n_proc){
+float DAGTask::computeZk(const int n_proc){
     // Algorithm 2, Melani et al. "Response-Time Analysis of Conditional DAG Tasks in Multiprocessor Systems"
 
     if(!ordIDs.size())
@@ -215,7 +215,7 @@ int DAGTask::computeZk(const int n_proc){
         if(V[idx]->desc.size()){
             S[idx].insert(idx);
             if(V[idx]->mode != C_SOURCE_T){ //if not conditional source
-                std::vector<int> U (V[idx]->desc.size(),0);
+                std::vector<float> U (V[idx]->desc.size(),0);
                 for(int j=0; j<V[idx]->desc.size(); ++j){
                     S[idx].insert(S[V[idx]->desc[j]->id].begin(), S[V[idx]->desc[j]->id].end());
                     U[j] = f[V[idx]->desc[j]->id];
@@ -225,18 +225,19 @@ int DAGTask::computeZk(const int n_proc){
                             D.clear();
                             std::set_difference(S[V[idx]->desc[k]->id].begin(), 
                                                 S[V[idx]->desc[k]->id].end(),
-                                                S[V[idx]->desc[j]->id].begin(), 
-                                                S[V[idx]->desc[j]->id].end(), 
+                                                T[V[idx]->desc[j]->id].begin(), 
+                                                T[V[idx]->desc[j]->id].end(), 
                                                 std::inserter(D, D.begin()) );
-                        }
-                        for (const auto& d:D){
-                            C+= V[d]->c / n_proc;
-                        }
+                        
+                            for (const auto& d:D)
+                                C+= V[d]->c / n_proc;
 
-                        U[j]+=C;
+                            U[j]+=C;
+                        }
                     }
                 }
                 int max_U_idx = std::max_element(U.begin(),U.end()) - U.begin();
+                T[idx].clear();
                 T[idx].insert(idx);
                 T[idx].insert(T[V[idx]->desc[max_U_idx]->id].begin(), T[V[idx]->desc[max_U_idx]->id].end());
                 f[idx] = V[idx]->c + U[max_U_idx];
@@ -257,6 +258,7 @@ int DAGTask::computeZk(const int n_proc){
                 S[idx].insert(S[V[idx]->desc[max_C_idx]->id].begin(), S[V[idx]->desc[max_C_idx]->id].end());
 
                 int max_ff_idx = std::max_element(ff.begin(),ff.end()) - ff.begin();
+                T[idx].clear();
                 T[idx].insert(idx);
                 T[idx].insert(T[V[idx]->desc[max_ff_idx]->id].begin(), T[V[idx]->desc[max_ff_idx]->id].end());
 
@@ -299,7 +301,7 @@ void DAGTask::maximizeMakespan(const SubTask* v, const std::vector<float>& mksp,
     }
 }
 
-int DAGTask::computeMakespanUB(const int n_proc){
+float DAGTask::computeMakespanUB(const int n_proc){
     if(!ordIDs.size())
         topologicalSort();
 
@@ -328,7 +330,7 @@ int DAGTask::computeMakespanUB(const int n_proc){
             if(V[idx]->mode != C_SOURCE_T){ //if not conditional source
 
             float max_mksp = 0;
-            int w_tmp = 0;
+            float w_tmp = 0;
             std::set<int> wset_tmp, mkspset_tmp;
             maximizeMakespan(V[idx], mksp, mksp_set, w_set, mkspset_tmp, max_mksp, n_proc);
 

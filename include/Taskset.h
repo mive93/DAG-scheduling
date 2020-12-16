@@ -26,7 +26,6 @@ class Taskset{
 
     void computeUtilization(){
         for(const auto& task: tasks){
-            std::cout<<task.getUtilization()<<std::endl;
             U += task.getUtilization();
         }
     }

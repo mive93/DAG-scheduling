@@ -91,9 +91,9 @@ class DAGTask{
     void expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond);
     void makeItDag(float prob);
     void computeWorstCaseWorkload();
-    int computeZk(const int n_proc);
+    float computeZk(const int n_proc);
     void maximizeMakespan(const SubTask* v, const std::vector<float>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc);
-    int computeMakespanUB(const int n_proc);
+    float computeMakespanUB(const int n_proc);
     void assignSchedParametersUUniFast(const float U);
 
 };
