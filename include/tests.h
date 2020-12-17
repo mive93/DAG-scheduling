@@ -5,6 +5,8 @@
 #include "DAGTask.h"
 #include "Taskset.h"
 
+bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y);
+
 bool Graham1969(const Taskset& taskset, const int m); 
 
 bool G_EDF_Baruah2012_C(const DAGTask& task, const int m);
@@ -20,6 +22,7 @@ bool G_EDF_Qamhieh2013_C(Taskset taskset, const int m);
 
 bool G_EDF_Baruah2014_C(Taskset taskset, const int m); 
 
+void test_Melani(Taskset taskset, const int m);
 bool G_EDF_Melani2015_C(Taskset taskset, const int m); //TODO
 bool G_FP_Melani2015_C(Taskset taskset, const int m); //TODO
 

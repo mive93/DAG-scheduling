@@ -58,4 +58,9 @@ void printSet(const std::set<T>& v, const std::string& name){
     std::cout<<std::endl;
 }
 
+template<typename T>
+bool areEqual(const T a, const T b){
+    return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
+}
+
 #endif /*UTILS_H*/

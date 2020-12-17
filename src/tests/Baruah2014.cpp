@@ -142,7 +142,7 @@ std::vector<float> getTestingSet(const Taskset& taskset, const float sigma, cons
             }
 
             for(int i=0; i<new_V.size();++i){
-                if( std::fabs(new_V[i] - bound) <=  std::numeric_limits<float>::epsilon() ||  new_V[i] < bound)
+                if( areEqual<float>(new_V[i], bound) ||  new_V[i] < bound)
                     interval_set.insert(new_V[i]);
                 else
                 {

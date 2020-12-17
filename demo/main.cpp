@@ -35,6 +35,11 @@ int main(int argc, char **argv){
     std::cout<<"Taskset Hyper-Period: "<<taskset.getHyperPeriod()<<std::endl;
     std::cout<<"Taskset max Density: "<<taskset.getMaxDensity()<<std::endl<<std::endl;
 
+    test_Melani(taskset, n_proc);
+    std::cout<< "\tMelani 2015 constrained (G-FP): "   <<G_FP_Melani2015_C(taskset, n_proc)<<std::endl;
+    std::cout<< "\tMelani 2015 constrained (G-EDF): "   <<G_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
+    return 0;
+
 
     //single DAG tests
     std::cout<<"Single task tests: \n";
@@ -69,6 +74,8 @@ int main(int argc, char **argv){
         std::cout<< "\tBonifaci 2013 constrained (G-DM): "   <<G_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tQamhieh 2013 constrained (G-EDF): "   <<G_EDF_Qamhieh2013_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tBaruah 2014 constrained (G-EDF): "   <<G_EDF_Baruah2014_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tMelani 2015 constrained (G-FP): "   <<G_FP_Melani2015_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tMelani 2015 constrained (G-EDF): "   <<G_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
     }
 
     //implicit

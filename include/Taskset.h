@@ -55,14 +55,7 @@ class Taskset{
             t.computeUtilization();
             t.computeDensity();
 
-            float Z = t.computeZk(4);
-            std::cout<<"Z "<<Z<<std::endl;
-
-            float mksp = t.computeMakespanUB(4);
-            std::cout<<"mskpUB "<<mksp<<std::endl;
-
             tasks.push_back(t);
-
         }
 
         computeUtilization();
@@ -115,11 +108,6 @@ class Taskset{
 
             t.assignSchedParametersUUniFast(U_part);
 
-            float Z = t.computeZk(n_proc);
-            std::cout<<"Z "<<Z<<std::endl;
-
-            float mksp = t.computeMakespanUB(n_proc);
-            std::cout<<"mskpUB "<<mksp<<std::endl;
             tasks.push_back(t);
         }
 

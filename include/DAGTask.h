@@ -20,15 +20,15 @@ class DAGTask{
 
     std::vector<SubTask*> V;
 
-    float t = 0;          //period
-    float d = 0;          //deadline
+    float t = 0;          // period
+    float d = 0;          // deadline
     float L = 0;          // longest chain
-    float vol  = 0;       //volume
+    float vol  = 0;       // volume
     float wcw = 0;        // worst case workload (= to volume if no conditional branch exist)
-    float delta = 0;    // density
-    float u = 0;         //utilization
-
+    float delta = 0;      // density
+    float u = 0;          // utilization
     
+
     //distribution to add branches (MelaniGen)
     std::discrete_distribution<int> dist;
     std::vector<int> ordIDs; // ids in topological order
@@ -36,6 +36,8 @@ class DAGTask{
     std::mt19937 gen;       
 
     public:
+
+    float R = 0;          // response time
 
     int maxCondBranches     = 2; //max conditional branches allowed (MelaniGen)
     int maxParBranches      = 6; //max parallel branches allowed (MelaniGen)
@@ -77,13 +79,14 @@ class DAGTask{
 
     float getLength() const {return L;};
     float getVolume() const {return vol;};
+    float getWorstCaseWorkload() const {return wcw;};
     float getWCW() const {return wcw;};
     float getPeriod() const {return t;};
     float getDeadline() const {return d;};
     float getUtilization() const {return u;};
     float getDensity() const {return delta;};
+    std::vector<int> getTopologicalOrder() const {return ordIDs;};
     std::vector<SubTask*> getVertices() const {return V;};
-    
 
     //Melani generation methods
     void configureParams();
@@ -91,9 +94,6 @@ class DAGTask{
     void expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond);
     void makeItDag(float prob);
     void computeWorstCaseWorkload();
-    float computeZk(const int n_proc);
-    void maximizeMakespan(const SubTask* v, const std::vector<float>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc);
-    float computeMakespanUB(const int n_proc);
     void assignSchedParametersUUniFast(const float U);
 
 };
