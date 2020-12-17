@@ -5,7 +5,7 @@
 /* Corollary 6 in the paper*/
 bool GP_FP_EDF_Li2013_I(const Taskset& taskset, const int m){
     for(const auto& task:taskset.tasks){
-        if(!(task.getDeadline() == task.getPeriod()))
+        if(!( areEqual<float> (task.getDeadline() , task.getPeriod())))
             FatalError("This test requires implicit deadline tasks");
 
         if(task.getLength() > 1. / ( 4. - 2. / m) * task.getPeriod())

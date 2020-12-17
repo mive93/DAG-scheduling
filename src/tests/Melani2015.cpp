@@ -1,9 +1,4 @@
 #include "tests.h"
-
-bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y) { 
-    return (tau_x.getDeadline() < tau_y.getDeadline()); 
-}
-
 // Alessandra Melani et al. “Response-time analysis of conditional dag tasks in multiprocessor systems”. (ECRTS 2015)
 
 float computeZk(DAGTask task, const int n_proc){
@@ -319,7 +314,7 @@ bool GP_FP_FTP_Melani2015_C(Taskset taskset, const int m){
 
             if(i > 0){
                 for(int j=0; j<i; ++j)
-                    R[i] = R[i] + 1 / 3 * workloadUpperBound(taskset.tasks[i], R_old[i], m);
+                    R[i] = R[i] + 1 / m * workloadUpperBound(taskset.tasks[i], R_old[i], m);
 
                 R[i] = std::floor(R[i]);
                 R[i] += mksp[i];
