@@ -35,12 +35,6 @@ int main(int argc, char **argv){
     std::cout<<"Taskset Hyper-Period: "<<taskset.getHyperPeriod()<<std::endl;
     std::cout<<"Taskset max Density: "<<taskset.getMaxDensity()<<std::endl<<std::endl;
 
-    test_Melani(taskset, n_proc);
-    std::cout<< "\tMelani 2015 constrained (G-FP): "   <<G_FP_Melani2015_C(taskset, n_proc)<<std::endl;
-    std::cout<< "\tMelani 2015 constrained (G-EDF): "   <<G_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
-    return 0;
-
-
     //single DAG tests
     std::cout<<"Single task tests: \n";
     bool constrained_taskset = true;
@@ -69,6 +63,11 @@ int main(int argc, char **argv){
     std::cout<< "\tBonifaci 2013 arbitrary (G-EDF): "   <<G_EDF_Bonifaci2013_A(taskset, n_proc)<<std::endl;
     std::cout<< "\tBonifaci 2013 arbitrary (G-DM): "   <<G_DM_Bonifaci2013_A(taskset, n_proc)<<std::endl;
 
+    //implicit
+    if(implicit_taskset){
+        std::cout<< "\tLi 2013 implicit (G-EDF): "   <<G_EDF_Li2013_I(taskset, n_proc)<<std::endl;
+    }
+
     //constrained
     if(constrained_taskset){
         std::cout<< "\tBonifaci 2013 constrained (G-DM): "   <<G_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
@@ -78,10 +77,5 @@ int main(int argc, char **argv){
         std::cout<< "\tMelani 2015 constrained (G-EDF): "   <<G_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
     }
 
-    //implicit
-    if(implicit_taskset){
-        std::cout<< "\tLi 2013 implicit (G-EDF): "   <<G_EDF_Li2013_I(taskset, n_proc)<<std::endl;
-    }
-    
 
 }

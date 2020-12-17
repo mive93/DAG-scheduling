@@ -1,6 +1,6 @@
 tasks:
-- t: 10
-  d: 10
+- t: 20
+  d: 20
   vertices:
     - id: 0
       c: 2
