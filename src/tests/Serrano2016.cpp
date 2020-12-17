@@ -24,13 +24,13 @@ float computeDeltaM(const Taskset& taskset, const int x, const float interval, c
         }
 
         std::sort(max_over_vs.begin(), max_over_vs.end(), std::greater<float>());
-        for(int i=0; i < m || i < max_over_vs.size(); ++i)
+        for(int i=0; i < m && i < max_over_vs.size(); ++i)
             max_over_taus.push_back(max_over_vs[i]);
     }
 
     float delta = 0;
     std::sort(max_over_taus.begin(), max_over_taus.end(), std::greater<float>());
-    for(int i=0; i < m || i < max_over_taus.size(); ++i)
+    for(int i=0; i < m && i < max_over_taus.size(); ++i)
         delta += max_over_taus[i];
 
     return delta;
