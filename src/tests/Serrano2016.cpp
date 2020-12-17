@@ -1,5 +1,7 @@
 #include "tests.h"
 
+//Maria A Serrano et al. “Response-time analysis of DAG tasks under fixed priority scheduling with limited preemptions” (DATE 2016)
+
 float computePreemptionNumberUpperBound(const Taskset& taskset, const int x, const float interval){
     float h = 0;
 

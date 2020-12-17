@@ -33,10 +33,9 @@ bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m); //TODO
 
 //global policy, limited preemptive
 
-bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m); //TODO
+bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m); 
 
 // needed TODO
-// Serrano ’16 [104] -sure
 // Pathan ’17 [88] - sure
 // Fonseca ’17 [47] - yes
 // Han ’19 [59] - yes 
