@@ -3,7 +3,7 @@
 // "Feasibility Analysis in the Sporadic DAG Task Model" Bonifaci et al. (ECRTS 2013)
 
 /* Theorem 21 in the paper */
-bool G_EDF_Bonifaci2013_A(const Taskset& taskset, const int m){
+bool GP_FP_EDF_Bonifaci2013_A(const Taskset& taskset, const int m){
     float constr_contrib = 0, unconstr_contrib = 0;
     for(const auto& task:taskset.tasks){
         if(task.getPeriod() <= task.getDeadline())
@@ -21,7 +21,7 @@ bool G_EDF_Bonifaci2013_A(const Taskset& taskset, const int m){
 }
 
 /* Theorem 22 in the paper */
-bool G_DM_Bonifaci2013_A(const Taskset& taskset, const int m){
+bool GP_FP_DM_Bonifaci2013_A(const Taskset& taskset, const int m){
     float constr_contrib = 0, unconstr_contrib = 0;
     for(const auto& task:taskset.tasks){
         if(task.getPeriod() <= 2 * task.getDeadline())
@@ -39,7 +39,7 @@ bool G_DM_Bonifaci2013_A(const Taskset& taskset, const int m){
 }
 
 /* Theorem 23 in the paper */
-bool G_DM_Bonifaci2013_C(const Taskset& taskset, const int m){
+bool GP_FP_DM_Bonifaci2013_C(const Taskset& taskset, const int m){
     float constr_contrib = 0, unconstr_contrib = 0;
     for(const auto& task:taskset.tasks){
         if(!(task.getDeadline() <= task.getPeriod()))

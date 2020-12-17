@@ -164,7 +164,7 @@ std::vector<float> getTestingSet(const Taskset& taskset, const float sigma, cons
     return intervals;
 }
 
-bool G_EDF_Baruah2014_C(Taskset taskset, const int m){
+bool GP_FP_EDF_Baruah2014_C(Taskset taskset, const int m){
 
     for(auto& task:taskset.tasks){
         if(!(task.getDeadline() <= task.getPeriod()))

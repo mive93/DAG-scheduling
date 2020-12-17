@@ -237,7 +237,7 @@ void test_Melani(Taskset taskset, const int m){
     }
 }
 
-bool G_EDF_Melani2015_C(Taskset taskset, const int m){
+bool GP_FP_EDF_Melani2015_C(Taskset taskset, const int m){
     std::vector<float> R_old (taskset.tasks.size(), 0);
     std::vector<float> R (taskset.tasks.size(), 0);
     std::vector<float> mksp (taskset.tasks.size(), 0);
@@ -292,7 +292,7 @@ bool G_EDF_Melani2015_C(Taskset taskset, const int m){
 
 }
 
-bool G_FP_Melani2015_C(Taskset taskset, const int m){
+bool GP_FP_FTP_Melani2015_C(Taskset taskset, const int m){
 
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
 
