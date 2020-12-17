@@ -71,7 +71,7 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m){
 
             //for all hp
             for(int j=0; j<i; ++j)
-                R[i] += workloadUpperBound(taskset.tasks[i], R_old[i], m);
+                R[i] += workloadUpperBound(taskset.tasks[j], R_old[i], m);
             
             //for all lp
             R[i] += blockingWorkload(taskset, i, R_old[i], m);
@@ -83,10 +83,10 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m){
         }
 
         if( areEqual<float>(R[i], R_old[i]))
-            return true;
+            taskset.tasks[i].R = R[i];
         else if (R[i] > taskset.tasks[i].getDeadline())
             return false;
     }
 
-    return false;
+    return true;
 }

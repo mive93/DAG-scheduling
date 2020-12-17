@@ -314,7 +314,7 @@ bool GP_FP_FTP_Melani2015_C(Taskset taskset, const int m){
 
             if(i > 0){
                 for(int j=0; j<i; ++j)
-                    R[i] = R[i] + 1 / m * workloadUpperBound(taskset.tasks[i], R_old[i], m);
+                    R[i] = R[i] + (1. / m) * workloadUpperBound(taskset.tasks[j], R_old[i], m);
 
                 R[i] = std::floor(R[i]);
                 R[i] += mksp[i];
@@ -326,10 +326,10 @@ bool GP_FP_FTP_Melani2015_C(Taskset taskset, const int m){
         }
 
         if( areEqual<float>(R[i], R_old[i]))
-            return true;
+            taskset.tasks[i].R = R[i];
         else if (R[i] > taskset.tasks[i].getDeadline())
             return false;
     }
 
-    return false;
+    return true;
 }

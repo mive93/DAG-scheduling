@@ -49,3 +49,17 @@ tasks:
       to: 5
     - from: 4
       to: 5
+- t: 100
+  d: 100
+  vertices:
+    - id: 0
+      c: 2
+    - id: 1
+      c: 1
+    - id: 2
+      c: 3
+  edges:
+    - from: 0
+      to: 1
+    - from: 1
+      to: 2
