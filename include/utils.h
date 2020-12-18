@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include<set>
+#include<utility>
 #include<algorithm>
 
 #define REPRODUCIBLE 1
@@ -43,7 +44,7 @@ void set_difference_inplace(std::set<T>& a, const std::set<T>& b)
 }
 
 template<typename T>
-void printVector(const std::vector<T>& v, const std::string& name){
+void printVector(const std::vector<T>& v, const std::string& name = ""){
     std::cout<<name<<": ";
     for(const auto &val:v)
         std::cout<<val<<" ";
@@ -51,12 +52,21 @@ void printVector(const std::vector<T>& v, const std::string& name){
 }
 
 template<typename T>
-void printSet(const std::set<T>& v, const std::string& name){
+void printSet(const std::set<T>& v, const std::string& name = ""){
     std::cout<<name<<": ";
     for(const auto &val:v)
         std::cout<<val<<" ";
     std::cout<<std::endl;
 }
+
+template<typename T1, typename T2>
+void printPairVector(const std::vector<std::pair<T1, T2>>& v, const std::string& name = ""){
+    std::cout<<name<<": ";
+    for(const auto &val:v)
+        std::cout<<val.first<<":"<<val.second<<"  ";
+    std::cout<<std::endl;
+}
+    
 
 template<typename T>
 bool areEqual(const T a, const T b){

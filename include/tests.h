@@ -36,7 +36,6 @@ bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m); //TODO
 bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m); 
 
 // needed TODO
-// Pathan ’17 [88] - sure
 // Fonseca ’17 [47] - yes
 // Han ’19 [59] - yes 
 // He ’19 [60] - yes 

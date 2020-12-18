@@ -3,6 +3,48 @@ tasks:
   d: 20
   vertices:
     - id: 0
+      c: 1
+    - id: 1
+      c: 8
+    - id: 2
+      c: 4
+    - id: 3
+      c: 4
+    - id: 4
+      c: 4
+    - id: 5
+      c: 4
+    - id: 6
+      c: 4
+    - id: 7
+      c: 2
+  edges:
+    - from: 0
+      to: 1
+    - from: 0
+      to: 2
+    - from: 0
+      to: 3
+    - from: 0
+      to: 4
+    - from: 0
+      to: 5
+    - from: 1
+      to: 7
+    - from: 2
+      to: 7
+    - from: 3
+      to: 7
+    - from: 4
+      to: 6
+    - from: 5
+      to: 6
+    - from: 6
+      to: 7
+- t: 20
+  d: 20
+  vertices:
+    - id: 0
       c: 2
     - id: 1
       c: 4

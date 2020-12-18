@@ -76,6 +76,8 @@ class DAGTask{
     void localOffset(SubTask *task, const int i);
     void computeLocalOffsets();
     void computeLocalDeadlines();
+    void computeEFTs();
+    void computeLSTs();
 
     float getLength() const {return L;};
     float getVolume() const {return vol;};

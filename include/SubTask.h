@@ -2,6 +2,7 @@
 #define SUBTASK_H
 
 #include <vector>
+#include "utils.h"
 
 enum subTaskMode {NORMAL_T, C_INTERN_T, C_SOURCE_T, C_SINK_T};
 
@@ -16,8 +17,11 @@ class SubTask{
     float accWork   = 0; // accumulated workload
     float r         = 0; // response time of the subtask
 
-    float localO = 0; // local offset
-    float localD = 0; // local deadline
+    float localO = -1; // local offset - EST
+    float localD = -1; // local deadline - LFT
+
+    float EFT = -1;
+    float LST = -1;
 
     subTaskMode mode = NORMAL_T;    // type of node
 
@@ -46,6 +50,12 @@ class SubTask{
         }
     }
 
+    void EasliestFinishingTime(){
+        if(localO == -1)
+            FatalError("Requires local offsets to be computed");
+        EFT = localO + c;
+    }
+
     void localDeadline(const float task_deadline){
         if(desc.size() == 0)
             localD = task_deadline;
@@ -57,6 +67,12 @@ class SubTask{
                 if(temp_local_d < localD) localD = temp_local_d;
             }
         }
+    }
+
+    void LatestStartingTime(){
+        if(localD == -1)
+            FatalError("Requires local deadlines to be computed");
+        LST = localD - c;
     }
    
 };

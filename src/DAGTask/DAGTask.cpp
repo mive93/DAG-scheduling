@@ -150,3 +150,16 @@ void DAGTask::computeLocalDeadlines(){
         V[ordIDs[i]]->localDeadline(d);
     }
 }
+
+void DAGTask::computeEFTs(){
+    DAGTask::computeLocalOffsets();
+
+    for(auto&v:V)
+        v->EasliestFinishingTime();
+}
+void DAGTask::computeLSTs(){
+    DAGTask::computeLocalDeadlines();
+
+    for(auto&v:V)
+        v->LatestStartingTime();
+}

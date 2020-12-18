@@ -59,6 +59,11 @@ int main(int argc, char **argv){
     //taskset tests
     std::cout<<"Taskset tests: \n";
 
+    std::cout<< "\tFonseca 2017 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca17_C(taskset, n_proc)<<std::endl;
+
+    return 0;
+
+
     //arbitrary
     std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-EDF): "   <<GP_FP_EDF_Bonifaci2013_A(taskset, n_proc)<<std::endl;
     std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-DM): "   <<GP_FP_DM_Bonifaci2013_A(taskset, n_proc)<<std::endl;
