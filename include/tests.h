@@ -7,7 +7,7 @@
 
 bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y);
 
-bool Graham1969(const Taskset& taskset, const int m); 
+bool Graham1969(const DAGTask& task, const int m); 
 
 //global policy, fully preemptive
 bool GP_FP_EDF_Baruah2012_C(const DAGTask& task, const int m);
@@ -27,7 +27,7 @@ float workloadUpperBound(const DAGTask& task, const float t, const int m);
 bool GP_FP_EDF_Melani2015_C(Taskset taskset, const int m);
 bool GP_FP_FTP_Melani2015_C(Taskset taskset, const int m);
 
-bool GP_FP_FTP_Pathan17_C(Taskset taskset, const int m); //TODO
+bool GP_FP_DM_Pathan17_C(Taskset taskset, const int m); 
 
 bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m); //TODO
 

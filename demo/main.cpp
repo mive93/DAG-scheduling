@@ -47,6 +47,7 @@ int main(int argc, char **argv){
             implicit_taskset = false;
         }
         std::cout<< "\t\tBaruah 2012 arbitrary (GP-FP-EDF): "   <<GP_FP_EDF_Baruah2012_A(taskset.tasks[i], n_proc)<<std::endl;
+        std::cout<< "\t\tGraham 1969 : "   <<Graham1969(taskset.tasks[i], n_proc)<<std::endl;
 
         if(taskset.tasks[i].getDeadline() > taskset.tasks[i].getPeriod()){
             constrained_taskset = false;
@@ -59,7 +60,6 @@ int main(int argc, char **argv){
     std::cout<<"Taskset tests: \n";
 
     //arbitrary
-    std::cout<< "\tGraham 1969 : "   <<Graham1969(taskset, n_proc)<<std::endl;
     std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-EDF): "   <<GP_FP_EDF_Bonifaci2013_A(taskset, n_proc)<<std::endl;
     std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-DM): "   <<GP_FP_DM_Bonifaci2013_A(taskset, n_proc)<<std::endl;
 
@@ -75,6 +75,7 @@ int main(int argc, char **argv){
         std::cout<< "\tBaruah 2014 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Baruah2014_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tMelani 2015 constrained (GP-FP-FTP): "   <<GP_FP_FTP_Melani2015_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tMelani 2015 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tPathan 2017 constrained (GP-FP-DM): "   <<GP_FP_DM_Pathan17_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tSerrano 2016 constrained (GP-LP-FTP): "   <<GP_LP_FTP_Serrano16_C(taskset, n_proc)<<std::endl;
     }
 

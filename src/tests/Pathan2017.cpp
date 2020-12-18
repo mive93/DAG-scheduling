@@ -7,17 +7,20 @@ std::vector<int> computeSxi(const DAGTask& tau_x, const int k ){
     std::vector<int> topo_ord = tau_x.getTopologicalOrder();
     auto V = tau_x.getVertices();
     int idx = 0;
+    bool is_succ = false;
 
     std::vector<int> S;
     for(int i=0; i<topo_ord.size(); ++i){
         idx = topo_ord[i];
+        //if the node is before in topological order
         if(idx == k) break;
 
-        for(int j=0; j<V[idx]->ancst.size(); ++j){
-            if(idx != V[idx]->ancst[j]->id){
-                S.push_back(idx);
-            }
-        }
+        is_succ = false;
+        
+        //and if it is not one of v_k ancestors
+        tau_x.isSuccessor(V[k], V[idx], is_succ);
+        if(!is_succ)
+            S.push_back(idx);
     }
 
     return S;
@@ -51,30 +54,32 @@ float computeWorloadIntra(const DAGTask& tau_x, const int k ){
     return W_intra;
 }
 
-float computeX(const DAGTask& tau_x, const int k, const float interval, const int m ){
-    float ci_b = computeLatestReadyTime(tau_x.getVertices()[k]->ancst) + interval - tau_x.getWCW() / m;
+float computeX(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const float interval, const int m ){
+    auto V = tau_x.getVertices();
+    float ci_b = computeLatestReadyTime(V[k]->ancst) + interval - tau_y.getWCW() / m;
     return std::max( float(0), ci_b );
 }
 
-float computeTcin(const DAGTask& tau_x, const int k, const float interval, const int m ){
+float computeTcin(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const float interval, const int m ){
 
-    float X_x = computeX(tau_x, k, interval, m);
-    float W_x = tau_x.getWCW();
-    float T_x = tau_x.getPeriod();
+    float X_y = computeX(tau_y, tau_x, k, interval, m);
+    float W_y = tau_x.getWCW();
+    float T_y = tau_x.getPeriod();
 
-    float ci = interval - (T_x - tau_x.R) - std::floor ( X_x / T_x ) * T_x - W_x / m;
+    float ci = interval - (T_y - tau_y.R) - std::floor ( X_y / T_y ) * T_y - W_y / m;
     return std::max( float(0), ci);
 
 }
 
-float computeCR(const DAGTask& tau_x, const int k, const float interval, const int m ){
-    auto V = tau_x.getVertices();
+float computeCR(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const float interval, const int m ){
+    auto V_x = tau_x.getVertices();
+    auto V_y = tau_y.getVertices();
     float A = 0;
 
-    for(int i=0; i<V.size(); ++i)
-        A += std::min(V[i]->c, std::max(float(0), V[i]->r - computeLatestReadyTime(V[i]->ancst)));
+    for(int i=0; i<V_y.size(); ++i)
+        A += std::min(V_y[i]->c, std::max(float(0), V_y[i]->r - computeLatestReadyTime(V_x[k]->ancst)));
     
-    return std::min (m * computeTcin(tau_x, k, interval, m) , A);
+    return std::min (m * computeTcin(tau_y, tau_x, k, interval, m) , A);
 }
 
 float computeWorloadInter(const Taskset& taskset, const int x, const int i, const float interval, const int m){
@@ -86,22 +91,21 @@ float computeWorloadInter(const Taskset& taskset, const int x, const int i, cons
 
         T_y = taskset.tasks[y].getPeriod();
         W_y = taskset.tasks[y].getWCW();
-        t_cin_y = computeTcin(taskset.tasks[y], i, interval, m);
-        X_y = computeX(taskset.tasks[y], i, interval, m);
-        CR_y = computeCR(taskset.tasks[y], i, t_cin_y, m);
+        t_cin_y = computeTcin(taskset.tasks[y], taskset.tasks[x], i, interval, m);
+        X_y = computeX(taskset.tasks[y], taskset.tasks[x], i, interval, m);
+        CR_y = computeCR(taskset.tasks[y], taskset.tasks[x], i, t_cin_y, m);
 
         W_inter += CR_y + std::floor( X_y / T_y ) * W_y + W_y;
+
+        //NB: doesn't make much sense to account for all the workload of W_y: here's the pessimism
     }
 
     return W_inter;
 }
 
-bool GP_FP_FTP_Pathan17_C(Taskset taskset, const int m){
+bool GP_FP_DM_Pathan17_C(Taskset taskset, const int m){
 
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
-
-    
-    
 
     for(int x=0; x<taskset.tasks.size(); ++x){
 
@@ -111,14 +115,13 @@ bool GP_FP_FTP_Pathan17_C(Taskset taskset, const int m){
         std::vector<float> R_old (V.size(), 0);
         std::vector<float> R (V.size(), 0);
 
-        for(int i=0; i<V.size(); ++i){
-            R_old[i] = V[i]->c;
-            V[i]->r = V[i]->c;
-        }
 
         // compute the response of a subtask in topological order
         for(int idx=0, i; idx<topo_ord.size(); ++idx){
             i = topo_ord[idx];
+
+            R_old[i] = V[i]->c;
+            V[i]->r = V[i]->c;
             
             if(R_old[i] > taskset.tasks[x].getDeadline())
                 return false;
@@ -139,12 +142,11 @@ bool GP_FP_FTP_Pathan17_C(Taskset taskset, const int m){
                 init = false;
             }
 
-            if( areEqual<float>(R[i], R_old[i]))
-                V[i]->r = R[i];
-
+            if(R[i] > taskset.tasks[x].getDeadline())
+                return false;
+            V[i]->r = R[i];
         }
 
-        
         // the response time of the task is the max response time of one of its nodes
         taskset.tasks[x].R = 0;
         for(int i=0; i<V.size(); ++i){

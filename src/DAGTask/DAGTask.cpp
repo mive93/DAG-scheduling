@@ -28,7 +28,7 @@ void DAGTask::destroyVerices(){
         delete V[i];
 }
 
-void DAGTask::isSuccessor(SubTask* v, SubTask *w, bool &is_succ){
+void DAGTask::isSuccessor(SubTask* v, SubTask *w, bool &is_succ) const{
 
     for(size_t i=0; i<w->desc.size(); ++i){
         if(w->desc[i] == v){
