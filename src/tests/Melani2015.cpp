@@ -24,21 +24,21 @@ float computeZk(DAGTask task, const int n_proc){
     for(int i = ordIDs.size()-2; i >= 0; --i ){
         idx = ordIDs[i];
 
-        if(V[idx]->desc.size()){
+        if(V[idx]->succ.size()){
             S[idx].insert(idx);
             if(V[idx]->mode != C_SOURCE_T){ //if not conditional source
-                std::vector<float> U (V[idx]->desc.size(),0);
-                for(int j=0; j<V[idx]->desc.size(); ++j){
-                    S[idx].insert(S[V[idx]->desc[j]->id].begin(), S[V[idx]->desc[j]->id].end());
-                    U[j] = f[V[idx]->desc[j]->id];
-                    for(int k=0; k<V[idx]->desc.size(); ++k){
+                std::vector<float> U (V[idx]->succ.size(),0);
+                for(int j=0; j<V[idx]->succ.size(); ++j){
+                    S[idx].insert(S[V[idx]->succ[j]->id].begin(), S[V[idx]->succ[j]->id].end());
+                    U[j] = f[V[idx]->succ[j]->id];
+                    for(int k=0; k<V[idx]->succ.size(); ++k){
                         if(k!=j){
                             C = 0;
                             D.clear();
-                            std::set_difference(S[V[idx]->desc[k]->id].begin(), 
-                                                S[V[idx]->desc[k]->id].end(),
-                                                T[V[idx]->desc[j]->id].begin(), 
-                                                T[V[idx]->desc[j]->id].end(), 
+                            std::set_difference(S[V[idx]->succ[k]->id].begin(), 
+                                                S[V[idx]->succ[k]->id].end(),
+                                                T[V[idx]->succ[j]->id].begin(), 
+                                                T[V[idx]->succ[j]->id].end(), 
                                                 std::inserter(D, D.begin()) );
                         
                             for (const auto& d:D)
@@ -51,30 +51,30 @@ float computeZk(DAGTask task, const int n_proc){
                 int max_U_idx = std::max_element(U.begin(),U.end()) - U.begin();
                 T[idx].clear();
                 T[idx].insert(idx);
-                T[idx].insert(T[V[idx]->desc[max_U_idx]->id].begin(), T[V[idx]->desc[max_U_idx]->id].end());
+                T[idx].insert(T[V[idx]->succ[max_U_idx]->id].begin(), T[V[idx]->succ[max_U_idx]->id].end());
                 f[idx] = V[idx]->c + U[max_U_idx];
             }
             else{
-                std::vector<float> C (V[idx]->desc.size(),0);
-                std::vector<float> ff (V[idx]->desc.size(),0);
+                std::vector<float> C (V[idx]->succ.size(),0);
+                std::vector<float> ff (V[idx]->succ.size(),0);
 
-                for(int j=0; j<V[idx]->desc.size(); ++j){
-                    for(auto k: S[V[idx]->desc[j]->id]){
+                for(int j=0; j<V[idx]->succ.size(); ++j){
+                    for(auto k: S[V[idx]->succ[j]->id]){
                         C[j] += V[k]->c;
                     }
 
-                    ff[j] = f[V[idx]->desc[j]->id];
+                    ff[j] = f[V[idx]->succ[j]->id];
                 }
 
                 int max_C_idx = std::max_element(C.begin(),C.end()) - C.begin();
-                S[idx].insert(S[V[idx]->desc[max_C_idx]->id].begin(), S[V[idx]->desc[max_C_idx]->id].end());
+                S[idx].insert(S[V[idx]->succ[max_C_idx]->id].begin(), S[V[idx]->succ[max_C_idx]->id].end());
 
                 int max_ff_idx = std::max_element(ff.begin(),ff.end()) - ff.begin();
                 T[idx].clear();
                 T[idx].insert(idx);
-                T[idx].insert(T[V[idx]->desc[max_ff_idx]->id].begin(), T[V[idx]->desc[max_ff_idx]->id].end());
+                T[idx].insert(T[V[idx]->succ[max_ff_idx]->id].begin(), T[V[idx]->succ[max_ff_idx]->id].end());
 
-                f[idx] = V[idx]->c + f[V[idx]->desc[max_ff_idx]->id];
+                f[idx] = V[idx]->c + f[V[idx]->succ[max_ff_idx]->id];
 
             }
         }
@@ -84,19 +84,19 @@ float computeZk(DAGTask task, const int n_proc){
 
 void maximizeMakespan(const std::vector<SubTask *>& V, const SubTask* v, const std::vector<float>& mksp, const std::vector<std::set<int>>& mksp_set,  const std::vector<std::set<int>>& w_set,  std::set<int>& mkspset_tmp, float& max_mksp, const int n_proc){
     max_mksp = 0;
-    for(int j=0; j<v->desc.size(); ++j){
+    for(int j=0; j<v->succ.size(); ++j){
         float sum_w = 0;
         std::set<int> wset_tmp;
 
-        for(int k=0; k<v->desc.size(); ++k){
+        for(int k=0; k<v->succ.size(); ++k){
             if(k != j){
                 std::set<int> new_vert;
-                std::set_difference(w_set[v->desc[k]->id].begin(), 
-                                    w_set[v->desc[k]->id].end(),
+                std::set_difference(w_set[v->succ[k]->id].begin(), 
+                                    w_set[v->succ[k]->id].end(),
                                     wset_tmp.begin(), 
                                     wset_tmp.end(), 
                                     std::inserter(new_vert, new_vert.begin()) );
-                set_difference_inplace<int>(new_vert, mksp_set[v->desc[j]->id]);
+                set_difference_inplace<int>(new_vert, mksp_set[v->succ[j]->id]);
                 wset_tmp.insert(new_vert.begin(), new_vert.end());
 
                 for(const auto& nv:new_vert)
@@ -105,9 +105,9 @@ void maximizeMakespan(const std::vector<SubTask *>& V, const SubTask* v, const s
             }
         }
 
-        if(mksp[v->desc[j]->id] + sum_w / n_proc > max_mksp){
-            max_mksp = mksp[v->desc[j]->id] + sum_w / n_proc;
-            mkspset_tmp.insert(mksp_set[v->desc[j]->id].begin(), mksp_set[v->desc[j]->id].end());
+        if(mksp[v->succ[j]->id] + sum_w / n_proc > max_mksp){
+            max_mksp = mksp[v->succ[j]->id] + sum_w / n_proc;
+            mkspset_tmp.insert(mksp_set[v->succ[j]->id].begin(), mksp_set[v->succ[j]->id].end());
             mkspset_tmp.insert(wset_tmp.begin(), wset_tmp.end());
         }
     }
@@ -142,7 +142,7 @@ float computeMakespanUB(DAGTask task, const int n_proc){
         mksp[idx] = V[idx]->c;
         w[idx] = V[idx]->c;
 
-        if(V[idx]->desc.size()){
+        if(V[idx]->succ.size()){
              
             if(V[idx]->mode != C_SOURCE_T){ //if not conditional source
 
@@ -155,10 +155,10 @@ float computeMakespanUB(DAGTask task, const int n_proc){
             mksp_set[idx].insert(idx);
             mksp_set[idx].insert(mkspset_tmp.begin(), mkspset_tmp.end());
 
-            for(int j=0; j<V[idx]->desc.size(); ++j){
+            for(int j=0; j<V[idx]->succ.size(); ++j){
                 std::set<int> new_vert;
-                std::set_difference(w_set[V[idx]->desc[j]->id].begin(), 
-                                    w_set[V[idx]->desc[j]->id].end(),
+                std::set_difference(w_set[V[idx]->succ[j]->id].begin(), 
+                                    w_set[V[idx]->succ[j]->id].end(),
                                     wset_tmp.begin(), 
                                     wset_tmp.end(), 
                                     std::inserter(new_vert, new_vert.begin()) );
@@ -175,24 +175,24 @@ float computeMakespanUB(DAGTask task, const int n_proc){
             else{
                 float max_mksp = 0, max_w = 0;
                 int max_idx = 0;
-                for(int j=0; j<V[idx]->desc.size(); ++j){
-                    if(mksp[V[idx]->desc[j]->id] > max_mksp){
-                        max_mksp = mksp[V[idx]->desc[j]->id];
+                for(int j=0; j<V[idx]->succ.size(); ++j){
+                    if(mksp[V[idx]->succ[j]->id] > max_mksp){
+                        max_mksp = mksp[V[idx]->succ[j]->id];
                         max_idx = j;
                     }
                 }
                 mksp[idx] += max_mksp;
-                mksp_set[idx].insert(mksp_set[V[idx]->desc[max_idx]->id].begin(), mksp_set[V[idx]->desc[max_idx]->id].end());
+                mksp_set[idx].insert(mksp_set[V[idx]->succ[max_idx]->id].begin(), mksp_set[V[idx]->succ[max_idx]->id].end());
 
-                for(int j=0; j<V[idx]->desc.size(); ++j){
-                    if(w[V[idx]->desc[j]->id] > max_w){
-                        max_w = w[V[idx]->desc[j]->id];
+                for(int j=0; j<V[idx]->succ.size(); ++j){
+                    if(w[V[idx]->succ[j]->id] > max_w){
+                        max_w = w[V[idx]->succ[j]->id];
                         max_idx = j;
                     }
                 }
 
                 w[idx] += max_w;
-                w_set[idx].insert(w_set[V[idx]->desc[max_idx]->id].begin(),w_set[V[idx]->desc[max_idx]->id].end());
+                w_set[idx].insert(w_set[V[idx]->succ[max_idx]->id].begin(),w_set[V[idx]->succ[max_idx]->id].end());
             }
         }
     }

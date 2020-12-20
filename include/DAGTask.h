@@ -63,7 +63,7 @@ class DAGTask{
     void cloneVertices(const std::vector<SubTask*>& to_clone_V);
     void destroyVerices();
     void isSuccessor(SubTask* v, SubTask *w, bool &is_succ) const;
-    bool allPrecAdded(std::vector<SubTask*> ancst, std::vector<int> ids);
+    bool allPrecAdded(std::vector<SubTask*> pred, std::vector<int> ids);
     void topologicalSort();
     bool checkIndexAndIdsAreEqual();
     void computeAccWorkload();

@@ -2,7 +2,7 @@
 
 //José Fonseca et al. “Improved response time analysis of sporadic dag tasks for global fp scheduling”.  (RTNS 2017) 
 
-std::vector<std::pair<float, float>> computeWorkloadDistribution(const DAGTask& task){
+std::vector<std::pair<float, float>> computeWorkloadDistributionCI(const DAGTask& task){
 
     std::vector<std::pair<float, float>> WD;
     auto V = task.getVertices();
@@ -41,28 +41,90 @@ std::vector<std::pair<float, float>> computeWorkloadDistribution(const DAGTask& 
 
 }
 
-float computeCarriInUpperBound(const Taskset& taskset, const int y, const int interval){
+float computeCarryInUpperBound(const DAGTask& task, const int interval){
 
     //equation 6 in the paper
 
-    std::vector<std::pair<float, float>> WD_y = computeWorkloadDistribution(taskset.tasks[y]);
+    std::vector<std::pair<float, float>> WD_UCI_y = computeWorkloadDistributionCI(task);
     float CI = 0, CI_tmp = 0;
 
-    for(int i=0; i< WD_y.size();++i){
-        CI_tmp = interval - taskset.tasks[y].getPeriod() + taskset.tasks[y].R; 
+    for(int i=0; i< WD_UCI_y.size();++i){
+        CI_tmp = interval - task.getPeriod() + task.R; 
 
-        for(int j=i+1; j< WD_y.size();++j)
-            CI_tmp -= WD_y[j].first;
+        for(int j=i+1; j< WD_UCI_y.size();++j)
+            CI_tmp -= WD_UCI_y[j].first;
 
-        CI += WD_y[i].second * std::max( float(0), std::min (WD_y[i].first, CI_tmp));
+        CI += WD_UCI_y[i].second * std::max( float(0), std::min (WD_UCI_y[i].first, CI_tmp));
     }
 
     return CI;
 
 }
 
-float interTaskWorkload(){
-    
+std::vector<std::pair<float, float>> computeWorkloadDistributionCO(const DAGTask& task){
+    // algorithm 1
+    //TODO
+}
+
+
+float computeImprovedCarryInUpperBound(const DAGTask& task, const int interval, const int m){
+    //theorem 2 in the paper
+
+    float CI_up = computeCarryInUpperBound(task, interval);
+    return std::min( CI_up, m * std::max( float(0) , interval - task.getPeriod() + task.R ));
+}
+
+float computeCarryOutUpperBound(const DAGTask& task, const int interval){
+
+    //equation 9 in the paper
+
+    std::vector<std::pair<float, float>> WD_UCO_y = computeWorkloadDistributionCO(task);
+    float CO = 0, CO_tmp = 0;
+
+    for(int i=0; i< WD_UCO_y.size();++i){
+        CO_tmp = interval; 
+
+        for(int j=0; j < i;++j)
+            CO_tmp -= WD_UCO_y[j].first;
+
+        CO += WD_UCO_y[i].second * std::max( float(0), std::min (WD_UCO_y[i].first, CO_tmp));
+    }
+
+    return CO;
+
+}
+
+float computeImprovedCarryOutUpperBound(const DAGTask& task, const float interval, const int m){
+    //theorem 4 in the paper
+
+    float CO_up = computeCarryOutUpperBound(task, interval);
+    float CO =  std::min( CO_up, interval * m);
+    CO =  std::min( CO, task.getVolume() - std::max( float(0) ,task.getLength() - interval ));
+
+    return CO;
+}
+
+float computeCarryWorkload(const DAGTask& task, const float interval, const int m){
+    // Algorithm 2
+    //TODO
+}
+
+float computeDeltaC(const DAGTask& task, const float interval){
+    // equation 11
+    float L = task.getLength();
+    float T = task.getPeriod();
+    return interval - std::max( float(0), std::floor( (interval - L) / T )) * T;
+}
+
+float interTaskWorkload(const DAGTask& task, const float interval, const int m){
+    // equation 10
+
+    float carry_workload = computeCarryWorkload(task, interval, m);
+    float delta_c = computeDeltaC(task, interval);
+    float T = task.getPeriod();
+    float vol = task.getVolume();
+
+    return carry_workload + std::max( float(0), std::floor( (interval - delta_c) /  T )) * vol;
 }
 
 bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m){
@@ -78,7 +140,7 @@ bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m){
 
 
     taskset.tasks[0].R = 15;
-    std::cout<<computeCarriInUpperBound(taskset, 0, 4)<<std::endl;
+    std::cout<<computeCarryInUpperBound(taskset.tasks[0], 4)<<std::endl;
 
     return  false;
 
@@ -96,7 +158,7 @@ bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m){
 
             if(i > 0){
                 for(int j=0; j<i; ++j)
-                    R[i] = interTaskWorkload();
+                    R[i] = interTaskWorkload(taskset.tasks[j], R_old[i], m); //TODO: fixme
 
                 R[i] *= (1. / m);
                 R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());

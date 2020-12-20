@@ -10,14 +10,14 @@ void DAGTask::cloneVertices(const std::vector<SubTask*>& to_clone_V){
     }
 
     for(int i=0; i<to_clone_V.size();++i){
-        cloned_V[i]->ancst.clear();
-        cloned_V[i]->desc.clear();
+        cloned_V[i]->pred.clear();
+        cloned_V[i]->succ.clear();
 
-        for(int j=0; j<to_clone_V[i]->desc.size();++j)
-            cloned_V[i]->desc.push_back(cloned_V[to_clone_V[i]->desc[j]->id]);
+        for(int j=0; j<to_clone_V[i]->succ.size();++j)
+            cloned_V[i]->succ.push_back(cloned_V[to_clone_V[i]->succ[j]->id]);
 
-        for(int j=0; j<to_clone_V[i]->ancst.size();++j)
-            cloned_V[i]->ancst.push_back(cloned_V[to_clone_V[i]->ancst[j]->id]);
+        for(int j=0; j<to_clone_V[i]->pred.size();++j)
+            cloned_V[i]->pred.push_back(cloned_V[to_clone_V[i]->pred[j]->id]);
     }
 
     V = cloned_V;
@@ -30,23 +30,23 @@ void DAGTask::destroyVerices(){
 
 void DAGTask::isSuccessor(SubTask* v, SubTask *w, bool &is_succ) const{
 
-    for(size_t i=0; i<w->desc.size(); ++i){
-        if(w->desc[i] == v){
+    for(size_t i=0; i<w->succ.size(); ++i){
+        if(w->succ[i] == v){
             is_succ = true;
             return;
         }
         else
-            isSuccessor(v, w->desc[i], is_succ);
+            isSuccessor(v, w->succ[i], is_succ);
     }
     return;
 }
 
-bool DAGTask::allPrecAdded(std::vector<SubTask*> ancst, std::vector<int> ids){
+bool DAGTask::allPrecAdded(std::vector<SubTask*> pred, std::vector<int> ids){
     bool prec_present;
-    for(int i=0; i<ancst.size();++i){
+    for(int i=0; i<pred.size();++i){
         prec_present = false;
         for(int j=0; j<ids.size();++j){
-            if(ancst[i]->id == ids[j]){
+            if(pred[i]->id == ids[j]){
                 prec_present = true;
                 break;
             }
@@ -68,7 +68,7 @@ void DAGTask::topologicalSort (){
     while(nodes_to_add){
         nodes_to_add = false;
         for(auto &v: V_copy){
-            if((v.ancst.empty() || allPrecAdded(v.ancst, ordIDs))){
+            if((v.pred.empty() || allPrecAdded(v.pred, ordIDs))){
                 if(v.id != -1 ){
                     ordIDs.push_back(v.id);
                     v.id = -1;
@@ -102,9 +102,9 @@ void DAGTask::computeAccWorkload(){
     int max_acc_prec;
     for(size_t i=0; i<ordIDs.size();++i){
         max_acc_prec = 0;
-        for(size_t j=0; j<V[ordIDs[i]]->ancst.size();++j){
-            if(V[ordIDs[i]]->ancst[j]->accWork > max_acc_prec)
-                max_acc_prec = V[ordIDs[i]]->ancst[j]->accWork;
+        for(size_t j=0; j<V[ordIDs[i]]->pred.size();++j){
+            if(V[ordIDs[i]]->pred[j]->accWork > max_acc_prec)
+                max_acc_prec = V[ordIDs[i]]->pred[j]->accWork;
         }
 
         V[ordIDs[i]]->accWork = V[ordIDs[i]]->c + max_acc_prec;

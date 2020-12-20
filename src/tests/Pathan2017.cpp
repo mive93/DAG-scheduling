@@ -47,7 +47,7 @@ float computeWorloadIntra(const DAGTask& tau_x, const int k ){
     for(int i=0; i< S.size(); ++i){
         idx = S[i];
 
-        R_part = std::max( float(0) , V[idx]->r - computeLatestReadyTime(V[k]->ancst) );
+        R_part = std::max( float(0) , V[idx]->r - computeLatestReadyTime(V[k]->pred) );
         W_intra += std::min(V[idx]->c, R_part);
     }
 
@@ -56,7 +56,7 @@ float computeWorloadIntra(const DAGTask& tau_x, const int k ){
 
 float computeX(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const float interval, const int m ){
     auto V = tau_x.getVertices();
-    float ci_b = computeLatestReadyTime(V[k]->ancst) + interval - tau_y.getWCW() / m;
+    float ci_b = computeLatestReadyTime(V[k]->pred) + interval - tau_y.getWCW() / m;
     return std::max( float(0), ci_b );
 }
 
@@ -77,7 +77,7 @@ float computeCR(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const f
     float A = 0;
 
     for(int i=0; i<V_y.size(); ++i)
-        A += std::min(V_y[i]->c, std::max(float(0), V_y[i]->r - computeLatestReadyTime(V_x[k]->ancst)));
+        A += std::min(V_y[i]->c, std::max(float(0), V_y[i]->r - computeLatestReadyTime(V_x[k]->pred)));
     
     return std::min (m * computeTcin(tau_y, tau_x, k, interval, m) , A);
 }
@@ -137,7 +137,7 @@ bool GP_FP_DM_Pathan17_C(Taskset taskset, const int m){
                 W_inter = computeWorloadInter(taskset, x, i, R_old[i], m);
                 W_intra = computeWorloadIntra(taskset.tasks[x], i);
 
-                R[i] += computeLatestReadyTime(V[i]->ancst) + (1. / m) * (W_intra + W_inter) + V[i]->c;
+                R[i] += computeLatestReadyTime(V[i]->pred) + (1. / m) * (W_intra + W_inter) + V[i]->c;
 
                 init = false;
             }

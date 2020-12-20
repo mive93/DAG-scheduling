@@ -69,8 +69,8 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
             case TERMINAL_T:{
                 SubTask *v = new SubTask;
                 v->id = V.size();
-                v->ancst.push_back(source);
-                v->desc.push_back(sink);
+                v->pred.push_back(source);
+                v->succ.push_back(sink);
                 v->mode = ifCond? C_INTERN_T : NORMAL_T;
                 v->depth = depth;
                 v->width = w1 + step * (i - 1);
@@ -79,32 +79,32 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
 
                 source->mode    = ifCond ? C_SOURCE_T : NORMAL_T;
                 sink->mode      = ifCond ? C_SINK_T : NORMAL_T;
-                source->desc.push_back(V[V.size()-1]);
+                source->succ.push_back(V[V.size()-1]);
                 
-                sink->ancst.push_back(V[V.size()-1]);
+                sink->pred.push_back(V[V.size()-1]);
                 break;
             }
             case PARALLEL_T: case CONDITIONAL_T:{
                 SubTask *v1 = new SubTask;
                 v1->id = V.size();
-                v1->ancst.push_back(source);
+                v1->pred.push_back(source);
                 v1->mode = ifCond? C_INTERN_T : NORMAL_T;
                 v1->depth = depth;
                 v1->width = w1 + step * (i - 1);
                 V.push_back(v1);
 
-                source->desc.push_back(V[V.size()-1]);
+                source->succ.push_back(V[V.size()-1]);
                 source->mode = ifCond ? C_SOURCE_T : NORMAL_T;
 
                 SubTask *v2 = new SubTask;
                 v2->id = V.size();
-                v2->desc.push_back(sink);
+                v2->succ.push_back(sink);
                 v2->mode = ifCond? C_INTERN_T : NORMAL_T;
                 v2->depth = -depth;
                 v2->width = w2 + step * (i - 1);
                 V.push_back(v2);
 
-                sink->ancst.push_back(V[V.size()-1]);
+                sink->pred.push_back(V[V.size()-1]);
                 sink->mode = ifCond ? C_SINK_T : NORMAL_T;
 
                 int max_branches = (state == PARALLEL_T )? maxParBranches : maxCondBranches;
@@ -146,8 +146,8 @@ void DAGTask::makeItDag(float prob){
             )
             {
                 //add an edge v -> w
-                v->desc.push_back(w);
-                w->ancst.push_back(v);
+                v->succ.push_back(w);
+                w->pred.push_back(v);
             }
         }
     }
@@ -165,24 +165,24 @@ void DAGTask::computeWorstCaseWorkload(){
         idx = ordIDs[i];
         paths[idx].insert(idx);
 
-        if(V[idx]->desc.size()){
+        if(V[idx]->succ.size()){
             if(V[idx]->mode != C_SOURCE_T){
-                for(int j=0; j<V[idx]->desc.size(); ++j)
-                    paths[idx].insert(paths[V[idx]->desc[j]->id].begin(), paths[V[idx]->desc[j]->id].end());
+                for(int j=0; j<V[idx]->succ.size(); ++j)
+                    paths[idx].insert(paths[V[idx]->succ[j]->id].begin(), paths[V[idx]->succ[j]->id].end());
             }
             else{
-                std::vector<int> sum (V[idx]->desc.size(), 0);
+                std::vector<int> sum (V[idx]->succ.size(), 0);
                 int max_id = 0;
                 float max_sum = 0;
-                for(int j=0; j<V[idx]->desc.size(); ++j){
-                    for(auto k: paths[V[idx]->desc[j]->id])
+                for(int j=0; j<V[idx]->succ.size(); ++j){
+                    for(auto k: paths[V[idx]->succ[j]->id])
                         sum[j] += V[k]->c;
                     if(sum[j] > max_sum){
                         max_sum = sum[j];
                         max_id = j;
                     }
                 }
-                paths[idx].insert(paths[V[idx]->desc[max_id]->id].begin(), paths[V[idx]->desc[max_id]->id].end());
+                paths[idx].insert(paths[V[idx]->succ[max_id]->id].begin(), paths[V[idx]->succ[max_id]->id].end());
             }
         }
     }

@@ -14,10 +14,10 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
     os<< "vertices :"<<std::endl;
     for(auto v: t.V){
         os<< "\t v_" << v->id << " - c: "<<v->c <<" \tsucc: ";
-        for(auto s:v->desc)
+        for(auto s:v->succ)
             os<< s->id << " ";
         os<<" \tprec: ";
-        for(auto p:v->ancst)
+        for(auto p:v->pred)
             os<< p->id << " ";
 
         os<<" \tlocal O: " << v->localO;
@@ -62,8 +62,8 @@ void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
         form_id = id_pos[edges[j]["from"].as<int>()];
         to_id = id_pos[edges[j]["to"].as<int>()];
 
-        V[form_id]->desc.push_back(V[to_id]);
-        V[to_id]->ancst.push_back(V[form_id]);
+        V[form_id]->succ.push_back(V[to_id]);
+        V[to_id]->pred.push_back(V[form_id]);
     }
     
 }
@@ -82,7 +82,7 @@ void DAGTask::saveAsDot(const std::string &filename){
     }
 
     for (const auto &v: V){
-        for(auto s: v->desc)
+        for(auto s: v->succ)
             of<<v->id<<" -> "<<s->id<<";\n";
     }
     of<<"}";
