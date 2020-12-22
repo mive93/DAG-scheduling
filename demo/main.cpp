@@ -15,8 +15,8 @@ int main(int argc, char **argv){
     int n_proc = 4;
     Taskset taskset;
     if(random_creation){
-        int n_tasks = 6;
-        float U_tot = 4;
+        int n_tasks = 2;
+        float U_tot = 2;
         taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc);
     }
     else

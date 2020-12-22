@@ -2,25 +2,23 @@
 
 void DAGTask::cloneVertices(const std::vector<SubTask*>& to_clone_V){
     V.clear();
-    std::vector<SubTask*> cloned_V;
     for(int i=0; i<to_clone_V.size();++i){
         SubTask * v = new SubTask;
         *v = *to_clone_V[i];
-        cloned_V.push_back(v);
+        V.push_back(v);
     }
 
     for(int i=0; i<to_clone_V.size();++i){
-        cloned_V[i]->pred.clear();
-        cloned_V[i]->succ.clear();
+        V[i]->pred.clear();
+        V[i]->succ.clear();
 
         for(int j=0; j<to_clone_V[i]->succ.size();++j)
-            cloned_V[i]->succ.push_back(cloned_V[to_clone_V[i]->succ[j]->id]);
+            V[i]->succ.push_back(V[to_clone_V[i]->succ[j]->id]);
 
         for(int j=0; j<to_clone_V[i]->pred.size();++j)
-            cloned_V[i]->pred.push_back(cloned_V[to_clone_V[i]->pred[j]->id]);
+            V[i]->pred.push_back(V[to_clone_V[i]->pred[j]->id]);
+        
     }
-
-    V = cloned_V;
 }
 
 void DAGTask::destroyVerices(){
@@ -28,17 +26,72 @@ void DAGTask::destroyVerices(){
         delete V[i];
 }
 
-void DAGTask::isSuccessor(SubTask* v, SubTask *w, bool &is_succ) const{
-
+void DAGTask::isSuccessor(const SubTask* v, const SubTask *w, bool &is_succ) const{
     for(size_t i=0; i<w->succ.size(); ++i){
+        
         if(w->succ[i] == v){
             is_succ = true;
             return;
         }
-        else
+        else{
+            
             isSuccessor(v, w->succ[i], is_succ);
+        }
     }
     return;
+}
+
+std::vector<SubTask*> DAGTask::getSubTaskAncestors(const int i) const{
+    
+    std::vector<SubTask*> ancst;
+    bool is_succ = false;
+    for(int j=0; j<V.size(); ++j){
+        is_succ = false;
+        isSuccessor(V[i], V[j], is_succ);
+        if( is_succ )
+            ancst.push_back(V[j]);
+    }
+
+    return ancst;
+}
+
+std::vector<SubTask*> DAGTask::getSubTaskDescendants(const int i) const{
+    
+    std::vector<SubTask*> desc;
+    bool is_succ = false;
+    for(int j=0; j<V.size(); ++j){
+        is_succ = false;
+        isSuccessor(V[j], V[i], is_succ);
+        if( is_succ )
+            desc.push_back(V[j]);
+    }
+
+    return desc;
+}
+
+void DAGTask::transitiveReduction(){
+    for(int i=0; i<V.size(); ++i){
+        std::vector<SubTask*> succ_desc;
+        //find all the successors descendants
+        for(int j=0; j<V[i]->succ.size();++j){
+            std::vector<SubTask*> succ_desc_j = getSubTaskDescendants(V[i]->succ[j]->id);
+            succ_desc.insert(succ_desc.end(), succ_desc_j.begin(), succ_desc_j.end());
+        }
+        
+        // is a successor is also a successors descendants, mark to remove
+        std::vector<SubTask*> to_remove;
+        for(int j=0; j<V[i]->succ.size();++j){
+            if ( std::find(succ_desc.begin(), succ_desc.end(), V[i]->succ[j]) != succ_desc.end() ){
+                to_remove.push_back(V[i]->succ[j]);
+            }
+        }
+
+        //remove 
+        for(auto& r:to_remove){
+            V[i]->succ.erase(std::remove(V[i]->succ.begin(), V[i]->succ.end(), r), V[i]->succ.end());
+            r->pred.erase(std::remove(r->pred.begin(), r->pred.end(), V[i]), r->pred.end());
+        }
+    }
 }
 
 bool DAGTask::allPrecAdded(std::vector<SubTask*> pred, std::vector<int> ids){

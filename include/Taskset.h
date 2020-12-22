@@ -49,6 +49,8 @@ class Taskset{
             DAGTask t;
             t.readTaskFromYamlNode(tasks_node, i);
 
+            t.transitiveReduction();
+
             t.computeWorstCaseWorkload();
             t.computeVolume();
             t.computeLength();
@@ -95,6 +97,8 @@ class Taskset{
             t.expandTaskSeriesParallel(nullptr, nullptr,t.rec_depth,0,false);
             t.assignWCET(t.Cmin, t.Cmax);
             t.makeItDag(t.addProb);
+
+            t.transitiveReduction();
 
             t.computeWorstCaseWorkload();
             t.computeVolume();

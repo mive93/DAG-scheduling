@@ -25,8 +25,8 @@ class SubTask{
 
     subTaskMode mode = NORMAL_T;    // type of node
 
-    std::vector<SubTask*> succ;     // descendants 
-    std::vector<SubTask*> pred;    // ancestors
+    std::vector<SubTask*> succ;     // successors 
+    std::vector<SubTask*> pred;    // predecessors
 
     std::vector<int> getCondPred(){
         std::vector<int> cond_pred;

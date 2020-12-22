@@ -37,7 +37,7 @@ float computeLatestReadyTime(const std::vector<SubTask *>& ancst_i){
     return max_R;
 }
 
-float computeWorloadIntra(const DAGTask& tau_x, const int k ){
+float computeWorloadIntra(const DAGTask& tau_x, const int k, const std::vector<SubTask*>& ancst_k ){
     std::vector<int> S = computeSxi(tau_x, k);
     auto V = tau_x.getVertices();
     
@@ -47,22 +47,22 @@ float computeWorloadIntra(const DAGTask& tau_x, const int k ){
     for(int i=0; i< S.size(); ++i){
         idx = S[i];
 
-        R_part = std::max( float(0) , V[idx]->r - computeLatestReadyTime(V[k]->pred) );
+        R_part = std::max( float(0) , V[idx]->r - computeLatestReadyTime(ancst_k) );
         W_intra += std::min(V[idx]->c, R_part);
     }
 
     return W_intra;
 }
 
-float computeX(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const float interval, const int m ){
+float computeX(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const std::vector<SubTask*>& ancst_k, const float interval, const int m ){
     auto V = tau_x.getVertices();
-    float ci_b = computeLatestReadyTime(V[k]->pred) + interval - tau_y.getWCW() / m;
+    float ci_b = computeLatestReadyTime(ancst_k) + interval - tau_y.getWCW() / m;
     return std::max( float(0), ci_b );
 }
 
-float computeTcin(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const float interval, const int m ){
+float computeTcin(const DAGTask& tau_y, const DAGTask& tau_x, const int k,const std::vector<SubTask*>& ancst_k, const float interval, const int m ){
 
-    float X_y = computeX(tau_y, tau_x, k, interval, m);
+    float X_y = computeX(tau_y, tau_x, k, ancst_k, interval, m);
     float W_y = tau_x.getWCW();
     float T_y = tau_x.getPeriod();
 
@@ -71,18 +71,18 @@ float computeTcin(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const
 
 }
 
-float computeCR(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const float interval, const int m ){
+float computeCR(const DAGTask& tau_y, const DAGTask& tau_x, const int k, const std::vector<SubTask*>& ancst_k, const float interval, const int m ){
     auto V_x = tau_x.getVertices();
     auto V_y = tau_y.getVertices();
     float A = 0;
 
     for(int i=0; i<V_y.size(); ++i)
-        A += std::min(V_y[i]->c, std::max(float(0), V_y[i]->r - computeLatestReadyTime(V_x[k]->pred)));
+        A += std::min(V_y[i]->c, std::max(float(0), V_y[i]->r - computeLatestReadyTime(ancst_k)));
     
-    return std::min (m * computeTcin(tau_y, tau_x, k, interval, m) , A);
+    return std::min (m * computeTcin(tau_y, tau_x, k, ancst_k, interval, m) , A);
 }
 
-float computeWorloadInter(const Taskset& taskset, const int x, const int i, const float interval, const int m){
+float computeWorloadInter(const Taskset& taskset, const int x, const int i, const std::vector<SubTask*>& ancst_i, const float interval, const int m){
 
     //for all hp of tau_x
     float W_inter = 0;
@@ -91,9 +91,9 @@ float computeWorloadInter(const Taskset& taskset, const int x, const int i, cons
 
         T_y = taskset.tasks[y].getPeriod();
         W_y = taskset.tasks[y].getWCW();
-        t_cin_y = computeTcin(taskset.tasks[y], taskset.tasks[x], i, interval, m);
-        X_y = computeX(taskset.tasks[y], taskset.tasks[x], i, interval, m);
-        CR_y = computeCR(taskset.tasks[y], taskset.tasks[x], i, t_cin_y, m);
+        t_cin_y = computeTcin(taskset.tasks[y], taskset.tasks[x], i, ancst_i, interval, m);
+        X_y = computeX(taskset.tasks[y], taskset.tasks[x], i, ancst_i, interval, m);
+        CR_y = computeCR(taskset.tasks[y], taskset.tasks[x], i, ancst_i, t_cin_y, m);
 
         W_inter += CR_y + std::floor( X_y / T_y ) * W_y + W_y;
 
@@ -115,10 +115,14 @@ bool GP_FP_DM_Pathan17_C(Taskset taskset, const int m){
         std::vector<float> R_old (V.size(), 0);
         std::vector<float> R (V.size(), 0);
 
+        
+
 
         // compute the response of a subtask in topological order
         for(int idx=0, i; idx<topo_ord.size(); ++idx){
             i = topo_ord[idx];
+
+            std::vector<SubTask*> ancst_i = taskset.tasks[x].getSubTaskAncestors(i);
 
             R_old[i] = V[i]->c;
             V[i]->r = V[i]->c;
@@ -134,8 +138,8 @@ bool GP_FP_DM_Pathan17_C(Taskset taskset, const int m){
                     R[i] = 0;
                 }
 
-                W_inter = computeWorloadInter(taskset, x, i, R_old[i], m);
-                W_intra = computeWorloadIntra(taskset.tasks[x], i);
+                W_inter = computeWorloadInter(taskset, x, i, ancst_i, R_old[i], m);
+                W_intra = computeWorloadIntra(taskset.tasks[x], i, ancst_i);
 
                 R[i] += computeLatestReadyTime(V[i]->pred) + (1. / m) * (W_intra + W_inter) + V[i]->c;
 

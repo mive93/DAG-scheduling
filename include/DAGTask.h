@@ -62,7 +62,7 @@ class DAGTask{
     //operation on DAG
     void cloneVertices(const std::vector<SubTask*>& to_clone_V);
     void destroyVerices();
-    void isSuccessor(SubTask* v, SubTask *w, bool &is_succ) const;
+    void isSuccessor(const SubTask* v, const SubTask *w, bool &is_succ) const;
     bool allPrecAdded(std::vector<SubTask*> pred, std::vector<int> ids);
     void topologicalSort();
     bool checkIndexAndIdsAreEqual();
@@ -79,6 +79,10 @@ class DAGTask{
     void computeEFTs();
     void computeLSTs();
 
+    std::vector<SubTask*> getSubTaskAncestors(const int i) const;
+    std::vector<SubTask*> getSubTaskDescendants(const int i) const;
+    void transitiveReduction();
+
     float getLength() const {return L;};
     float getVolume() const {return vol;};
     float getWorstCaseWorkload() const {return wcw;};
@@ -89,6 +93,9 @@ class DAGTask{
     float getDensity() const {return delta;};
     std::vector<int> getTopologicalOrder() const {return ordIDs;};
     std::vector<SubTask*> getVertices() const {return V;};
+
+    void setVertices(std::vector<SubTask*> given_V){ V.clear(); V = given_V; }
+
 
     //Melani generation methods
     void configureParams();
