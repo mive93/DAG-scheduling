@@ -2,7 +2,7 @@
 
 #include "SP-Tree.h"
 
-//Jstd::couté Fonseca et al. “Improved response time analysis of sporadic dag tasks for global fp scheduling”.  (RTNS 2017) 
+//Fonseca et al. “Improved response time analysis of sporadic dag tasks for global fp scheduling”.  (RTNS 2017) 
 
 std::vector<std::pair<float, float>> computeWorkloadDistributionCI(const DAGTask& task){
 
@@ -40,7 +40,7 @@ std::vector<std::pair<float, float>> computeWorkloadDistributionCI(const DAGTask
     return WD;
 }
 
-float computeCarryInUpperBound(const DAGTask& task, const int interval, std::vector<std::pair<float, float>> WD_UCI_y){
+float computeCarryInUpperBound(const DAGTask& task, const int interval, const std::vector<std::pair<float, float>>& WD_UCI_y){
 
     //equation 6 in the paper
 
@@ -60,7 +60,7 @@ float computeCarryInUpperBound(const DAGTask& task, const int interval, std::vec
 }
 
 
-float computeImprovedCarryInUpperBound(const DAGTask& task, const int interval, std::vector<std::pair<float, float>> WD_UCI_y, const int m){
+float computeImprovedCarryInUpperBound(const DAGTask& task, const int interval, const std::vector<std::pair<float, float>>& WD_UCI_y, const int m){
     //theorem 2 in the paper
 
     float CI_up = computeCarryInUpperBound(task, interval, WD_UCI_y);
@@ -179,7 +179,7 @@ std::vector<std::pair<float, float>> computeWorkloadDistributionCO(const DAGTask
     return WD_UCO_y;
 }
 
-float computeCarryOutUpperBound(const DAGTask& task, const int interval, const int task_idx, std::vector<std::pair<float, float>> WD_UCO_y){
+float computeCarryOutUpperBound(const DAGTask& task, const int interval, const std::vector<std::pair<float, float>>& WD_UCO_y){
 
     //equation 9 in the paper
     float CO = 0, CO_tmp = 0;
@@ -197,20 +197,20 @@ float computeCarryOutUpperBound(const DAGTask& task, const int interval, const i
 
 }
 
-float computeImprovedCarryOutUpperBound(const DAGTask& task, const float interval, std::vector<std::pair<float, float>> WD_UCO_y, const int m, const int task_idx){
+float computeImprovedCarryOutUpperBound(const DAGTask& task, const float interval, const std::vector<std::pair<float, float>>& WD_UCO_y, const int m){
     //theorem 4 in the paper
 
-    float CO_up = computeCarryOutUpperBound(task, interval, task_idx, WD_UCO_y);
+    float CO_up = computeCarryOutUpperBound(task, interval, WD_UCO_y);
     float CO =  std::min( CO_up, interval * m);
     CO =  std::min( CO, task.getVolume() - std::max( float(0) ,task.getLength() - interval ));
 
     return CO;
 }
 
-float computeCarryWorkload(const DAGTask& task, const float interval, std::vector<std::pair<float, float>> WD_UCO_y, std::vector<std::pair<float, float>> WD_UCI_y, const int task_id){
+float computeCarryWorkload(const DAGTask& task, const float interval, const std::vector<std::pair<float, float>>& WD_UCO_y, const std::vector<std::pair<float, float>>& WD_UCI_y){
     // Algorithm 2
 
-    float WyC = computeCarryOutUpperBound(task, interval, task_id, WD_UCO_y );
+    float WyC = computeCarryOutUpperBound(task, interval, WD_UCO_y );
     float x1 = task.getPeriod() - task.R, x2;
     float CI = 0, CO = 0;
 
@@ -218,7 +218,7 @@ float computeCarryWorkload(const DAGTask& task, const float interval, std::vecto
         x1 += WD_UCI_y[i].first;
         x2 = interval - x1;
         CI = computeCarryInUpperBound(task, x1, WD_UCI_y);
-        CO = computeCarryOutUpperBound(task, x2, task_id, WD_UCO_y);
+        CO = computeCarryOutUpperBound(task, x2, WD_UCO_y);
         WyC = std::max(WyC, CI + CO);
     }
 
@@ -232,7 +232,7 @@ float computeCarryWorkload(const DAGTask& task, const float interval, std::vecto
         x1 = interval - x2;
 
         CI = computeCarryInUpperBound(task, x1, WD_UCI_y);
-        CO = computeCarryOutUpperBound(task, x2, task_id, WD_UCO_y);
+        CO = computeCarryOutUpperBound(task, x2,  WD_UCO_y);
         WyC = std::max(WyC, CI + CO);
 
     }
@@ -246,15 +246,11 @@ float computeDeltaC(const DAGTask& task, const float interval){
     return interval - std::max( float(0), std::floor( (interval - L) / T )) * T;
 }
 
-float interTaskWorkload(const DAGTask& task, const float interval, const int task_idx){
+float interTaskWorkload(const DAGTask& task, const float interval,  const std::vector<std::pair<float, float>>& WD_UCO_y, const std::vector<std::pair<float, float>>& WD_UCI_y){
     // equation 10
 
-    auto WD_UCO_y = computeWorkloadDistributionCO(task, task_idx);
-    auto WD_UCI_y = computeWorkloadDistributionCI(task);
-
-    
     float delta_c = computeDeltaC(task, interval);
-    float carry_workload = computeCarryWorkload(task, delta_c, WD_UCO_y, WD_UCI_y, task_idx);
+    float carry_workload = computeCarryWorkload(task, delta_c, WD_UCO_y, WD_UCI_y);
     float T = task.getPeriod();
     float vol = task.getVolume();
 
@@ -266,10 +262,16 @@ bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m){
 
     std::vector<float> R_old (taskset.tasks.size(), 0);
     std::vector<float> R (taskset.tasks.size(), 0);
+
+    std::vector<std::vector<std::pair<float, float>>> WD_UCO (taskset.tasks.size());
+    std::vector<std::vector<std::pair<float, float>>> WD_UCI (taskset.tasks.size());
     for(int i=0; i<taskset.tasks.size(); ++i){
         R_old[i] = taskset.tasks[i].getLength();
         taskset.tasks[i].R = taskset.tasks[i].getLength();
         taskset.tasks[i].computeEFTs();
+
+        WD_UCO[i] = computeWorkloadDistributionCO(taskset.tasks[i], i);
+        WD_UCI[i] = computeWorkloadDistributionCI(taskset.tasks[i]);
     }
 
     for(int i=0; i<taskset.tasks.size(); ++i){
@@ -286,7 +288,7 @@ bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m){
 
             if(i > 0){
                 for(int j=0; j<i; ++j)
-                    R[i] = interTaskWorkload(taskset.tasks[j], R_old[i], j); 
+                    R[i] = interTaskWorkload(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j]); 
 
                 R[i] *= (1. / m);
                 R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());

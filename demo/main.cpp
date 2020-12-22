@@ -78,6 +78,7 @@ int main(int argc, char **argv){
         std::cout<< "\tMelani 2015 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tPathan 2017 constrained (GP-FP-DM): "   <<GP_FP_DM_Pathan17_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tFonseca 2017 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca17_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tFonseca 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca19(taskset, n_proc)<<std::endl;
         std::cout<< "\tSerrano 2016 constrained (GP-LP-FTP): "   <<GP_LP_FTP_Serrano16_C(taskset, n_proc)<<std::endl;
     }
 

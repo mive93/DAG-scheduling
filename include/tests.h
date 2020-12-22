@@ -29,7 +29,14 @@ bool GP_FP_FTP_Melani2015_C(Taskset taskset, const int m);
 
 bool GP_FP_DM_Pathan17_C(Taskset taskset, const int m); 
 
-bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m); //TODO
+std::vector<std::pair<float, float>> computeWorkloadDistributionCO(const DAGTask& t, const int task_idx);
+std::vector<std::pair<float, float>> computeWorkloadDistributionCI(const DAGTask& task);
+float computeCarryOutUpperBound(const DAGTask& task, const int interval, const std::vector<std::pair<float, float>>& WD_UCO_y);
+float computeCarryInUpperBound(const DAGTask& task, const int interval, const std::vector<std::pair<float, float>>& WD_UCI_y);
+bool GP_FP_FTP_Fonseca17_C(Taskset taskset, const int m); 
+
+bool GP_FP_FTP_Fonseca19(Taskset taskset, const int m, bool constrained_deadlines = true); //TODO
+bool GP_FP_FTP_Fonseca19_A(Taskset taskset, const int m); //TODO
 
 //global policy, limited preemptive
 
