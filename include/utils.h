@@ -2,6 +2,7 @@
 #define UTILS_H
 
 #include<iostream>
+#include<sstream>
 #include<cmath>
 #include<set>
 #include<utility>

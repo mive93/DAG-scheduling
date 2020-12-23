@@ -29,7 +29,7 @@ class GeneratorParams{
     float pPar              = 0.2;  // probability of generating a parallel branch 
     float pTerm             = 0.8;  // probability of generating a terminal vertex 
     float Cmin              = 1;    // minimum WCET for subtasks 
-    float Cmax              = 10;  // maximum WCET for subtasks 
+    float Cmax              = 10;   // maximum WCET for subtasks 
     float addProb           = 0.1;  // probability to add an edge between 2 nodes, if possible 
     float probSCond         = 0.5;  // probability that the source is conditional 
 

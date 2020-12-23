@@ -9,19 +9,19 @@ enum NodeType_t{ S, P, L};
 
 struct SPNode{
     NodeType_t type;
-    int id = -1;    // id in the tree
-    int V_id = -1;  // corresponding id in the DAG
-    SPNode *left = nullptr;
-    SPNode *right = nullptr;
+    int id          = -1;       // id in the tree
+    int V_id        = -1;       // corresponding id in the DAG
+    SPNode *left    = nullptr;  // left son
+    SPNode *right   = nullptr;  // right son
 };
 
 struct STempNode{
-    int left = -1;
-    int right = -1;
-    int right_ordids = -1;  // topological order in the DAG of right
-    int left_ordids = -1;   // topological order in the DAG of left
-    bool used = false;
-    bool visited = false;
+    int left            = -1;
+    int right           = -1;
+    int right_ordids    = -1;  // topological order in the DAG of right
+    int left_ordids     = -1;   // topological order in the DAG of left
+    bool used           = false;
+    bool visited        = false;
 };
 
 bool compareSTempNode(const STempNode& a, const STempNode& b);
