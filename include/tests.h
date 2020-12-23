@@ -37,10 +37,12 @@ bool GP_FP_FTP_Fonseca2017_C(Taskset taskset, const int m);
 
 bool GP_FP_FTP_Fonseca2019(Taskset taskset, const int m, bool constrained_deadlines = true);
 
-bool GP_FP_Han2019_C_1(DAGTask task, const std::vector<int> m); 
+bool GP_FP_Han2019_C_1(const DAGTask& task, const std::vector<int> m); 
+
+bool GP_FP_He2019_C(DAGTask task, const int m);
 bool GP_FP_FTP_He2019_C(Taskset taskset, const int m); //TODO
-// Qingqiang He, Nan Guan, Zhishan Guo, et al. “Intra-task priority assignmentin real-time scheduling of dag tasks on multi-cores”. In:IEEE Transactions onParallel and Distributed Systems30.10 (2019), pp. 2283–2295.
-bool GP_FP_Chang2020_C(DAGTask task, const int m); //TODO
+
+bool GP_FP_Chang2020_C(const DAGTask& task, const int m); //TODO
 // Shuangshuang Chang et al. “Real-Time scheduling and analysis of paralleltasks  on  heterogeneous  multi-cores”.  In:Journal  of  Systems  Architecture105(2020), p. 10170
 
 //global policy, limited preemptive

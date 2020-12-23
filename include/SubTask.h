@@ -17,6 +17,7 @@ class SubTask{
     float accWork   = 0; // accumulated workload
     float r         = 0; // response time of the subtask
     int gamma       = 0; // type of core
+    int prio        = 0; // priority of the subtask
 
     float localO = -1; // local offset - EST
     float localD = -1; // local deadline - LFT
