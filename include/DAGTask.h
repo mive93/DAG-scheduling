@@ -27,8 +27,9 @@ class DAGTask{
     float wcw = 0;        // worst case workload (= to volume if no conditional branch exist)
     float delta = 0;      // density
     float u = 0;          // utilization
-    
 
+    std::map<int, float> typedVol;
+    
     //distribution to add branches (MelaniGen)
     std::discrete_distribution<int> dist;
     std::vector<int> ordIDs; // ids in topological order
@@ -69,6 +70,7 @@ class DAGTask{
     void computeAccWorkload();
     void computeLength();
     void computeVolume();
+    void computeTypedVolume();
     void computeUtilization();
     void computeDensity();
 
@@ -85,6 +87,7 @@ class DAGTask{
 
     float getLength() const {return L;};
     float getVolume() const {return vol;};
+    std::map<int, float> getTypedVolume() const {return typedVol;};
     float getWorstCaseWorkload() const {return wcw;};
     float getWCW() const {return wcw;};
     float getPeriod() const {return t;};

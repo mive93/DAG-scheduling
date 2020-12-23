@@ -151,6 +151,15 @@ void DAGTask::computeVolume(){
         vol += V[i]->c;
 }
 
+void DAGTask::computeTypedVolume(){
+    for(size_t i=0; i<V.size();++i){
+        if ( typedVol.find(V[i]->gamma) == typedVol.end() ) 
+            typedVol[V[i]->gamma] = V[i]->c;
+        else
+            typedVol[V[i]->gamma] += V[i]->c;
+    }
+}
+
 void DAGTask::computeAccWorkload(){
     int max_acc_prec;
     for(size_t i=0; i<ordIDs.size();++i){
@@ -167,7 +176,7 @@ void DAGTask::computeAccWorkload(){
 void DAGTask::computeLength(){
     if(!ordIDs.size())
         topologicalSort();
-        
+    L = 0;    
     computeAccWorkload();
     for(const auto&v :V)
         if(v->accWork > L)

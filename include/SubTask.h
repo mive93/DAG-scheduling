@@ -16,6 +16,7 @@ class SubTask{
     int depth       = 0; // depth in the graph
     float accWork   = 0; // accumulated workload
     float r         = 0; // response time of the subtask
+    int gamma       = 0; // type of core
 
     float localO = -1; // local offset - EST
     float localD = -1; // local deadline - LFT

@@ -13,6 +13,7 @@ int main(int argc, char **argv){
     bool random_creation = false;
 
     int n_proc = 4;
+    std::vector<int> typed_proc = {4,4};
     Taskset taskset;
     if(random_creation){
         int n_tasks = 2;
@@ -46,6 +47,10 @@ int main(int argc, char **argv){
             std::cout<< "\t\tBaruah 2012 constrained (GP-FP-EDF): " <<GP_FP_EDF_Baruah2012_C(taskset.tasks[i], n_proc)<<std::endl;
             implicit_taskset = false;
         }
+
+        if(taskset.tasks[i].getDeadline() <= taskset.tasks[i].getPeriod()){
+            std::cout<< "\t\tHan 2020 constrained typed(GP-FP): " <<GP_FP_Han2019_C_1(taskset.tasks[i], typed_proc)<<std::endl;
+        }
         std::cout<< "\t\tBaruah 2012 arbitrary (GP-FP-EDF): "   <<GP_FP_EDF_Baruah2012_A(taskset.tasks[i], n_proc)<<std::endl;
         std::cout<< "\t\tGraham 1969 : "   <<Graham1969(taskset.tasks[i], n_proc)<<std::endl;
 
@@ -76,11 +81,12 @@ int main(int argc, char **argv){
         std::cout<< "\tBaruah 2014 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Baruah2014_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tMelani 2015 constrained (GP-FP-FTP): "   <<GP_FP_FTP_Melani2015_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tMelani 2015 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tPathan 2017 constrained (GP-FP-DM): "   <<GP_FP_DM_Pathan17_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tFonseca 2017 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca17_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tFonseca 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca19(taskset, n_proc)<<std::endl;
+        std::cout<< "\tPathan 2017 constrained (GP-FP-DM): "   <<GP_FP_DM_Pathan2017_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tFonseca 2017 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2017_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tFonseca 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc)<<std::endl;
         std::cout<< "\tSerrano 2016 constrained (GP-LP-FTP): "   <<GP_LP_FTP_Serrano16_C(taskset, n_proc)<<std::endl;
     }
 
+    std::cout<< "\tFonseca 2019 arbitrary (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc, false)<<std::endl;
 
 }

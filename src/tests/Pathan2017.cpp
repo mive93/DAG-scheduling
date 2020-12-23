@@ -103,7 +103,7 @@ float computeWorloadInter(const Taskset& taskset, const int x, const int i, cons
     return W_inter;
 }
 
-bool GP_FP_DM_Pathan17_C(Taskset taskset, const int m){
+bool GP_FP_DM_Pathan2017_C(Taskset taskset, const int m){
 
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
 

@@ -116,7 +116,7 @@ float interTaskWorkload_C(const DAGTask& task, const float interval,  const std:
     return carry_workload + std::max( float(0), std::floor( (interval - delta_c) /  T )) * vol;
 }
 
-bool GP_FP_FTP_Fonseca19(Taskset taskset, const int m, bool constrained_deadlines){
+bool GP_FP_FTP_Fonseca2019(Taskset taskset, const int m, bool constrained_deadlines){
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
 
     std::vector<float> R_old (taskset.tasks.size(), 0);

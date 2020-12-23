@@ -51,6 +51,9 @@ void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
 
         id_pos[vert[j]["id"].as<int>()] = j;
 
+        if(vert[j]["s"])
+            v->gamma = vert[j]["s"].as<int>();
+
         V.push_back(v);
     }
 
