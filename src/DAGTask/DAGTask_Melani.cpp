@@ -1,25 +1,13 @@
 #include "DAGTask.h"
 
-void DAGTask::configureParams(){
-    maxCondBranches = 2;
-    maxParBranches  = 6;
-    p_cond          = 0; 
-    p_par           = 0.2;
-    p_term          = 0.8;
-    rec_depth       = 2;
-    Cmin            = 1;
-    Cmax            = 10;
-    addProb         = 0.1;
-    probSCond       = 0.5;
-
-    weights.push_back(p_cond);
-    weights.push_back(p_par);
-    weights.push_back(p_term);
+void GeneratorParams::configureParams(){
+    weights.push_back(pCond);
+    weights.push_back(pPar);
+    weights.push_back(pTerm);
     dist.param(std::discrete_distribution<int> ::param_type(std::begin(weights), std::end(weights)));
 
     if(REPRODUCIBLE) gen.seed(1);
     else gen.seed(time(0));
-    
 }
 
 void DAGTask::assignWCET(const int minC, const int maxC){
@@ -27,9 +15,9 @@ void DAGTask::assignWCET(const int minC, const int maxC){
         v->c = rand()%maxC + minC;
 }
 
-void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond){
+void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond, GeneratorParams& gp){
 
-    int depthFactor = std::max(maxCondBranches, maxParBranches);
+    int depthFactor = std::max(gp.maxCondBranches, gp.maxParBranches);
     int horSpace = std::pow(depthFactor,depth);
 
     if(source == nullptr && sink==nullptr){
@@ -45,13 +33,13 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
         V.push_back(si);
 
         double r = ((double) rand() / (RAND_MAX));
-        if (r < probSCond){ //make it conditional
-            int cond_branches = rand() % maxCondBranches + 2;
-            expandTaskSeriesParallel(V[0], V[1], depth - 1, cond_branches, true);
+        if (r < gp.probSCond){ //make it conditional
+            int cond_branches = rand() % gp.maxCondBranches + 2;
+            expandTaskSeriesParallel(V[0], V[1], depth - 1, cond_branches, true, gp);
         }
         else{
-            int par_branches = rand() % maxParBranches + 2;
-            expandTaskSeriesParallel(V[0], V[1], depth - 1, par_branches, false);
+            int par_branches = rand() % gp.maxParBranches + 2;
+            expandTaskSeriesParallel(V[0], V[1], depth - 1, par_branches, false, gp);
         }
     }
     else{
@@ -63,7 +51,7 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
             
             // int current = V.size();
             creationStates state = TERMINAL_T;
-            if (depth != 0) state = static_cast<creationStates>(dist(gen));
+            if (depth != 0) state = static_cast<creationStates>(gp.dist(gp.gen));
 
             switch (state){
             case TERMINAL_T:{
@@ -107,12 +95,12 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
                 sink->pred.push_back(V[V.size()-1]);
                 sink->mode = ifCond ? C_SINK_T : NORMAL_T;
 
-                int max_branches = (state == PARALLEL_T )? maxParBranches : maxCondBranches;
+                int max_branches = (state == PARALLEL_T )? gp.maxParBranches : gp.maxCondBranches;
                 float cond = (state == PARALLEL_T) ? false: true;
 
                 int branches = rand() % max_branches + 2;               
             
-                expandTaskSeriesParallel(V[V.size()-2], V[V.size()-1], depth - 1, branches, cond);
+                expandTaskSeriesParallel(V[V.size()-2], V[V.size()-1], depth - 1, branches, cond, gp);
             
                 break;
             }
@@ -153,45 +141,6 @@ void DAGTask::makeItDag(float prob){
     }
 }
 
-void DAGTask::computeWorstCaseWorkload(){
-    // Algorithm 1, Melani et al. "Response-Time Analysis of Conditional DAG Tasks in Multiprocessor Systems"
-    if(!ordIDs.size())
-        topologicalSort();
-
-    std::vector<std::set<int>> paths (V.size());
-    paths[ordIDs[ordIDs.size()-1]].insert(ordIDs[ordIDs.size()-1]);
-    int idx;
-    for(int i = ordIDs.size()-2; i >= 0; --i ){
-        idx = ordIDs[i];
-        paths[idx].insert(idx);
-
-        if(V[idx]->succ.size()){
-            if(V[idx]->mode != C_SOURCE_T){
-                for(int j=0; j<V[idx]->succ.size(); ++j)
-                    paths[idx].insert(paths[V[idx]->succ[j]->id].begin(), paths[V[idx]->succ[j]->id].end());
-            }
-            else{
-                std::vector<int> sum (V[idx]->succ.size(), 0);
-                int max_id = 0;
-                float max_sum = 0;
-                for(int j=0; j<V[idx]->succ.size(); ++j){
-                    for(auto k: paths[V[idx]->succ[j]->id])
-                        sum[j] += V[k]->c;
-                    if(sum[j] > max_sum){
-                        max_sum = sum[j];
-                        max_id = j;
-                    }
-                }
-                paths[idx].insert(paths[V[idx]->succ[max_id]->id].begin(), paths[V[idx]->succ[max_id]->id].end());
-            }
-        }
-    }
-
-    wcw = 0;
-    for(auto i:paths[ordIDs[0]]){
-        wcw += V[i]->c;
-    }
-}
 
 
 void DAGTask::assignSchedParametersUUniFast(const float U){

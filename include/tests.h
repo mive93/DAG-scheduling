@@ -40,10 +40,8 @@ bool GP_FP_FTP_Fonseca2019(Taskset taskset, const int m, bool constrained_deadli
 bool GP_FP_Han2019_C_1(const DAGTask& task, const std::vector<int> m); 
 
 bool GP_FP_He2019_C(DAGTask task, const int m);
-bool GP_FP_FTP_He2019_C(Taskset taskset, const int m); //TODO
+bool GP_FP_FTP_He2019_C(Taskset taskset, const int m); 
 
-bool GP_FP_Chang2020_C(const DAGTask& task, const int m); //TODO
-// Shuangshuang Chang et al. “Real-Time scheduling and analysis of paralleltasks  on  heterogeneous  multi-cores”.  In:Journal  of  Systems  Architecture105(2020), p. 10170
 
 //global policy, limited preemptive
 
@@ -51,6 +49,7 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m);
 
 
 // if you have time (but you don't)
+// bool GP_FP_Chang2020_C(const DAGTask& task, const int m); //TODO
 // Baruah ’15 [9] - maybe no
 // Parri ’15 [87] - maybe no
 // Yang ’16 [124] - obi task, don't know

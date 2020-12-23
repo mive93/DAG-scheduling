@@ -16,6 +16,32 @@
    
 enum creationStates {CONDITIONAL_T=0, PARALLEL_T=1, TERMINAL_T=2};
 
+class GeneratorParams{
+
+    public:
+
+    // Hyperparameters for the generation of DAG and conditional DAGs proposed by Melani et al. (MelaniGen)
+    int maxCondBranches     = 2;    // max conditional branches allowed 
+    int maxParBranches      = 6;    // max parallel branches allowed 
+    int recDepth            = 2;    // maximum recursion depth for the generation of the task graphs 
+
+    float pCond             = 0;    // probability of generating a conditional branch 
+    float pPar              = 0.2;  // probability of generating a parallel branch 
+    float pTerm             = 0.8;  // probability of generating a terminal vertex 
+    float Cmin              = 1;    // minimum WCET for subtasks 
+    float Cmax              = 10;  // maximum WCET for subtasks 
+    float addProb           = 0.1;  // probability to add an edge between 2 nodes, if possible 
+    float probSCond         = 0.5;  // probability that the source is conditional 
+
+    //distribution to add branches 
+    std::discrete_distribution<int> dist;
+    std::vector<double> weights;
+    std::mt19937 gen;     
+
+    void configureParams();  
+
+};
+
 class DAGTask{
 
     std::vector<SubTask*> V;
@@ -28,28 +54,12 @@ class DAGTask{
     float delta = 0;      // density
     float u = 0;          // utilization
 
-    std::map<int, float> typedVol;
-    
-    //distribution to add branches (MelaniGen)
-    std::discrete_distribution<int> dist;
-    std::vector<int> ordIDs; // ids in topological order
-    std::vector<double> weights;
-    std::mt19937 gen;       
+    std::vector<int> ordIDs;        // ids in topological order
+    std::map<int, float> typedVol;  // volume for typed DAG [type of core, volume]
 
     public:
 
     float R = 0;          // response time
-
-    int maxCondBranches     = 2; //max conditional branches allowed (MelaniGen)
-    int maxParBranches      = 6; //max parallel branches allowed (MelaniGen)
-    float p_cond            = 0; //probability of generating a conditional branch (MelaniGen)
-    float p_par             = 0.2; //probability of generating a parallel branch (MelaniGen)
-    float p_term            = 0.8; //probability of generating a terminal vertex (MelaniGen)
-    int rec_depth           = 2; // maximum recursion depth for the generation of the task graphs (MelaniGen)
-    float Cmin                = 1; // minimum WCET for subtasks (MelaniGen)
-    float Cmax                = 100; //maximum WCET for subtasks (MelaniGen)
-    float addProb           = 0.1; //probability to add an edge between 2 nodes, if possible (MelaniGen)
-    float probSCond         = 0.5; //probability that the source is conditional (MelaniGen)
 
     DAGTask(){};
     DAGTask(const float T, const float D): t(T), d(D) {};
@@ -71,9 +81,11 @@ class DAGTask{
     void computeLength();
     void computeVolume();
     void computeTypedVolume();
+    void computeWorstCaseWorkload();
     void computeUtilization();
     void computeDensity();
 
+    // EST, EFT, LST, LFT
     void localDeadline(SubTask *task, const int i);
     void localOffset(SubTask *task, const int i);
     void computeLocalOffsets();
@@ -85,6 +97,7 @@ class DAGTask{
     std::vector<SubTask*> getSubTaskDescendants(const int i) const;
     void transitiveReduction();
 
+    //getters
     float getLength() const {return L;};
     float getVolume() const {return vol;};
     std::map<int, float> getTypedVolume() const {return typedVol;};
@@ -97,15 +110,13 @@ class DAGTask{
     std::vector<int> getTopologicalOrder() const {return ordIDs;};
     std::vector<SubTask*> getVertices() const {return V;};
 
+    //setters
     void setVertices(std::vector<SubTask*> given_V){ V.clear(); V = given_V; }
 
-
     //Melani generation methods
-    void configureParams();
     void assignWCET(const int minC, const int maxC);
-    void expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond);
+    void expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond, GeneratorParams& gp);
     void makeItDag(float prob);
-    void computeWorstCaseWorkload();
     void assignSchedParametersUUniFast(const float U);
 
 };

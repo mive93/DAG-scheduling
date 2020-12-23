@@ -1,6 +1,8 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include<iostream>
+#include<cmath>
 #include<set>
 #include<utility>
 #include<algorithm>

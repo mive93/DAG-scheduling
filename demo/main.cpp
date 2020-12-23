@@ -10,15 +10,18 @@ int main(int argc, char **argv){
     if(REPRODUCIBLE) srand (1);
     else srand (time(NULL));
     
-    bool random_creation = false;
+    bool random_creation = true;
 
     int n_proc = 4;
     std::vector<int> typed_proc = {4,4};
     Taskset taskset;
     if(random_creation){
         int n_tasks = 2;
-        float U_tot = 2;
-        taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc);
+        float U_tot = 1;
+        GeneratorParams gp;
+        gp.configureParams();
+
+        taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc, gp);
     }
     else
         taskset.readTasksetFromYaml("../demo/taskset.yaml");

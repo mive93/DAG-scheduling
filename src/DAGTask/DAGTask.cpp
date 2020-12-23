@@ -151,6 +151,47 @@ void DAGTask::computeVolume(){
         vol += V[i]->c;
 }
 
+void DAGTask::computeWorstCaseWorkload(){
+    // Algorithm 1, Melani et al. "Response-Time Analysis of Conditional DAG Tasks in Multiprocessor Systems"
+    // computes volume both for DAGs and Conditinal DAGs
+    if(!ordIDs.size())
+        topologicalSort();
+
+    std::vector<std::set<int>> paths (V.size());
+    paths[ordIDs[ordIDs.size()-1]].insert(ordIDs[ordIDs.size()-1]);
+    int idx;
+    for(int i = ordIDs.size()-2; i >= 0; --i ){
+        idx = ordIDs[i];
+        paths[idx].insert(idx);
+
+        if(V[idx]->succ.size()){
+            if(V[idx]->mode != C_SOURCE_T){
+                for(int j=0; j<V[idx]->succ.size(); ++j)
+                    paths[idx].insert(paths[V[idx]->succ[j]->id].begin(), paths[V[idx]->succ[j]->id].end());
+            }
+            else{
+                std::vector<int> sum (V[idx]->succ.size(), 0);
+                int max_id = 0;
+                float max_sum = 0;
+                for(int j=0; j<V[idx]->succ.size(); ++j){
+                    for(auto k: paths[V[idx]->succ[j]->id])
+                        sum[j] += V[k]->c;
+                    if(sum[j] > max_sum){
+                        max_sum = sum[j];
+                        max_id = j;
+                    }
+                }
+                paths[idx].insert(paths[V[idx]->succ[max_id]->id].begin(), paths[V[idx]->succ[max_id]->id].end());
+            }
+        }
+    }
+
+    wcw = 0;
+    for(auto i:paths[ordIDs[0]]){
+        wcw += V[i]->c;
+    }
+}
+
 void DAGTask::computeTypedVolume(){
     for(size_t i=0; i<V.size();++i){
         if ( typedVol.find(V[i]->gamma) == typedVol.end() ) 

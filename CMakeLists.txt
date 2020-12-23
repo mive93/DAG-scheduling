@@ -18,7 +18,7 @@ find_package(yaml-cpp REQUIRED)
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
-file(GLOB dag-sched-SRC "src/*/*.cpp")
+file(GLOB dag-sched-SRC "src/*/*.cpp" "src/*.cpp")
 set(dag-sched-LIBS yaml-cpp)
 add_library(dag-sched SHARED ${dag-sched-SRC})
 target_link_libraries(dag-sched ${dag-sched-LIBS} )
