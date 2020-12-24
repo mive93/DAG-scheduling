@@ -2,6 +2,7 @@
 #include "DAGTask.h"
 #include "Taskset.h"
 #include "tests.h"
+#include "plot_utils.h"
 
 #include <ctime>    
 
@@ -19,7 +20,7 @@ int main(int argc, char **argv){
         int n_tasks = 2;
         float U_tot = 1;
         GeneratorParams gp;
-        gp.configureParams();
+        gp.configureParams(GenerationType_t::VARYING_N);
 
         taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc, gp);
     }

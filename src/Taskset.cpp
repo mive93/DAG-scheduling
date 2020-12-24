@@ -2,17 +2,20 @@
 
 
 void Taskset::computeUtilization(){
+    U = 0;
     for(const auto& task: tasks){
         U += task.getUtilization();
     }
 }
 
 void Taskset::computeHyperPeriod(){
+    HP = 1;
     for(const auto& task: tasks)
         HP =  std::lcm((int) task.getPeriod(), HP);
 }
 
 void Taskset::computeMaxDensity(){
+    maxDelta = 0;
     for(const auto& task: tasks)
         if(task.getDensity() > maxDelta)
             maxDelta = task.getDensity();
@@ -67,6 +70,7 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
 
     float U_part = 0;
     float sum_U = U_tot;
+    U = 0;
 
     for(int i=0; i<n_tasks; ++i){
         DAGTask t;
@@ -82,11 +86,49 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
         t.computeUtilization();
         t.computeDensity();
 
-        U_part = UUniFast_Upart(sum_U, i, n_tasks, t) ;
+        if(gp.gType == GenerationType_t::VARYING_N){
 
-        std::cout<<"U_part "<<U_part<<std::endl;
+            U_part = UUniFast_Upart(sum_U, i, n_tasks, t) ;
+            // std::cout<<"U_part "<<U_part<<std::endl;
+            t.assignSchedParametersUUniFast(U_part);
+            if(gp.dtype == DeadlinesType_t::IMPLICIT)
+                t.setDeadline(t.getPeriod());
+        }
+        else{
+            if(n_tasks == 1){
+                float t_to_assign = std::floor(t.getWCW() / U_tot);
+                float d_to_assign = floatRandMaxMin(t.getLength(), t_to_assign);
+                t.assignFixedSchedParameters(t_to_assign, d_to_assign);
 
-        t.assignSchedParametersUUniFast(U_part);
+            }
+            else{
+
+                t.assignSchedParameters(gp.beta);
+                if(gp.dtype == DeadlinesType_t::IMPLICIT)
+                    t.setDeadline(t.getPeriod());
+
+                U += t.getWCW() / t.getPeriod();
+
+                if( U > U_tot){
+                    float U_prev = U - t.getWCW() / t.getPeriod();
+                    float U_target = U_tot - U_prev;
+                    float t_to_assign = std::floor(t.getWCW() / U_target);
+                    float d_to_assign = floatRandMaxMin(t.getLength(), t_to_assign);;
+                    t.assignFixedSchedParameters(t_to_assign, d_to_assign);
+                    n_tasks = i;
+                    break;
+                }
+            }
+        }
+
+        if(gp.DAGType == DAGType_t::TDAG){
+            //random assignment of core types to subnodes
+            auto V = t.getVertices();
+            for(int j=0; j<V.size(); ++j)
+                V[j]->gamma = rand() % gp.typedProc.size();
+        }
+
+        
 
         tasks.push_back(t);
     }

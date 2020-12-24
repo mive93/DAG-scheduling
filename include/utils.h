@@ -1,6 +1,7 @@
 #ifndef UTILS_H
 #define UTILS_H
 
+#include<vector>
 #include<iostream>
 #include<sstream>
 #include<cmath>
@@ -75,5 +76,9 @@ template<typename T>
 bool areEqual(const T a, const T b){
     return std::fabs(a - b) < std::numeric_limits<T>::epsilon();
 }
+
+int intRandMaxMin(const int v_min, const int v_max);
+float floatRandMaxMin(const float v_min, const float v_max);
+
 
 #endif /*UTILS_H*/

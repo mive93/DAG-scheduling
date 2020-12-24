@@ -1,18 +1,8 @@
 #include "DAGTask.h"
 
-void GeneratorParams::configureParams(){
-    weights.push_back(pCond);
-    weights.push_back(pPar);
-    weights.push_back(pTerm);
-    dist.param(std::discrete_distribution<int> ::param_type(std::begin(weights), std::end(weights)));
-
-    if(REPRODUCIBLE) gen.seed(1);
-    else gen.seed(time(0));
-}
-
 void DAGTask::assignWCET(const int minC, const int maxC){
     for(auto &v: V)
-        v->c = rand()%maxC + minC;
+        v->c = intRandMaxMin(minC, maxC);
 }
 
 void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond, GeneratorParams& gp){
@@ -34,11 +24,11 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
 
         double r = ((double) rand() / (RAND_MAX));
         if (r < gp.probSCond){ //make it conditional
-            int cond_branches = rand() % gp.maxCondBranches + 2;
+            int cond_branches = intRandMaxMin(2, gp.maxCondBranches);
             expandTaskSeriesParallel(V[0], V[1], depth - 1, cond_branches, true, gp);
         }
         else{
-            int par_branches = rand() % gp.maxParBranches + 2;
+            int par_branches = intRandMaxMin(2, gp.maxParBranches);
             expandTaskSeriesParallel(V[0], V[1], depth - 1, par_branches, false, gp);
         }
     }
@@ -98,7 +88,7 @@ void DAGTask::expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int d
                 int max_branches = (state == PARALLEL_T )? gp.maxParBranches : gp.maxCondBranches;
                 float cond = (state == PARALLEL_T) ? false: true;
 
-                int branches = rand() % max_branches + 2;               
+                int branches = intRandMaxMin(2, max_branches);
             
                 expandTaskSeriesParallel(V[V.size()-2], V[V.size()-1], depth - 1, branches, cond, gp);
             
@@ -146,4 +136,16 @@ void DAGTask::makeItDag(float prob){
 void DAGTask::assignSchedParametersUUniFast(const float U){
     t = std::ceil(wcw / U);
     d = t;    
+}
+
+void DAGTask::assignSchedParameters(const float beta){
+    float Tmin = L;
+    float Tmax = wcw / beta;
+    t = floatRandMaxMin(Tmin, Tmax);
+    d = floatRandMaxMin(Tmin, t);
+}
+
+void DAGTask::assignFixedSchedParameters(const float period, const float deadline){
+    t = period;
+    d = deadline;
 }

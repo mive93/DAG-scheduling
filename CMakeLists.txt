@@ -16,10 +16,10 @@ find_package(yaml-cpp REQUIRED)
 #-------------------------------------------------------------------------------
 
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include matplotlib-cpp /usr/include/python3.8)
 
 file(GLOB dag-sched-SRC "src/*/*.cpp" "src/*.cpp")
-set(dag-sched-LIBS yaml-cpp)
+set(dag-sched-LIBS yaml-cpp python3.8)
 add_library(dag-sched SHARED ${dag-sched-SRC})
 target_link_libraries(dag-sched ${dag-sched-LIBS} )
 
@@ -28,3 +28,6 @@ target_link_libraries(dag-sched ${dag-sched-LIBS} )
 #-------------------------------------------------------------------------------
 add_executable(demo demo/main.cpp)
 target_link_libraries(demo dag-sched)
+
+add_executable(eval demo/evaluate.cpp)
+target_link_libraries(eval dag-sched)

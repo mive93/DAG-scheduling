@@ -13,34 +13,9 @@
 #include <yaml-cpp/yaml.h>
 #include "SubTask.h"
 #include "utils.h"
+#include "GeneratorParams.h"
    
 enum creationStates {CONDITIONAL_T=0, PARALLEL_T=1, TERMINAL_T=2};
-
-class GeneratorParams{
-
-    public:
-
-    // Hyperparameters for the generation of DAG and conditional DAGs proposed by Melani et al. (MelaniGen)
-    int maxCondBranches     = 2;    // max conditional branches allowed 
-    int maxParBranches      = 6;    // max parallel branches allowed 
-    int recDepth            = 2;    // maximum recursion depth for the generation of the task graphs 
-
-    float pCond             = 0;    // probability of generating a conditional branch 
-    float pPar              = 0.2;  // probability of generating a parallel branch 
-    float pTerm             = 0.8;  // probability of generating a terminal vertex 
-    float Cmin              = 1;    // minimum WCET for subtasks 
-    float Cmax              = 10;   // maximum WCET for subtasks 
-    float addProb           = 0.1;  // probability to add an edge between 2 nodes, if possible 
-    float probSCond         = 0.5;  // probability that the source is conditional 
-
-    //distribution to add branches 
-    std::discrete_distribution<int> dist;
-    std::vector<double> weights;
-    std::mt19937 gen;     
-
-    void configureParams();  
-
-};
 
 class DAGTask{
 
@@ -112,12 +87,15 @@ class DAGTask{
 
     //setters
     void setVertices(std::vector<SubTask*> given_V){ V.clear(); V = given_V; }
+    void setDeadline(const float deadline) { d = deadline; }
 
     //Melani generation methods
     void assignWCET(const int minC, const int maxC);
     void expandTaskSeriesParallel(SubTask* source,SubTask* sink,const int depth,const int numBranches, const bool ifCond, GeneratorParams& gp);
     void makeItDag(float prob);
     void assignSchedParametersUUniFast(const float U);
+    void assignSchedParameters(const float beta);
+    void assignFixedSchedParameters(const float period, const float deadline);
 
 };
 

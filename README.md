@@ -8,3 +8,11 @@ To convert from dot to png
 ```
 dot -Tpng test.dot > test.png
 ```
+
+
+sudo apt-get install gnuplot 
+sudo apt-get install graphviz
+
+sudo apt-get install python3-matplotlib 
+sudo apt install libyaml-cpp-dev
+
