@@ -23,7 +23,7 @@ void testMatplotlib(){
 }
 
 void plotResults(std::map<std::string,std::vector<float>> sched_res, std::vector<float> x, const std::string x_axis, const std::string y_axis){
-    std::vector<std::string> line_style = {"r", "b", "g--", "k+", "c", "m", "y"};
+    std::vector<std::string> line_style = {"r", "b", "g--", "k+-", "c", "m", "y"};
 
     int i=0;
     for(std::map<std::string,std::vector<float>>::iterator iter = sched_res.begin(); iter != sched_res.end(); ++iter){

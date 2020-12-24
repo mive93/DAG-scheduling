@@ -83,8 +83,14 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
         t.computeWorstCaseWorkload();
         t.computeVolume();
         t.computeLength();
-        t.computeUtilization();
         t.computeDensity();
+
+        if(gp.DAGType == DAGType_t::TDAG){
+            //random assignment of core types to subnodes
+            auto V = t.getVertices();
+            for(int j=0; j<V.size(); ++j)
+                V[j]->gamma = rand() % gp.typedProc.size();
+        }
 
         if(gp.gType == GenerationType_t::VARYING_N){
 
@@ -93,13 +99,14 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
             t.assignSchedParametersUUniFast(U_part);
             if(gp.dtype == DeadlinesType_t::IMPLICIT)
                 t.setDeadline(t.getPeriod());
+            U += t.getWCW() / t.getPeriod();
         }
         else{
             if(n_tasks == 1){
                 float t_to_assign = std::floor(t.getWCW() / U_tot);
                 float d_to_assign = floatRandMaxMin(t.getLength(), t_to_assign);
                 t.assignFixedSchedParameters(t_to_assign, d_to_assign);
-
+                U += t.getWCW() / t.getPeriod();
             }
             else{
 
@@ -114,26 +121,21 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
                     float U_target = U_tot - U_prev;
                     float t_to_assign = std::floor(t.getWCW() / U_target);
                     float d_to_assign = floatRandMaxMin(t.getLength(), t_to_assign);;
+                    if(gp.dtype == DeadlinesType_t::IMPLICIT)
+                        d_to_assign = t_to_assign;
                     t.assignFixedSchedParameters(t_to_assign, d_to_assign);
+                    U = U_prev + t.getWCW() / t.getPeriod();
                     n_tasks = i;
+                    tasks.push_back(t);
                     break;
                 }
             }
         }
 
-        if(gp.DAGType == DAGType_t::TDAG){
-            //random assignment of core types to subnodes
-            auto V = t.getVertices();
-            for(int j=0; j<V.size(); ++j)
-                V[j]->gamma = rand() % gp.typedProc.size();
-        }
-
-        
-
         tasks.push_back(t);
     }
 
-    computeUtilization();
+    // computeUtilization();
     computeHyperPeriod();
     computeMaxDensity();
 }
