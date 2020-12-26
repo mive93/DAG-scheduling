@@ -76,14 +76,17 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
         DAGTask t;
         t.expandTaskSeriesParallel(nullptr, nullptr,gp.recDepth,0,false,gp);
         t.assignWCET(gp.Cmin, gp.Cmax);
-        t.makeItDag(gp.addProb);
+        if( !(  gp.sType == SchedulingType_t::FTP 
+                && gp.DAGType ==DAGType_t::DAG 
+                && (    gp.dtype == DeadlinesType_t::CONSTRAINED 
+                        || gp.dtype == DeadlinesType_t::IMPLICIT)   )   )
+            t.makeItDag(gp.addProb);
 
         t.transitiveReduction();
 
         t.computeWorstCaseWorkload();
         t.computeVolume();
         t.computeLength();
-        t.computeDensity();
 
         if(gp.DAGType == DAGType_t::TDAG){
             //random assignment of core types to subnodes
@@ -99,13 +102,20 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
             t.assignSchedParametersUUniFast(U_part);
             if(gp.dtype == DeadlinesType_t::IMPLICIT)
                 t.setDeadline(t.getPeriod());
+            t.computeDensity();
             U += t.getWCW() / t.getPeriod();
         }
         else{
             if(n_tasks == 1){
                 float t_to_assign = std::floor(t.getWCW() / U_tot);
-                float d_to_assign = floatRandMaxMin(t.getLength(), t_to_assign);
+                float d_to_assign = floatRandMaxMin(std::min(t.getLength(), t_to_assign), t_to_assign);
+                std::cout<<t_to_assign<<" "<<d_to_assign<<" "<< t.getLength()<<std::endl;
                 t.assignFixedSchedParameters(t_to_assign, d_to_assign);
+                if(gp.dtype == DeadlinesType_t::IMPLICIT)
+                    t.setDeadline(t.getPeriod());
+
+                std::cout<<"HEEEERE: "<<t.getDeadline()<<" "<<t.getPeriod()<<std::endl;
+                t.computeDensity();
                 U += t.getWCW() / t.getPeriod();
             }
             else{
@@ -114,16 +124,18 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
                 if(gp.dtype == DeadlinesType_t::IMPLICIT)
                     t.setDeadline(t.getPeriod());
 
+                t.computeDensity();
                 U += t.getWCW() / t.getPeriod();
 
                 if( U > U_tot){
                     float U_prev = U - t.getWCW() / t.getPeriod();
                     float U_target = U_tot - U_prev;
                     float t_to_assign = std::floor(t.getWCW() / U_target);
-                    float d_to_assign = floatRandMaxMin(t.getLength(), t_to_assign);;
+                    float d_to_assign = floatRandMaxMin(std::min(t.getLength(), t_to_assign), t_to_assign);;
                     if(gp.dtype == DeadlinesType_t::IMPLICIT)
                         d_to_assign = t_to_assign;
                     t.assignFixedSchedParameters(t_to_assign, d_to_assign);
+                    t.computeDensity();
                     U = U_prev + t.getWCW() / t.getPeriod();
                     n_tasks = i;
                     tasks.push_back(t);

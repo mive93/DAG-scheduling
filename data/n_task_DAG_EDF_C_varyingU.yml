@@ -14,9 +14,9 @@ Umax: 8
 stepU : 0.25
 m : 8
 nTasks: 10000
-tasksetPerVarFactor : 10
+tasksetPerVarFactor : 500
 gType : 1
-dtype : 1
+dtype : 0
 sType : 1
 wType : 1
 DAGType : 0

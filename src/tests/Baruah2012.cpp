@@ -5,7 +5,7 @@
 /* Theorem 1 in the paper */
 bool GP_FP_EDF_Baruah2012_C(const DAGTask& task, const int m){
 
-    if(!(task.getDeadline() < task.getPeriod()))
+    if(!(task.getDeadline() <= task.getPeriod()))
         FatalError("This test requires a constrained deadline task");
 
     if( (m-1) * task.getLength() / task.getDeadline() + 

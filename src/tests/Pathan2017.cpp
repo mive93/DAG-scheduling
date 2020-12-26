@@ -115,9 +115,6 @@ bool GP_FP_DM_Pathan2017_C(Taskset taskset, const int m){
         std::vector<float> R_old (V.size(), 0);
         std::vector<float> R (V.size(), 0);
 
-        
-
-
         // compute the response of a subtask in topological order
         for(int idx=0, i; idx<topo_ord.size(); ++idx){
             i = topo_ord[idx];
@@ -144,6 +141,8 @@ bool GP_FP_DM_Pathan2017_C(Taskset taskset, const int m){
                 R[i] += computeLatestReadyTime(V[i]->pred) + (1. / m) * (W_intra + W_inter) + V[i]->c;
 
                 init = false;
+                if(R[i] < R_old[i])
+                    break;
             }
 
             if(R[i] > taskset.tasks[x].getDeadline())

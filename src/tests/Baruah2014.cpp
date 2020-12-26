@@ -144,8 +144,7 @@ std::vector<float> getTestingSet(const Taskset& taskset, const float sigma, cons
             for(int i=0; i<new_V.size();++i){
                 if( areEqual<float>(new_V[i], bound) ||  new_V[i] < bound)
                     interval_set.insert(new_V[i]);
-                else
-                {
+                else{
                     exit = true;
                     break;
                 }
@@ -165,6 +164,8 @@ std::vector<float> getTestingSet(const Taskset& taskset, const float sigma, cons
 }
 
 bool GP_FP_EDF_Baruah2014_C(Taskset taskset, const int m){
+
+    std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
 
     for(auto& task:taskset.tasks){
         if(!(task.getDeadline() <= task.getPeriod()))
@@ -200,11 +201,13 @@ bool GP_FP_EDF_Baruah2014_C(Taskset taskset, const int m){
         std::vector<float> ts = getTestingSet(taskset, sigma_tmp, b1);
 
         for(int i=0; i< ts.size(); ++i){
-            if (ts[i] >= interval_tmp && 
-                work(taskset, ts[i], sigma_tmp) > ts[i] * ( m - (m-1) * sigma_tmp) ){
-                interval_tmp = ts[i];
-                sched = false;
-                break;
+            if (ts[i] >= interval_tmp){
+                float w = work(taskset, ts[i], sigma_tmp);
+                if( w > ts[i] * ( m - (m-1) * sigma_tmp) ){
+                    interval_tmp = ts[i];
+                    sched = false;
+                    break;
+                }
             }
         }
 

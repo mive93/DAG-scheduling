@@ -247,7 +247,7 @@ std::vector<SPNode*> SPTree::mergeSubtrees(std::vector<SPNode*> subtrees){
         if(subtrees.size() == 1)
             break;
 
-        std::vector<bool> used (subtrees.size());
+        std::vector<bool> used (subtrees.size(), false);
 
         for(int i=0; i<subtrees.size();++i){
             // retrieve all the ids of subtree i
@@ -295,6 +295,10 @@ std::vector<SPNode*> SPTree::mergeSubtrees(std::vector<SPNode*> subtrees){
                     }
                 }
             }
+        }
+        for(int i=0; i<subtrees.size();++i){
+            if(!used[i])
+                new_subtrees.push_back(subtrees[i]);
         }
     }
 
@@ -395,8 +399,11 @@ SPNode * SPTree::computeCommonRoot(std::vector<SPNode*> subtrees, std::vector<ST
     for(int s=0; s<S_idx.size(); ++s){
         cur_node = nullptr;
         findNode(subtrees[subtree_idx], S[S_idx[s]].left, cur_node);
-        if(cur_node == nullptr)
+        if(cur_node == nullptr){
+            std::cout<<S[S_idx[s]].left<<std::endl;
+            saveAsDot(subtrees[subtree_idx], "error");
             FatalError("Node not found in the subtree");
+        }
 
         if(dad == nullptr)
             findDad(subtrees[subtree_idx], cur_node, dad);
@@ -502,7 +509,7 @@ void SPTree::convertNFJDAGtoSPTree(const DAGTask& dag, const int dag_id){
     if(subtrees.size() > 1)
         FatalError("Was not able to merge all subtrees");
 
-    saveAsDot(subtrees[0], "final_tree" + std::to_string(dag_id));
+    // saveAsDot(subtrees[0], "final_tree" + std::to_string(dag_id));
     root = subtrees[0];
 }
 

@@ -106,9 +106,9 @@ float interTaskWorkload_C(const DAGTask& task, const float interval,  const std:
     float delta_c = computeDeltaC_B(task, interval, m);
     float carry_workload;
     if( constrained_deadlines) 
-        computeCarryWorkload_C(task, delta_c, WD_UCO_y, WD_UCI_y, m);
+        carry_workload = computeCarryWorkload_C(task, delta_c, WD_UCO_y, WD_UCI_y, m);
     else
-        computeCarryWorkload_A(task, delta_c, WD_UCO_y, WD_UCI_y, m);
+        carry_workload = computeCarryWorkload_A(task, delta_c, WD_UCO_y, WD_UCI_y, m);
     
     float T = task.getPeriod();
     float vol = task.getVolume();
@@ -147,7 +147,7 @@ bool GP_FP_FTP_Fonseca2019(Taskset taskset, const int m, bool constrained_deadli
 
             if(i > 0){
                 for(int j=0; j<i; ++j)
-                    R[i] = interTaskWorkload_C(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j], m, constrained_deadlines); 
+                    R[i] += interTaskWorkload_C(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j], m, constrained_deadlines); 
 
                 R[i] *= (1. / m);
                 R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());

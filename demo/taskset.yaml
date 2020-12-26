@@ -51,8 +51,8 @@ tasks:
       to: 5
     - from: 4
       to: 5
-- t: 100
-  d: 100
+- t: 30
+  d: 30
   vertices:
     - id: 0
       c: 2

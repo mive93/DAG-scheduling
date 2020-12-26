@@ -79,12 +79,13 @@ void removeConflictingEdge(std::vector<SubTask*> & V, const int i, const int j, 
 
     // if V_j has no successor, link it to the end
     if(V[j]->succ.size() == 0 &&  j != ordIDs[ordIDs.size() - 1]){
-        V[j]->succ.push_back(V[ordIDs.size() - 1]);
-        V[ordIDs.size() - 1]->pred.push_back(V[j]);
+        // std::cout<<"adding:"<< V[j]->id <<" to "<< V[ordIDs[ordIDs.size() - 1]]->id<<std::endl;
+        V[j]->succ.push_back(V[ordIDs[ordIDs.size() - 1]]);
+        V[ordIDs[ordIDs.size() - 1]]->pred.push_back(V[j]);
     }
 }
 
-void convertDAGintoNFJDAG(DAGTask& t1, const int task_idx, bool save=true){
+void convertDAGintoNFJDAG(DAGTask& t1, const int task_idx, bool save=false){
 
     auto V = t1.getVertices();
     auto ordIDs = t1.getTopologicalOrder();
@@ -288,7 +289,7 @@ bool GP_FP_FTP_Fonseca2017_C(Taskset taskset, const int m){
 
             if(i > 0){
                 for(int j=0; j<i; ++j)
-                    R[i] = interTaskWorkload(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j]); 
+                    R[i] += interTaskWorkload(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j]); 
 
                 R[i] *= (1. / m);
                 R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
