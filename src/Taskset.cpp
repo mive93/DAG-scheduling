@@ -77,9 +77,7 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
         t.expandTaskSeriesParallel(nullptr, nullptr,gp.recDepth,0,false,gp);
         t.assignWCET(gp.Cmin, gp.Cmax);
         if( !(  gp.sType == SchedulingType_t::FTP 
-                && gp.DAGType ==DAGType_t::DAG 
-                && (    gp.dtype == DeadlinesType_t::CONSTRAINED 
-                        || gp.dtype == DeadlinesType_t::IMPLICIT)   )   )
+                && gp.DAGType ==DAGType_t::DAG )    )
             t.makeItDag(gp.addProb);
 
         t.transitiveReduction();
@@ -114,7 +112,6 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
                 if(gp.dtype == DeadlinesType_t::IMPLICIT)
                     t.setDeadline(t.getPeriod());
 
-                std::cout<<"HEEEERE: "<<t.getDeadline()<<" "<<t.getPeriod()<<std::endl;
                 t.computeDensity();
                 U += t.getWCW() / t.getPeriod();
             }
