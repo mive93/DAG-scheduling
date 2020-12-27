@@ -35,7 +35,7 @@ void testMatplotlib(){
     matplotlibcpp::show();
 }
 
-void plotResults(std::map<std::string,std::vector<float>> sched_res, std::vector<float> x, const std::string x_axis, const std::string y_axis){
+void plotResults(std::map<std::string,std::vector<float>> sched_res, std::vector<float> x, const std::string x_axis, const std::string y_axis, const std::string& output_fig_path){
     std::vector<std::string> line_style = {"ro--", "b+--", "g*--", "ko--", "c+--", "m*--", "yo--"};
 
     int i=0;
@@ -46,7 +46,7 @@ void plotResults(std::map<std::string,std::vector<float>> sched_res, std::vector
     matplotlibcpp::xlabel(x_axis);
     matplotlibcpp::ylabel(y_axis);
     matplotlibcpp::legend();
-    matplotlibcpp::save("test.png");
+    matplotlibcpp::save(output_fig_path + ".pdf");
     matplotlibcpp::show();
 
 }

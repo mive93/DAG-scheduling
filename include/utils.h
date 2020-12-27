@@ -81,5 +81,6 @@ bool areEqual(const T a, const T b){
 int intRandMaxMin(const int v_min, const int v_max);
 float floatRandMaxMin(const float v_min, const float v_max);
 
+void removePathAndExtension(const std::string &full_string, std::string &name);
 
 #endif /*UTILS_H*/

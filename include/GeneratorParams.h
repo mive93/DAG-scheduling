@@ -88,8 +88,7 @@ class GeneratorParams{
             nTasksets = tasksetPerVarFactor * ((Umax - Umin) / stepU);
             break;
         case VARYING_M:
-            Utot = 2;
-            mMin = Utot;
+            mMin = std::floor(Utot);
             nTasksets = tasksetPerVarFactor * (mMax - mMin + 1);
             break;
         }
