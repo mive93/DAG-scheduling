@@ -110,23 +110,23 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
 
                 timer.tic();
                 sched_res["Bonifaci2013"][test_idx] +=  GP_FP_DM_Bonifaci2013_C(task_set, m);
-                time_res["Bonifaci2013"].push_back(timer.toc());
+                time_res["Bon2013"].push_back(timer.toc());
 
                 timer.tic();
                 sched_res["Melani2015"][test_idx] +=  GP_FP_FTP_Melani2015_C(task_set, m);
-                time_res["Melani2015"].push_back(timer.toc());
+                time_res["Mel2015"].push_back(timer.toc());
 
                 timer.tic();
                 sched_res["Pathan2017"][test_idx] +=  GP_FP_DM_Pathan2017_C(task_set, m);
-                time_res["Pathan2017"].push_back(timer.toc());
+                time_res["Pat2017"].push_back(timer.toc());
 
                 timer.tic();
                 sched_res["Fonseca2017"][test_idx] +=  GP_FP_FTP_Fonseca2017_C(task_set, m);
-                time_res["Fonseca2017"].push_back(timer.toc());
+                time_res["Fon2017"].push_back(timer.toc());
 
                 timer.tic();
                 sched_res["Fonseca2019"][test_idx] +=  GP_FP_FTP_Fonseca2019(task_set, m);
-                time_res["Fonseca2019"].push_back(timer.toc());
+                time_res["Fon2019"].push_back(timer.toc());
 
                 timer.tic();
                 sched_res["He2019"][test_idx] +=  GP_FP_FTP_He2019_C(task_set, m);

@@ -16,7 +16,7 @@ stepM : 1
 nTasks: 10000
 tasksetPerVarFactor : 500
 gType : 2
-dtype : 0
+dtype : 1
 sType : 1
-wType : 0
-DAGType : 1
+wType : 1
+DAGType : 0

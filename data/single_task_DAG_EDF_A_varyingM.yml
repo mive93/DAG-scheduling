@@ -9,14 +9,14 @@ addProb : 0.1
 probSCond : 0
 beta: 0.1
 saveRate: 25
-Umin: 0
-Umax: 8
-stepU : 0.25
-m : 8
+Utot: 2
+mMin: 2
+mMax: 30
+stepM : 1
 nTasks: 10000
 tasksetPerVarFactor : 500
-gType : 1
-dtype : 0
+gType : 2
+dtype : 2
 sType : 1
 wType : 0
-DAGType : 1
+DAGType : 0
