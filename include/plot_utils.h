@@ -35,18 +35,38 @@ void testMatplotlib(){
     matplotlibcpp::show();
 }
 
-void plotResults(std::map<std::string,std::vector<float>> sched_res, std::vector<float> x, const std::string x_axis, const std::string y_axis, const std::string& output_fig_path){
+void plotResults(std::map<std::string,std::vector<float>> sched_res, const std::vector<float>& x, const std::string& x_axis, const std::string& y_axis, const std::string& output_fig_path, bool show_plots=true){
     std::vector<std::string> line_style = {"ro--", "b+--", "g*--", "ko--", "c+--", "m*--", "yo--"};
+
+    matplotlibcpp::figure();
 
     int i=0;
     for(std::map<std::string,std::vector<float>>::iterator iter = sched_res.begin(); iter != sched_res.end(); ++iter)
         matplotlibcpp::named_plot(iter->first, x, iter->second, line_style[i++]);
     
-
     matplotlibcpp::xlabel(x_axis);
     matplotlibcpp::ylabel(y_axis);
     matplotlibcpp::legend();
     matplotlibcpp::save(output_fig_path + ".pdf");
-    matplotlibcpp::show();
+    if(show_plots) 
+        matplotlibcpp::show();
+}
 
+void plotTimes(std::map<std::string,std::vector<double>> time_res, const std::string& output_fig_path, bool show_plots=true){
+    std::vector<std::vector<double>> data;
+    std::vector<std::string> names;
+    
+    matplotlibcpp::figure();
+
+    for(std::map<std::string,std::vector<double>>::iterator iter = time_res.begin(); iter != time_res.end(); ++iter){
+        names.push_back(iter->first);
+        data.push_back(iter->second);
+
+    }
+    matplotlibcpp::boxplot(data, names);
+
+    matplotlibcpp::ylabel("Latency (us)");
+    matplotlibcpp::save(output_fig_path + "_times.pdf");
+    if(show_plots) 
+        matplotlibcpp::show();
 }

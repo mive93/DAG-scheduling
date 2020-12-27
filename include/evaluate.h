@@ -7,7 +7,7 @@
 #include "tests.h"
 #include "plot_utils.h"
 
-void evaluate(const std::string& genparams_path, const std::string& output_fig_path){
+void evaluate(const std::string& genparams_path, const std::string& output_fig_path, const bool show_plots){
     GeneratorParams gp;
     gp.readFromYaml(genparams_path);
     gp.configureParams(gp.gType);
@@ -25,9 +25,11 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
         n_tasks = gp.nMin - 1;
 
     std::map<std::string,std::vector<float>> sched_res;
+    std::map<std::string,std::vector<double>> time_res;
     std::vector<float> x;
 
     int test_idx = -1;
+    SimpleTimer timer;
 
     for(int i=0; i<gp.nTasksets; ++i){
         if(gp.gType == GenerationType_t::VARYING_U && i % gp.tasksetPerVarFactor == 0){
@@ -66,20 +68,34 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                     sched_res["Melani2015"].push_back(0);
                 }
 
+                timer.tic();
                 sched_res["Qamhieh2013"][test_idx] += GP_FP_EDF_Qamhieh2013_C(task_set, m);
+                time_res["Qamhieh2013"].push_back(timer.toc());
+
+                // timer.tic();
                 // sched_res["Baruah2014"][test_idx] += GP_FP_EDF_Baruah2014_C(task_set, m);
+                // time_res["Baruah2014"].push_back(timer.toc());
+
+                timer.tic();
                 sched_res["Melani2015"][test_idx] += GP_FP_EDF_Melani2015_C(task_set, m);
+                time_res["Melani2015"].push_back(timer.toc());
                 
                 if(gp.wType == workloadType_t::SINGLE_DAG){
                     if(i % gp.tasksetPerVarFactor == 0)
                         sched_res["Baruah2012"].push_back(0);
+                    
+                    timer.tic();
                     sched_res["Baruah2012"][test_idx] += GP_FP_EDF_Baruah2012_C(task_set.tasks[0], m);
+                    time_res["Baruah2012"].push_back(timer.toc());
                 }
 
                 if(gp.dtype != DeadlinesType_t::CONSTRAINED){
                     if(i % gp.tasksetPerVarFactor == 0)
                         sched_res["Li2013"].push_back(0);
+                    
+                    timer.tic();
                     sched_res["Li2013"][test_idx] += GP_FP_EDF_Li2013_I(task_set, m);
+                    time_res["Li2013"].push_back(timer.toc());
                 }
             }
             else if(gp.sType == SchedulingType_t::FTP && gp.DAGType ==DAGType_t::DAG){
@@ -91,33 +107,62 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                     sched_res["Fonseca2019"].push_back(0);
                     sched_res["He2019"].push_back(0);
                 }
-                
+
+                timer.tic();
                 sched_res["Bonifaci2013"][test_idx] +=  GP_FP_DM_Bonifaci2013_C(task_set, m);
+                time_res["Bonifaci2013"].push_back(timer.toc());
+
+                timer.tic();
                 sched_res["Melani2015"][test_idx] +=  GP_FP_FTP_Melani2015_C(task_set, m);
+                time_res["Melani2015"].push_back(timer.toc());
+
+                timer.tic();
                 sched_res["Pathan2017"][test_idx] +=  GP_FP_DM_Pathan2017_C(task_set, m);
+                time_res["Pathan2017"].push_back(timer.toc());
+
+                timer.tic();
                 sched_res["Fonseca2017"][test_idx] +=  GP_FP_FTP_Fonseca2017_C(task_set, m);
+                time_res["Fonseca2017"].push_back(timer.toc());
+
+                timer.tic();
                 sched_res["Fonseca2019"][test_idx] +=  GP_FP_FTP_Fonseca2019(task_set, m);
+                time_res["Fonseca2019"].push_back(timer.toc());
+
+                timer.tic();
                 sched_res["He2019"][test_idx] +=  GP_FP_FTP_He2019_C(task_set, m);
+                time_res["He2019"].push_back(timer.toc());
             }
 
             else if(gp.sType == SchedulingType_t::EDF && gp.DAGType ==DAGType_t::CDAG ){
                 if(i % gp.tasksetPerVarFactor == 0)
                     sched_res["Melani2015"].push_back(0);
+
+                timer.tic();
                 sched_res["Melani2015"][test_idx] +=  GP_FP_EDF_Melani2015_C(task_set, m);
+                time_res["Melani2015"].push_back(timer.toc());
             }
             else if(gp.sType == SchedulingType_t::FTP && gp.DAGType ==DAGType_t::CDAG){
                 if(i % gp.tasksetPerVarFactor == 0){
                     sched_res["Melani2015"].push_back(0);
                     sched_res["Pathan2017"].push_back(0);
                 }
+
+                timer.tic();
                 sched_res["Melani2015"][test_idx] +=  GP_FP_FTP_Melani2015_C(task_set, m);
+                time_res["Melani2015"].push_back(timer.toc());
+
+                timer.tic();
                 sched_res["Pathan2017"][test_idx] +=  GP_FP_DM_Pathan2017_C(task_set, m);
+                time_res["Pathan2017"].push_back(timer.toc());
             }
 
             else if(gp.sType == SchedulingType_t::FTP && gp.DAGType ==DAGType_t::TDAG && gp.wType == workloadType_t::SINGLE_DAG){
                 if(i % gp.tasksetPerVarFactor == 0)
                     sched_res["Han2019"].push_back(0);
+
+                timer.tic();
                 sched_res["Han2019"][test_idx] +=  GP_FP_Han2019_C_1(task_set.tasks[0], gp.typedProc);
+                time_res["Han2019"].push_back(timer.toc());
             }
 
             
@@ -127,11 +172,17 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                 if(i % gp.tasksetPerVarFactor == 0)
                     sched_res["Bonifaci2013"].push_back(0);
                 
+                timer.tic();
                 sched_res["Bonifaci2013"][test_idx] += GP_FP_EDF_Bonifaci2013_A(task_set, m);
+                time_res["Bonifaci2013"].push_back(timer.toc());
+
                 if(gp.wType == workloadType_t::SINGLE_DAG){
                     if(i % gp.tasksetPerVarFactor == 0)
                         sched_res["Baruah2012"].push_back(0);
+                    
+                    timer.tic();
                     sched_res["Baruah2012"][test_idx] += GP_FP_EDF_Baruah2012_A(task_set.tasks[0], m);
+                    time_res["Baruah2012"].push_back(timer.toc());
                 }
             }
             else if(gp.sType == SchedulingType_t::FTP && gp.DAGType ==DAGType_t::DAG ){
@@ -140,13 +191,21 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                     sched_res["Fonseca2019"].push_back(0);
                 }
 
+                timer.tic();
                 sched_res["Bonifaci2013"][test_idx] += GP_FP_DM_Bonifaci2013_A(task_set, m);
-                // sched_res["Fonseca2019"][test_idx] += GP_FP_FTP_Fonseca2019(task_set, m, false);
+                time_res["Bonifaci2013"].push_back(timer.toc());
+
+                timer.tic();
+                sched_res["Fonseca2019"][test_idx] += GP_FP_FTP_Fonseca2019(task_set, m, false);
+                time_res["Fonseca2019"].push_back(timer.toc());
+
                 if(gp.wType == workloadType_t::SINGLE_DAG){
                     if(i % gp.tasksetPerVarFactor == 0)
                         sched_res["Graham1969"].push_back(0);
 
+                    timer.tic();
                     sched_res["Graham1969"][test_idx] += Graham1969(task_set.tasks[0], m);
+                    time_res["Graham1969"].push_back(timer.toc());
                 }
             }
             break;
@@ -154,9 +213,6 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
 
         for(auto &t:task_set.tasks)
             t.destroyVerices();
-
-            
-
     }
 
 
@@ -168,7 +224,8 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
     else if(gp.gType == GenerationType_t::VARYING_U)
         x_axis_label = "Taskset utilization";
 
-    plotResults(sched_res, x, x_axis_label, "Taskset scheduled", output_fig_path);
+    plotResults(sched_res, x, x_axis_label, "Taskset scheduled", output_fig_path, show_plots);
+    plotTimes(time_res, output_fig_path, show_plots);
 
 }
 

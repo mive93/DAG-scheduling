@@ -1,0 +1,21 @@
+maxParBranches: 6
+recDepth: 2
+pCond : 0
+pPar: 0.8
+pTerm : 0.2
+Cmin: 1
+Cmax: 100
+addProb : 0.1
+probSCond : 0
+Utot : 2.5
+saveRate: 25
+Nmin: 11
+Nmax: 50
+stepN : 1
+m : 4
+tasksetPerVarFactor : 1
+gType : 0
+dtype : 0
+sType : 1
+wType : 1
+DAGType : 0

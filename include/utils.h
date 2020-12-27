@@ -36,6 +36,41 @@
 
 #define TSTOP TSTOP_C(COL_CYANB, TIME_VERBOSE)
 
+class SimpleTimer{
+
+    timespec tStart;
+    timespec tEnd; 
+
+    public:
+
+    enum TimeUnit_t { SECOND, MILLISECOND, MICROSECOND, NANOSECOND};
+
+    void tic(){
+        clock_gettime(CLOCK_MONOTONIC, &tStart);
+    }
+
+    double toc(TimeUnit_t time_unit=TimeUnit_t::MICROSECOND){
+        clock_gettime(CLOCK_MONOTONIC, &tEnd);
+        double t_ns = ((double)(tEnd.tv_sec - tStart.tv_sec) * 1.0e9 + (double)(tEnd.tv_nsec - tStart.tv_nsec));
+        switch (time_unit){
+        case TimeUnit_t::SECOND:
+            t_ns/=1.0e9;  
+            break;
+        case TimeUnit_t::MILLISECOND:
+            t_ns/=1.0e6;  
+            break;
+        case TimeUnit_t::MICROSECOND:
+            t_ns/=1.0e3;  
+            break;
+        case TimeUnit_t::NANOSECOND:
+            break;
+        }
+        
+        return t_ns;
+    }
+   
+};
+
 
 /*
 Given sets a and b it computes a \ b and save it in a
