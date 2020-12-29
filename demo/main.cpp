@@ -10,8 +10,15 @@ int main(int argc, char **argv){
 
     if(REPRODUCIBLE) srand (1);
     else srand (time(NULL));
-    
-    bool random_creation = true;
+
+    bool random_creation = false;
+    if(argc > 1)
+        random_creation = atoi(argv[1]);
+        
+    std::string taskset_filename = "../demo/taskset_2.yaml";
+    if(argc > 2)
+        taskset_filename = argv[2];
+        
 
     int n_proc = 4;
     std::vector<int> typed_proc = {4,4};
@@ -25,7 +32,7 @@ int main(int argc, char **argv){
         taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc, gp);
     }
     else
-        taskset.readTasksetFromYaml("../demo/taskset.yaml");
+        taskset.readTasksetFromYaml(taskset_filename);
     
     std::string dot_command = "";
     for(int i=0; i<taskset.tasks.size();++i){
