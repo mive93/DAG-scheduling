@@ -54,6 +54,9 @@ void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
         if(vert[j]["s"])
             v->gamma = vert[j]["s"].as<int>();
 
+        if(vert[j]["p"])
+            v->core = vert[j]["p"].as<int>();
+
         V.push_back(v);
     }
 
@@ -78,7 +81,7 @@ void DAGTask::saveAsDot(const std::string &filename){
 
     of<<"i [shape=box, label=\"D="<<d<<" T="<<t<<"\"]; \n";
     for (const auto &v: V){
-        of<<v->id<<" [label=\""<<v->c<<"("<<v->id<<")"<<"\"";
+        of<<v->id<<" [label=\""<<v->c<<"("<<v->id<<", p:"<<v->core<<")"<<"\"";
         if(v->mode == C_SOURCE_T) of<<",shape=diamond";
         else if(v->mode == C_SINK_T) of<<",shape=box";
         of<<"];\n";

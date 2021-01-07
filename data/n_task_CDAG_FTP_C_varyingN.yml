@@ -16,6 +16,6 @@ m : 4
 tasksetPerVarFactor : 1
 gType : 0
 dtype : 0
-sType : 0
+aType : 0
 wType : 1
 DAGType : 1

@@ -13,7 +13,8 @@
 
 enum GenerationType_t {VARYING_N, VARYING_U, VARYING_M};
 enum DeadlinesType_t {CONSTRAINED, IMPLICIT, ARBITRARY};
-enum SchedulingType_t {FTP, EDF};
+enum SchedulingType_t {GLOBAL, PARTITIONED, FEDERATED};
+enum AlgorithmType_t {FTP, EDF};
 enum workloadType_t {SINGLE_DAG, TASKSET};
 enum DAGType_t {DAG, CDAG, TDAG};
 
@@ -63,7 +64,8 @@ class GeneratorParams{
 
     GenerationType_t gType  = GenerationType_t::VARYING_N;
     DeadlinesType_t dtype   = DeadlinesType_t::CONSTRAINED;
-    SchedulingType_t sType  = SchedulingType_t::FTP;
+    SchedulingType_t sType  = SchedulingType_t::GLOBAL;
+    AlgorithmType_t aType   = AlgorithmType_t::FTP;
     workloadType_t wType    = workloadType_t::TASKSET;
     DAGType_t DAGType       = DAGType_t::DAG;  
 
@@ -146,6 +148,7 @@ class GeneratorParams{
         if(config["gType"]) gType = (GenerationType_t)  config["gType"].as<int>(); 
         if(config["dtype"]) dtype = (DeadlinesType_t) config["dtype"].as<int>();
         if(config["sType"]) sType = (SchedulingType_t) config["sType"].as<int>();
+        if(config["aType"]) aType = (AlgorithmType_t) config["aType"].as<int>();
         if(config["wType"]) wType = (workloadType_t) config["wType"].as<int>();
         if(config["DAGType"]) DAGType = (DAGType_t) config["DAGType"].as<int>();
     }
@@ -183,6 +186,7 @@ class GeneratorParams{
         std::cout<<"gType: "<<gType<<std::endl;
         std::cout<<"dtype: "<<dtype<<std::endl;
         std::cout<<"sType: "<<sType<<std::endl;
+        std::cout<<"aType: "<<aType<<std::endl;
         std::cout<<"wType: "<<wType<<std::endl;
         std::cout<<"DAGType: "<<DAGType<<std::endl;
     }

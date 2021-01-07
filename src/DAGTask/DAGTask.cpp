@@ -201,6 +201,15 @@ void DAGTask::computeTypedVolume(){
     }
 }
 
+void DAGTask::computepVolume(){
+    for(size_t i=0; i<V.size();++i){
+        if ( pVol.find(V[i]->core) == pVol.end() ) 
+            pVol[V[i]->core] = V[i]->c;
+        else
+            pVol[V[i]->core] += V[i]->c;
+    }
+}
+
 void DAGTask::computeAccWorkload(){
     int max_acc_prec;
     for(size_t i=0; i<ordIDs.size();++i){
@@ -265,4 +274,33 @@ void DAGTask::computeLSTs(){
 
     for(auto&v:V)
         v->LatestStartingTime();
+}
+
+std::vector<std::vector<int>> DAGTask::computeAllPathsSingleSource(std::vector<int>& path, std::vector<std::vector<int>>& all_paths) const{
+
+    int last_node = path.back();
+    if(V[last_node]->succ.size() > 0) {
+        for(int i=0; i<V[last_node]->succ.size(); ++i){
+            std::vector<int> new_path = path;
+            new_path.push_back(V[last_node]->succ[i]->id);
+            all_paths = computeAllPathsSingleSource(new_path, all_paths);
+        }
+    }
+    else
+        all_paths.push_back(path);
+
+    return all_paths;
+}
+
+std::vector<std::vector<int>> DAGTask::computeAllPaths() const{
+    std::vector<std::vector<int>> all_paths;
+    for(int i=0; i<V.size();++i){
+        if(V[i]->pred.size() == 0){
+            std::vector<int> cur_path;
+            cur_path.push_back(i);
+            all_paths = computeAllPathsSingleSource(cur_path, all_paths);
+        }
+    }
+
+    return all_paths;
 }

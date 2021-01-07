@@ -31,6 +31,7 @@ class DAGTask{
 
     std::vector<int> ordIDs;        // ids in topological order
     std::map<int, float> typedVol;  // volume for typed DAG [type of core, volume]
+    std::map<int, float> pVol;      // volume for partitioned DAG [core id, volume]
 
     public:
 
@@ -56,9 +57,12 @@ class DAGTask{
     void computeLength();
     void computeVolume();
     void computeTypedVolume();
+    void computepVolume();
     void computeWorstCaseWorkload();
     void computeUtilization();
     void computeDensity();
+    std::vector<std::vector<int>> computeAllPathsSingleSource(std::vector<int>& path, std::vector<std::vector<int>>& all_paths) const;
+    std::vector<std::vector<int>> computeAllPaths() const;
 
     // EST, EFT, LST, LFT
     void localDeadline(SubTask *task, const int i);
@@ -76,6 +80,7 @@ class DAGTask{
     float getLength() const {return L;};
     float getVolume() const {return vol;};
     std::map<int, float> getTypedVolume() const {return typedVol;};
+    std::map<int, float> getpVolume() const {return pVol;};
     float getWorstCaseWorkload() const {return wcw;};
     float getWCW() const {return wcw;};
     float getPeriod() const {return t;};

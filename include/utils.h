@@ -25,6 +25,7 @@
 #define COL_CYANB "\033[1;36m"
 
 #define TIME_VERBOSE 1
+#define METHOD_VERBOSE 0
 
 #define TSTART timespec start, end;                               \
                     clock_gettime(CLOCK_MONOTONIC, &start);            

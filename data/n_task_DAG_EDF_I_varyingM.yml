@@ -17,6 +17,6 @@ nTasks: 10000
 tasksetPerVarFactor : 500
 gType : 2
 dtype : 1
-sType : 1
+aType : 1
 wType : 1
 DAGType : 0

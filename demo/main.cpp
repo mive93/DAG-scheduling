@@ -15,7 +15,7 @@ int main(int argc, char **argv){
     if(argc > 1)
         random_creation = atoi(argv[1]);
         
-    std::string taskset_filename = "../demo/taskset_2.yaml";
+    std::string taskset_filename = "../demo/taskset.yaml";
     if(argc > 2)
         taskset_filename = argv[2];
         
@@ -88,6 +88,7 @@ int main(int argc, char **argv){
 
     //constrained
     if(constrained_taskset){
+        //global
         std::cout<< "\tBonifaci 2013 constrained (GP-FP-DM): "   <<GP_FP_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tQamhieh 2013 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Qamhieh2013_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tBaruah 2014 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Baruah2014_C(taskset, n_proc)<<std::endl;
@@ -98,6 +99,9 @@ int main(int argc, char **argv){
         std::cout<< "\tFonseca 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc)<<std::endl;
         std::cout<< "\tHe 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_He2019_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tSerrano 2016 constrained (GP-LP-FTP): "   <<GP_LP_FTP_Serrano16_C(taskset, n_proc)<<std::endl;
+
+        //partitioned
+        std::cout<< "\tFonseca 2016 constrained (P-FP-FTP): "<<P_FP_FTP_Fonseca2016_C(taskset, n_proc)<<std::endl;
     }
 
     std::cout<< "\tFonseca 2019 arbitrary (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc, false)<<std::endl;

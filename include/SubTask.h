@@ -14,6 +14,7 @@ class SubTask{
     int depth       = 0;    // depth in the graph
     int width       = 0;    // width in the graph
     int gamma       = 0;    // type of core
+    int core        = 0;    // id of assigned core
     int prio        = 0;    // priority of the subtask
 
     float c         = 0;    // WCET

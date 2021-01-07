@@ -47,6 +47,9 @@ bool GP_FP_FTP_He2019_C(Taskset taskset, const int m);
 
 bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m); 
 
+//partitioned policy
+
+bool P_FP_FTP_Fonseca2016_C(Taskset taskset, const int m, const bool joint=true);
 
 // if you have time (but you don't)
 // bool GP_FP_Chang2020_C(const DAGTask& task, const int m); //TODO

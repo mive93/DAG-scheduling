@@ -76,7 +76,7 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
         DAGTask t;
         t.expandTaskSeriesParallel(nullptr, nullptr,gp.recDepth,0,false,gp);
         t.assignWCET(gp.Cmin, gp.Cmax);
-        if( !(  gp.sType == SchedulingType_t::FTP 
+        if( !(  gp.aType == AlgorithmType_t::FTP 
                 && gp.DAGType ==DAGType_t::DAG )    )
             t.makeItDag(gp.addProb);
 
@@ -86,9 +86,13 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
         t.computeVolume();
         t.computeLength();
 
+        //random assignment of core in partitioned case
+        auto V = t.getVertices();
+        for(int j=0; j<V.size(); ++j)
+            V[j]->core = rand() % n_proc;
+
         if(gp.DAGType == DAGType_t::TDAG){
             //random assignment of core types to subnodes
-            auto V = t.getVertices();
             for(int j=0; j<V.size(); ++j)
                 V[j]->gamma = rand() % gp.typedProc.size();
         }
