@@ -49,7 +49,26 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m);
 
 //partitioned policy
 
+class SSTask{
+    public:
+    std::vector<float> S;
+    std::vector<float> C;
+    float Sub = 0;
+    int coreId = 0;
+
+    void print(){
+        std::cout<<"Task ss (core "<<coreId<<"):"<<std::endl;
+        std::cout<<"\t";
+        printVector<float>(C, "C");
+        std::cout<<"\t";
+        printVector<float>(S, "S");
+        std::cout<<"\tSub: "<<Sub<<std::endl;
+    }
+};
+
+SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path_ss, const int core_id, const std::vector<std::vector<float>>& RTs);
 bool P_FP_FTP_Fonseca2016_C(Taskset taskset, const int m, const bool joint=true);
+bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m);
 
 // if you have time (but you don't)
 // bool GP_FP_Chang2020_C(const DAGTask& task, const int m); //TODO

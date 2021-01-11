@@ -19,23 +19,7 @@ std::vector<int> computeSelfOfPath(const std::vector<int>& path, std::vector<Sub
     return self;
 }
 
-class SSTask{
-    public:
-    std::vector<float> S;
-    std::vector<float> C;
-    float Sub = 0;
-
-    void print(){
-        std::cout<<"Task ss:"<<std::endl;
-        std::cout<<"\t";
-        printVector<float>(C, "C");
-        std::cout<<"\t";
-        printVector<float>(S, "S");
-        std::cout<<"\tSub: "<<Sub<<std::endl;
-    }
-};
-
-SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path_ss, const int core_id, const std::vector<std::vector<int>>& RTs){
+SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path_ss, const int core_id, const std::vector<std::vector<float>>& RTs){
     //setSuspendingTask procedure
     SSTask task_ss;
     bool flag = false;
@@ -45,10 +29,13 @@ SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path
                 task_ss.S.push_back(0);
             task_ss.C.push_back(V[path_ss[i]]->c);
             flag = true;
-
         }
         else{
-            task_ss.S.push_back(RTs[path_ss[i]][path_ss[i]]);
+            if(flag || task_ss.S.empty())
+                task_ss.S.push_back(RTs[path_ss[i]][path_ss[i]]);
+            else
+                task_ss.S.back() += RTs[path_ss[i]][path_ss[i]];
+                
             flag = false;
         }
     }
@@ -74,9 +61,12 @@ SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path
 
         task_ss.Sub += RTs[path_ss[first]][path_ss[last]];
     }
+
+    task_ss.coreId = core_id;
     
     if(METHOD_VERBOSE) task_ss.print();
 
+    
     return task_ss;
 }
 
@@ -129,7 +119,7 @@ float computeWCRTss(const SSTask& tau_ss, const std::vector<int>& self_ss, const
     return WCRT_ss;
 }
 
-void pathAnalysis(const std::vector<int>& path_ss, const std::vector<int>& self, const Taskset& taskset, const int task_idx, std::vector<std::vector<int>>& RTs, const bool joint ){
+void pathAnalysis(const std::vector<int>& path_ss, const std::vector<int>& self, const Taskset& taskset, const int task_idx, std::vector<std::vector<float>>& RTs, const bool joint ){
     //algorithm 1
     if(METHOD_VERBOSE) std::cout<<"starting path analysis"<<std::endl;
     if(METHOD_VERBOSE) printVector<int>(path_ss, "path ss");
@@ -199,7 +189,7 @@ float computeWCRTDAG(const Taskset& taskset, const int task_idx, const bool join
     //corollary 1
     
     std::vector<SubTask*> V = taskset.tasks[task_idx].getVertices();
-    std::vector<std::vector<int>> RTs (V.size(), std::vector<int>(V.size(), 0));
+    std::vector<std::vector<float>> RTs (V.size(), std::vector<float>(V.size(), 0));
 
     //analyze each path
     std::vector<std::vector<int>> all_paths= taskset.tasks[task_idx].computeAllPaths();
@@ -225,8 +215,6 @@ float computeWCRTDAG(const Taskset& taskset, const int task_idx, const bool join
 bool P_FP_FTP_Fonseca2016_C(Taskset taskset, const int m, const bool joint){
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
 
-    std::vector<float> R_old (taskset.tasks.size(), 0);
-    std::vector<float> R (taskset.tasks.size(), 0);
     std::map<int, float> pVol;
     for(int i=0; i<taskset.tasks.size(); ++i){
         taskset.tasks[i].computepVolume();

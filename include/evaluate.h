@@ -214,12 +214,18 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
         }
         else if(gp.sType == SchedulingType_t::PARTITIONED){
             if(gp.aType == AlgorithmType_t::FTP && gp.DAGType == DAGType_t::DAG && gp.dtype != DeadlinesType_t::ARBITRARY){
-                 if(i % gp.tasksetPerVarFactor == 0)
+                 if(i % gp.tasksetPerVarFactor == 0){
                     sched_res["Fonseca2016"].push_back(0);
+                    sched_res["Casini2018"].push_back(0);
+                 }
                 
                 timer.tic();
                 sched_res["Fonseca2016"][test_idx] += P_FP_FTP_Fonseca2016_C(task_set, m);
                 time_res["Fonseca2016"].push_back(timer.toc());
+
+                timer.tic();
+                sched_res["Casini2018"][test_idx] += P_LP_FTP_Casini2018_C(task_set, m);
+                time_res["Casini2018"].push_back(timer.toc());
             }
         }
 
