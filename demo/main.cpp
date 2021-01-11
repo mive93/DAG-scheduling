@@ -11,7 +11,7 @@ int main(int argc, char **argv){
     if(REPRODUCIBLE) srand (1);
     else srand (time(NULL));
 
-    bool random_creation = true;
+    bool random_creation = false;
     if(argc > 1)
         random_creation = atoi(argv[1]);
         
@@ -73,7 +73,8 @@ int main(int argc, char **argv){
         
     }
 
-    std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
+    // std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
+    std::cout<< "\tNasri 2019 constrained (G-LP-FTP): "<<G_LP_FTP_Nasri2019_C(taskset, n_proc)<<std::endl;
 
     return 0;
 

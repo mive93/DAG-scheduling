@@ -70,6 +70,8 @@ SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path
 bool P_FP_FTP_Fonseca2016_C(Taskset taskset, const int m, const bool joint=true);
 bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m);
 
+bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m);
+
 // if you have time (but you don't)
 // bool GP_FP_Chang2020_C(const DAGTask& task, const int m); //TODO
 // Baruah ’15 [9] - maybe no

@@ -12,14 +12,22 @@ include_directories(${EIGEN3_INCLUDE_DIR})
 find_package(yaml-cpp REQUIRED)
 
 #-------------------------------------------------------------------------------
+# Submodules
+#-------------------------------------------------------------------------------
+
+add_subdirectory(np-schedulability-analysis)
+
+#-------------------------------------------------------------------------------
 # Build libraries
 #-------------------------------------------------------------------------------
 
 
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include matplotlib-cpp /usr/include/python3.8)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include matplotlib-cpp 
+                    ${CMAKE_CURRENT_SOURCE_DIR}/np-schedulability-analysis/include 
+                    /usr/include/python3.8)
 
 file(GLOB dag-sched-SRC "src/*/*.cpp" "src/*.cpp")
-set(dag-sched-LIBS yaml-cpp python3.8)
+set(dag-sched-LIBS yaml-cpp python3.8 tbb)
 add_library(dag-sched SHARED ${dag-sched-SRC})
 target_link_libraries(dag-sched ${dag-sched-LIBS} )
 

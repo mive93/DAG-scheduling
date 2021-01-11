@@ -1,3 +1,6 @@
 [submodule "matplotlib-cpp"]
 	path = matplotlib-cpp
 	url = https://github.com/lava/matplotlib-cpp
+[submodule "np-schedulability-analysis"]
+	path = np-schedulability-analysis
+	url = https://github.com/brandenburg/np-schedulability-analysis

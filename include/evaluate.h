@@ -106,6 +106,7 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                         sched_res["Pathan2017"].push_back(0);
                         sched_res["Fonseca2017"].push_back(0);
                         sched_res["Fonseca2019"].push_back(0);
+                        sched_res["Nasri2019"].push_back(0);
                         sched_res["He2019"].push_back(0);
                     }
 
@@ -128,6 +129,10 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                     timer.tic();
                     sched_res["Fonseca2019"][test_idx] +=  GP_FP_FTP_Fonseca2019(task_set, m);
                     time_res["Fon2019"].push_back(timer.toc());
+
+                    timer.tic();
+                    sched_res["Nasri2019"][test_idx] +=  G_LP_FTP_Nasri2019_C(task_set, m);
+                    time_res["Nasri2019"].push_back(timer.toc());
 
                     timer.tic();
                     sched_res["He2019"][test_idx] +=  GP_FP_FTP_He2019_C(task_set, m);
