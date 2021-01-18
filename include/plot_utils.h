@@ -36,7 +36,7 @@ void testMatplotlib(){
 }
 
 void plotResults(std::map<std::string,std::vector<float>> sched_res, const std::vector<float>& x, const std::string& x_axis, const std::string& y_axis, const std::string& output_fig_path, bool show_plots=true){
-    std::vector<std::string> line_style = {"ro--", "b+--", "g*--", "ko--", "c+--", "m*--", "yo--"};
+    std::vector<std::string> line_style = {"ro--", "b+--", "g*--", "ko--", "c+--", "m*--", "yo--", "r*--", "bo--"};
 
     matplotlibcpp::figure();
 

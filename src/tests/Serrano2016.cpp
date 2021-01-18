@@ -7,7 +7,7 @@ float computePreemptionNumberUpperBound(const Taskset& taskset, const int x, con
 
     //for all high priority tasks
     for(int y=0; y<x; y++){
-        h += std::floor( interval / taskset.tasks[y].getPeriod());
+        h += std::ceil( interval / taskset.tasks[y].getPeriod());
     }
 
     return std::min( float (taskset.tasks[x].getVertices().size() - 1) , h);
@@ -55,9 +55,13 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m){
     std::vector<float> R (taskset.tasks.size(), 0);
 
     for(int i=0; i<taskset.tasks.size(); ++i){
-        R_old[i] = taskset.tasks[i].getLength();
-        taskset.tasks[i].R = taskset.tasks[i].getLength();
+        R_old[i] = taskset.tasks[i].getLength() + 1./m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
+        taskset.tasks[i].R = R_old[i];
     }
+
+    float interf = 0;
+    float blocking = 0;
+    float SI = 0;
 
     for(int i=0; i<taskset.tasks.size(); ++i){
 
@@ -72,23 +76,27 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m){
             }
 
             //for all hp
+            interf = 0;
             for(int j=0; j<i; ++j)
-                R[i] += workloadUpperBound(taskset.tasks[j], R_old[i], m);
-            
-            //for all lp
-            R[i] += blockingWorkload(taskset, i, R_old[i], m);
+                interf += workloadUpperBound(taskset.tasks[j], R_old[i], m);
 
-            R[i] = std::floor(1. / m * R[i]);
-            R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
+            //for all lp
+            blocking = blockingWorkload(taskset, i, R_old[i], m);
+
+            //self interference
+            SI = (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
+
+            //final response time
+            R[i] = taskset.tasks[i].getLength() + 1. / m * SI + std::floor(1. / m * (interf + blocking));
 
             init = false;
         }
-
-        if( areEqual<float>(R[i], R_old[i]))
-            taskset.tasks[i].R = R[i];
-        else if (R[i] > taskset.tasks[i].getDeadline())
+        if (R[i] > taskset.tasks[i].getDeadline())
             return false;
-    }
 
+        if( areEqual<float>(R[i], R_old[i])){
+            taskset.tasks[i].R = R[i];
+        }
+    }
     return true;
 }

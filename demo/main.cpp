@@ -11,7 +11,7 @@ int main(int argc, char **argv){
     if(REPRODUCIBLE) srand (1);
     else srand (time(NULL));
 
-    bool random_creation = false;
+    bool random_creation = true;
     if(argc > 1)
         random_creation = atoi(argv[1]);
         
@@ -24,7 +24,7 @@ int main(int argc, char **argv){
     std::vector<int> typed_proc = {4,4};
     Taskset taskset;
     if(random_creation){
-        int n_tasks = 2;
+        int n_tasks = 4;
         float U_tot = 1;
         GeneratorParams gp;
         gp.configureParams(GenerationType_t::VARYING_N);
@@ -33,6 +33,8 @@ int main(int argc, char **argv){
     }
     else
         taskset.readTasksetFromYaml(taskset_filename);
+
+    std::cout<<"Assignment: "<< WorstFitProcessorsAssignment(taskset, n_proc)<<std::endl;
     
     std::string dot_command = "";
     for(int i=0; i<taskset.tasks.size();++i){
@@ -73,11 +75,6 @@ int main(int argc, char **argv){
         
     }
 
-    // std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
-    std::cout<< "\tNasri 2019 constrained (G-LP-FTP): "<<G_LP_FTP_Nasri2019_C(taskset, n_proc)<<std::endl;
-
-    return 0;
-
     //taskset tests
     std::cout<<"Taskset tests: \n";
 
@@ -103,10 +100,14 @@ int main(int argc, char **argv){
         std::cout<< "\tFonseca 2017 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2017_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tFonseca 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc)<<std::endl;
         std::cout<< "\tHe 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_He2019_C(taskset, n_proc)<<std::endl;
+
+        // limited preemption        
         std::cout<< "\tSerrano 2016 constrained (GP-LP-FTP): "   <<GP_LP_FTP_Serrano16_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tNasri 2019 constrained (G-LP-FTP): "<<G_LP_FTP_Nasri2019_C(taskset, n_proc)<<std::endl;
 
         //partitioned
         std::cout<< "\tFonseca 2016 constrained (P-FP-FTP): "<<P_FP_FTP_Fonseca2016_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
     }
 
     std::cout<< "\tFonseca 2019 arbitrary (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc, false)<<std::endl;

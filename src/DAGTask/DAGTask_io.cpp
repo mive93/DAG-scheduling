@@ -20,6 +20,7 @@ std::ostream& operator<<(std::ostream& os, const DAGTask& t)
         for(auto p:v->pred)
             os<< p->id << " ";
 
+        os<<" \tcore: " << v->core;
         os<<" \tlocal O: " << v->localO;
         os<<" \tlocal D: " << v->localD;
         os<<" \n";

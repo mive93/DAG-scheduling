@@ -93,6 +93,7 @@ class DAGTask{
     //setters
     void setVertices(std::vector<SubTask*> given_V){ V.clear(); V = given_V; }
     void setDeadline(const float deadline) { d = deadline; }
+    void setPeriod(const float period) { t = period; }
 
     //Melani generation methods
     void assignWCET(const int minC, const int maxC);
@@ -103,5 +104,13 @@ class DAGTask{
     void assignFixedSchedParameters(const float period, const float deadline);
 
 };
+
+
+bool compareDAGsDeadlineInc(const DAGTask& a, const DAGTask& b);
+bool compareDAGsDeadlineDec(const DAGTask& a, const DAGTask& b);
+bool compareDAGsPeriodInc(const DAGTask& a, const DAGTask& b);
+bool compareDAGsPeriodDec(const DAGTask& a, const DAGTask& b);
+bool compareDAGsUtilInc(const DAGTask& a, const DAGTask& b);
+bool compareDAGsUtilDec(const DAGTask& a, const DAGTask& b);
 
 #endif /* DAGTASK_H */

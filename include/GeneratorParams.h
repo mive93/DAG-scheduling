@@ -13,7 +13,7 @@
 
 enum GenerationType_t {VARYING_N, VARYING_U, VARYING_M};
 enum DeadlinesType_t {CONSTRAINED, IMPLICIT, ARBITRARY};
-enum SchedulingType_t {GLOBAL, PARTITIONED, FEDERATED};
+enum SchedulingType_t {GLOBAL, PARTITIONED, FEDERATED, SOTA};
 enum AlgorithmType_t {FTP, EDF};
 enum workloadType_t {SINGLE_DAG, TASKSET};
 enum DAGType_t {DAG, CDAG, TDAG};

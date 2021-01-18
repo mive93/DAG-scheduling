@@ -28,6 +28,7 @@ SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path
             if(flag)
                 task_ss.S.push_back(0);
             task_ss.C.push_back(V[path_ss[i]]->c);
+            task_ss.CvID.push_back(V[path_ss[i]]->id);
             flag = true;
         }
         else{

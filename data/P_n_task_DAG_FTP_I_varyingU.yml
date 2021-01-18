@@ -10,13 +10,14 @@ probSCond : 0
 beta: 0.1
 saveRate: 25
 Umin: 0
-Umax: 8
+Umax: 6
 stepU : 0.25
 m : 8
-tasksetPerVarFactor : 500
+tasksetPerVarFactor : 50
 nTasks: 10000
 gType : 1
-dtype : 0
+dtype : 1
 aType : 0
+sType : 1
 wType : 1
 DAGType : 0

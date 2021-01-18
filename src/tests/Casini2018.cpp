@@ -44,18 +44,18 @@ float computeSI(const std::vector<int>& path, const DAGTask& task){
     return SI;
 }
 
-std::vector<float> computeMultisetB(const int k, const float interval, const std::vector<std::vector<float>>& R_nodes, const Taskset& taskset, const int task_idx, int core_id ){
+std::vector<float> computeMultisetB(const int k, const float interval, const Taskset& taskset, const int task_idx, int core_id ){
     float eta;
     std::vector<float> multiset_C;
     for(int y=task_idx+1; y<taskset.tasks.size(); ++y){
         std::vector<SubTask*> V = taskset.tasks[y].getVertices();
         for(int j=0;j<V.size(); ++j)
             if(V[j]->core == core_id)
-            float eta = 1 + std::floor( ( interval + R_nodes[y][j] - V[j]->c) / taskset.tasks[y].getPeriod() );
+                eta = 1 + std::floor( ( interval + V[j]->r - V[j]->c) / taskset.tasks[y].getPeriod() );
 
         for(int j=0;j<V.size(); ++j)
             if(V[j]->core == core_id)
-                for(int e=0;e<eta; ++e)
+                for(int e=0 ; e < eta ; ++e)
                     multiset_C.push_back(V[j]->c);
     }
 
@@ -69,23 +69,24 @@ std::vector<float> computeMultisetB(const int k, const float interval, const std
     return multiset_B;
 }
 
-float computeMaximumInterference(const float interval, const std::vector<std::vector<float>>& R_nodes, const Taskset& taskset, const int task_idx, const int core_id){
+float computeMaximumInterference(const float interval, const Taskset& taskset, const int task_idx, const int core_id){
 
-    float first_term = 0, second_term = 0, tot_R;  
+    float first_term = 0, second_term = 0, R_bar;  
     for(int y=0; y<task_idx; ++y){
         std::vector<SubTask*> V = taskset.tasks[y].getVertices();
 
-        tot_R = 0;
+        R_bar = 0;
         for(int j=0; j<V.size(); ++j){
             if(V[j]->core == core_id){
-                first_term += V[j]->c * ( 1 + std::floor( (interval + R_nodes[y][j] - V[j]->c) / taskset.tasks[y].getPeriod() ));
+                first_term += V[j]->c * ( 1 + std::floor( (interval + V[j]->r - V[j]->c) / taskset.tasks[y].getPeriod() ));
+
+                if(V[j]->r > R_bar)
+                    R_bar = V[j]->r;
+
+                if(METHOD_VERBOSE) std::cout<<"maxinterf --> y: "<<y<<", "<<j<<" "<<V[j]->r<<" "<<R_bar<<std::endl;
             }
-            tot_R += R_nodes[y][j];
         }
-
-
-
-        second_term += (1 + std::floor( (interval + tot_R - taskset.tasks[y].getpVolume()[core_id] ) / taskset.tasks[y].getPeriod())) * taskset.tasks[y].getpVolume()[core_id];
+        second_term += (1 + std::floor( (interval + R_bar - taskset.tasks[y].getpVolume()[core_id] ) / taskset.tasks[y].getPeriod())) * taskset.tasks[y].getpVolume()[core_id];
     }
 
     if(METHOD_VERBOSE) std::cout<<"interval:"<<interval<<std::endl;
@@ -95,11 +96,11 @@ float computeMaximumInterference(const float interval, const std::vector<std::ve
     return std::min(first_term, second_term);
 }
 
-float Theorem1Casini2018(const SSTask& tau_ss, const std::vector<std::vector<float>>& R_nodes, const Taskset& taskset, const int task_idx, const float SI){
+float Theorem1Casini2018(const SSTask& tau_ss,  const Taskset& taskset, const int task_idx, const float SI){
 
     float base = 0;
 
-    for(int i=0; i<tau_ss.C.size() -1; ++i)
+    for(int i=0; i<tau_ss.C.size() - 1; ++i)
         base += tau_ss.C[i];
     
     float S_part = 0;
@@ -119,7 +120,7 @@ float Theorem1Casini2018(const SSTask& tau_ss, const std::vector<std::vector<flo
         R_prime_old = R_prime;
 
         //computing blocking from lp
-        multiset_B = computeMultisetB(tau_ss.C.size(), R_prime_old, R_nodes, taskset, task_idx, tau_ss.coreId);
+        multiset_B = computeMultisetB(tau_ss.C.size(), R_prime_old,  taskset, task_idx, tau_ss.coreId);
         if(METHOD_VERBOSE) printVector<float>(multiset_B, "multiset_B");
         b = 0;
         for(const auto B:multiset_B)
@@ -128,7 +129,7 @@ float Theorem1Casini2018(const SSTask& tau_ss, const std::vector<std::vector<flo
         if(METHOD_VERBOSE) std::cout<<"b: "<<b<<std::endl;
 
         //computing interference from hp
-        I = computeMaximumInterference(R_prime_old, R_nodes, taskset, task_idx, tau_ss.coreId);
+        I = computeMaximumInterference(R_prime_old, taskset, task_idx, tau_ss.coreId);
 
         if(METHOD_VERBOSE) std::cout<<"I: "<<I<<std::endl;
 
@@ -143,7 +144,7 @@ float Theorem1Casini2018(const SSTask& tau_ss, const std::vector<std::vector<flo
 
 }
 
-float Theorem2Casini2018(const int k, const SSTask& tau_ss, const std::vector<float>& R_ss, const std::vector<std::vector<float>>& R_nodes, const Taskset& taskset, const int task_idx, const float SI){
+float Theorem2Casini2018(const int k, const SSTask& tau_ss, const std::vector<float>& R_ss, const Taskset& taskset, const int task_idx, const float SI){
     float R = 0;
 
     for(int i=0; i<= k; ++i)
@@ -155,17 +156,12 @@ float Theorem2Casini2018(const int k, const SSTask& tau_ss, const std::vector<fl
     R += std::min(S_part, tau_ss.Sub);
 
     float r_k = (k == 0)? 0 : R_ss[k-1] + tau_ss.S[k-1];
-    std::vector<float> multiset_B = computeMultisetB(k, r_k, R_nodes, taskset, task_idx, tau_ss.coreId);
+    std::vector<float> multiset_B = computeMultisetB(k+1, r_k, taskset, task_idx, tau_ss.coreId);
 
     float bI = 0;
     float delta = 0;
     float new_delta = 0;
 
-    // This does not convince me at all, but it is implemented as it is in the paper. 
-    // We account for high interference only when:
-    //  (i) there is more than 1 C block in tau_ss 
-    //  (ii) there is at least one lower priority job
-    // that does not work imho
     for(const auto B:multiset_B){
 
         delta = 0;
@@ -174,7 +170,7 @@ float Theorem2Casini2018(const int k, const SSTask& tau_ss, const std::vector<fl
         //equation 6
         while(new_delta != delta){
             delta = new_delta;
-            new_delta = B + computeMaximumInterference(delta, R_nodes, taskset, task_idx, tau_ss.coreId);
+            new_delta = B + computeMaximumInterference(delta, taskset, task_idx, tau_ss.coreId) + SI;
         }
 
         bI += new_delta;
@@ -183,46 +179,47 @@ float Theorem2Casini2018(const int k, const SSTask& tau_ss, const std::vector<fl
     
     if(METHOD_VERBOSE) std::cout<<"R: "<<R<<" bI: "<<bI<<" SI: "<<SI<<std::endl;
     //equation 7
-    return R + bI + SI;
+    return R + bI;
 }
 
 
-float computeWCRTssCasini(const SSTask& tau_ss, const std::vector<int>& path_ss, const Taskset& taskset, const int task_idx, const std::vector<std::vector<float>>& R_nodes){
+float computeWCRTssCasini(const SSTask& tau_ss, const std::vector<int>& path_ss, const Taskset& taskset, const int task_idx, std::vector<std::vector<float>>& RTs){
 
     float SI = computeSI(path_ss, taskset.tasks[task_idx]);
 
     if(METHOD_VERBOSE) std::cout<<"SI:"<<SI<<std::endl;
     std::vector<float> R_ss(tau_ss.C.size(), 0);
     
-    float R1 = Theorem1Casini2018(tau_ss, R_nodes, taskset, task_idx, SI);
+    float R1 = Theorem1Casini2018(tau_ss, taskset, task_idx, SI);
     if(METHOD_VERBOSE) std::cout<<"R1: "<<R1<<std::endl;
     float R2, R1_j;
     float final_R = 0;
     for(int j = 0; j< tau_ss.C.size(); ++j){
-        R2 = Theorem2Casini2018(j, tau_ss, R_ss, R_nodes, taskset, task_idx, SI);
+        R2 = Theorem2Casini2018(j, tau_ss, R_ss, taskset, task_idx, SI);
 
         R1_j = R1;
         for(int k=j+1; k<tau_ss.C.size(); ++k)
             R1_j -= tau_ss.C[k];
 
-        for(int k=j+1; k<tau_ss.S.size(); ++k)
+        for(int k=j; k<tau_ss.S.size(); ++k)
             R1_j -= tau_ss.S[k];
 
         if(METHOD_VERBOSE) std::cout<<"R2: "<<R2<<std::endl;
         if(METHOD_VERBOSE) std::cout<<"R1_j: "<<R1_j<<std::endl;
         R_ss[j] = std::min(R2, R1_j);
+        if(R_ss[j] < RTs[tau_ss.CvID[j]][tau_ss.CvID[j]])
+            RTs[tau_ss.CvID[j]][tau_ss.CvID[j]] = R_ss[j];
         if(R_ss[j] > final_R)
             final_R = R_ss[j];
     }
 
-    final_R = R1;
     if(METHOD_VERBOSE) std::cout<<"final R: "<<final_R<<std::endl;
 
     return final_R;
 }
 
 
-float pathAnalysisImproved(const std::vector<int>& path_ss, const Taskset& taskset, const int task_idx, std::vector<std::vector<float>>& RTs, const bool is_root, const std::vector<std::vector<float>>& R_nodes ){
+float pathAnalysisImproved(const std::vector<int>& path_ss, const Taskset& taskset, const int task_idx, std::vector<std::vector<float>>& RTs, const bool is_root ){
     //algorithm 5
     if(METHOD_VERBOSE) std::cout<<"starting path analysis improved"<<std::endl;
     if(METHOD_VERBOSE) printVector<int>(path_ss, "path ss");
@@ -234,7 +231,7 @@ float pathAnalysisImproved(const std::vector<int>& path_ss, const Taskset& tasks
 
     if(path_ss.size() == 1){
         SSTask task_ss = deriveSSTask(V, path_ss, first->core, RTs);
-        float R_task_ss = computeWCRTssCasini(task_ss, path_ss, taskset, task_idx, R_nodes);
+        float R_task_ss = computeWCRTssCasini(task_ss, path_ss, taskset, task_idx, RTs);
         RTs[first->id][last->id] = R_task_ss;
         if(METHOD_VERBOSE) std::cout<<"RT "<<first->id<<", "<<last->id<<": "<<R_task_ss<<std::endl;
     }
@@ -242,9 +239,9 @@ float pathAnalysisImproved(const std::vector<int>& path_ss, const Taskset& tasks
         if(first->core == last->core){
             std::vector<int> path_sub (path_ss.begin()+1, path_ss.end()-1);
             if(path_sub.size() > 0)
-                pathAnalysisImproved(path_sub, taskset, task_idx, RTs, false, R_nodes);
+                pathAnalysisImproved(path_sub, taskset, task_idx, RTs, false);
             SSTask task_ss = deriveSSTask(V, path_ss, first->core, RTs);
-            float R_task_ss = computeWCRTssCasini(task_ss, path_ss, taskset, task_idx, R_nodes);
+            float R_task_ss = computeWCRTssCasini(task_ss, path_ss, taskset, task_idx, RTs);
             RTs[first->id][last->id] = R_task_ss - task_ss.Sub;
             if(METHOD_VERBOSE) std::cout<<"RT "<<first->id<<", "<<last->id<<": "<<RTs[first->id][last->id]<<std::endl;
         }
@@ -256,9 +253,9 @@ float pathAnalysisImproved(const std::vector<int>& path_ss, const Taskset& tasks
                     break;
             }
             std::vector<int> path_sub (path_ss.begin()+i, path_ss.end());
-            pathAnalysisImproved(path_sub, taskset, task_idx, RTs, false, R_nodes);
+            pathAnalysisImproved(path_sub, taskset, task_idx, RTs, false);
             std::vector<int> path_sub_2 (path_ss.begin(), path_ss.end()-1);
-            pathAnalysisImproved(path_sub_2, taskset, task_idx, RTs, false, R_nodes);
+            pathAnalysisImproved(path_sub_2, taskset, task_idx, RTs, false);
         }
     }
 
@@ -295,13 +292,13 @@ bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m){
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
     //algorithm 3
 
-    std::vector<std::vector<float>> new_R_nodes(taskset.tasks.size());
+    std::vector<std::vector<float>> R_star(taskset.tasks.size());
     for(int x=0; x<taskset.tasks.size(); ++x){    
         taskset.tasks[x].R = 0;
         taskset.tasks[x].computepVolume();
         
         std::vector<SubTask*> V = taskset.tasks[x].getVertices();
-        new_R_nodes[x].resize(V.size());
+        R_star[x].resize(V.size());
 
         for(int i=0;i<V.size();++i){
             auto desc = taskset.tasks[x].getSubTaskDescendants(i);
@@ -315,45 +312,155 @@ bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m){
     }
         
     bool at_least_one_update = true;
-    
+    bool return_true = true;
+
+    int it=0;
     while(at_least_one_update){
 
+        for(int x=0; x<taskset.tasks.size(); ++x)
+            taskset.tasks[x].R = 0;
+
+        std::cout<<"\tit:"<<it++<<std::endl;
         if(METHOD_VERBOSE) std::cout<<"NEW ITERATION-----------------------------------"<<std::endl;
         at_least_one_update = false;
 
-        for(int x=0; x<new_R_nodes.size(); ++x)
-            for(int i=0; i<new_R_nodes[x].size(); ++i)
-                new_R_nodes[x][i] = 0;
+        for(int x=0; x<R_star.size(); ++x)
+            for(int i=0; i<R_star[x].size(); ++i)
+                R_star[x][i] = 0;
 
         for(int x=0; x<taskset.tasks.size(); ++x){    
-            std::vector<std::vector<int>> all_paths= taskset.tasks[x].computeAllPaths();
+            std::vector<std::vector<int>> all_paths = taskset.tasks[x].computeAllPaths();
             std::vector<SubTask*> V = taskset.tasks[x].getVertices();
             std::vector<std::vector<float>> RTs (V.size(), std::vector<float>(V.size(), 0));
             for(const auto& p:all_paths){
-                float RT = pathAnalysisImproved(p,taskset, x, RTs, true, new_R_nodes);
+                float RT = pathAnalysisImproved(p,taskset, x, RTs, true);
                 taskset.tasks[x].R = std::max(taskset.tasks[x].R, RT);
                 
                 if(METHOD_VERBOSE) std::cout<<"taskset.tasks["<<x<<"].R "<<taskset.tasks[x].R<<std::endl;
-                if(taskset.tasks[x].R > taskset.tasks[x].getDeadline())
-                    return false;
 
-                for(const auto& v:p)
-                    new_R_nodes[x][v] = std::max(new_R_nodes[x][v], RTs[v][v]);
+                for(const auto& v:p){
+                    if(METHOD_VERBOSE) std::cout<<"RT vv: "<<RTs[v][v]<<std::endl;
 
+                    R_star[x][v] = std::max(R_star[x][v], RTs[v][v]);
+                }
             }
-
         }
 
-        for(int x=0; x<new_R_nodes.size(); ++x){
+        return_true = true;
+        for(int x=0; x<taskset.tasks.size(); ++x){    
+            if(taskset.tasks[x].R > taskset.tasks[x].getDeadline())
+                return_true = false;
+        }
+        if(return_true) 
+            return true;
+
+        for(int x=0; x<R_star.size(); ++x){
             std::vector<SubTask*> V = taskset.tasks[x].getVertices();
-            for(int i=0; i<new_R_nodes[x].size(); ++i){
-                if(new_R_nodes[x][i] < V[i]->r)
+            for(int i=0; i<R_star[x].size(); ++i){
+                if(R_star[x][i] < V[i]->r && R_star[x][i] !=0){
+                    if(METHOD_VERBOSE) std::cout<<"\t\tR*: "<< R_star[x][i]<<" R_: "<< V[i]->r<<std::endl;
                     at_least_one_update = true;
-                
-                V[i]->r = std::min(new_R_nodes[x][i], V[i]->r);
+                    }
+                if(R_star[x][i] > 0)
+                    V[i]->r = std::min(R_star[x][i], V[i]->r);
             }
         }
     }
     
+    return false;
+}
+
+//TOTALLY TO TEST
+bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m){
+
+    // switch (t_order){
+    // case INC_DEAD:
+    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsDeadlineInc);
+    //     break;
+    // case DEC_DEAD:
+    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsDeadlineDec);
+    //     break;
+    // case INC_PRIO:
+    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsPeriodInc);
+    //     break;
+    // case DEC_PRIO:
+    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsPeriodDec);
+    //     break;
+    // case INC_UTIL:
+    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsUtilInc);
+    //     break;
+    // case DEC_UTIL:
+    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsUtilDec);
+    //     break;
+    // }    
+
+
+    std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
+
+    std::vector<float> proc_util(m, 0);
+    Taskset taskset_prime;
+    float cur_subtask_util= 0;
+
+    PartitioningCoresOrder_t c_order = PartitioningCoresOrder_t::WORST_FIT;
+
+    for(int x=0; x<taskset.tasks.size();++x){
+
+        
+        DAGTask tau_x;
+        tau_x.setDeadline(taskset.tasks[x].getDeadline());
+        tau_x.setPeriod(taskset.tasks[x].getPeriod());
+        taskset_prime.tasks.push_back(tau_x);
+        std::vector<SubTask*> V_prime = taskset_prime.tasks[x].getVertices();
+
+        std::vector<SubTask*> V = taskset.tasks[x].getVertices();
+        for(int i=0; i<V.size(); ++i){
+            SubTask * v = new SubTask;
+            v->c = V[i]->c;
+            v->id = V[i]->id;
+            V_prime.push_back(v);
+
+            for(int j=0; j<=i; ++j){
+                for(const auto s: V[j]->succ)
+                    if(s->id < V_prime.size())
+                        V_prime[j]->succ.push_back(V_prime[s->id]);
+                
+                for(const auto p: V[j]->pred)
+                    if(p->id < V_prime.size())
+                        V_prime[j]->pred.push_back(V_prime[p->id]);
+            }
+        
+            taskset_prime.tasks[x].setVertices(V_prime);
+            taskset_prime.tasks[x].computeUtilization();
+
+
+            std::vector<int> candidates_cores = getCandidatesProcInOrder(proc_util, taskset_prime.tasks[x].getUtilization(), c_order);
+            if(candidates_cores.empty()){
+                for(int y=0; y<taskset_prime.tasks.size();++y)
+                    taskset_prime.tasks[y].destroyVerices();
+                return false;
+            }
+
+            bool found = false;
+
+            for(int p=0; p<candidates_cores.size();++p){
+                V_prime[i]->core = candidates_cores[p];
+
+                if(P_LP_FTP_Casini2018_C(taskset_prime, m)){
+                    V[i]->core = candidates_cores[p];
+                    found = true;
+                    break;
+                }
+            }
+
+            if(!found){
+                for(int y=0; y<taskset_prime.tasks.size();++y)
+                    taskset_prime.tasks[y].destroyVerices();
+                return false;
+            }
+        }
+    }
+
+    for(int y=0; y<taskset_prime.tasks.size();++y)
+        taskset_prime.tasks[y].destroyVerices();
     return true;
 }

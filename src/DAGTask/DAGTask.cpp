@@ -304,3 +304,27 @@ std::vector<std::vector<int>> DAGTask::computeAllPaths() const{
 
     return all_paths;
 }
+
+bool compareDAGsDeadlineInc(const DAGTask& a, const DAGTask& b){
+    return a.getDeadline() < b.getDeadline();
+}
+
+bool compareDAGsDeadlineDec(const DAGTask& a, const DAGTask& b){
+    return a.getDeadline() > b.getDeadline();
+}
+
+bool compareDAGsPeriodInc(const DAGTask& a, const DAGTask& b){
+    return a.getPeriod() < b.getPeriod();
+}
+
+bool compareDAGsPeriodDec(const DAGTask& a, const DAGTask& b){
+    return a.getPeriod() > b.getPeriod();
+}
+
+bool compareDAGsUtilInc(const DAGTask& a, const DAGTask& b){
+    return a.getUtilization() < b.getUtilization();
+}
+
+bool compareDAGsUtilDec(const DAGTask& a, const DAGTask& b){
+    return a.getUtilization() > b.getUtilization();
+}

@@ -5,8 +5,18 @@
 #include "DAGTask.h"
 #include "Taskset.h"
 
-bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y);
+//common
+enum PartitioningTaskOrder_t {INC_DEAD, DEC_DEAD, INC_PRIO, DEC_PRIO, INC_UTIL, DEC_UTIL};
+enum PartitioningCoresOrder_t {FIRST_FIT, BEST_FIT, WORST_FIT};
 
+bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y);
+std::vector<int> getCandidatesProcInOrder(const std::vector<float>& proc_util, const float cur_util, const PartitioningCoresOrder_t& c_order);
+
+bool WorstFitProcessorsAssignment(Taskset& taskset, const int m);
+bool BestFitProcessorsAssignment(Taskset& taskset, const int m);
+
+
+//methods from here
 bool Graham1969(const DAGTask& task, const int m); 
 
 //global policy, fully preemptive
@@ -53,6 +63,7 @@ class SSTask{
     public:
     std::vector<float> S;
     std::vector<float> C;
+    std::vector<int> CvID;
     float Sub = 0;
     int coreId = 0;
 
