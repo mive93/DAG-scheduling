@@ -80,8 +80,13 @@ class SSTask{
 SSTask deriveSSTask(const std::vector<SubTask*>& V, const std::vector<int>& path_ss, const int core_id, const std::vector<std::vector<float>>& RTs);
 bool P_FP_FTP_Fonseca2016_C(Taskset taskset, const int m, const bool joint=true);
 bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m);
+bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m);
 
 bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m);
+
+#ifdef ZAHAF2019
+bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m);
+#endif
 
 // if you have time (but you don't)
 // bool GP_FP_Chang2020_C(const DAGTask& task, const int m); //TODO

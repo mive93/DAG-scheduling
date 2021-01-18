@@ -288,6 +288,14 @@ float pathAnalysisImproved(const std::vector<int>& path_ss, const Taskset& tasks
 }
 
 bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m){
+
+    // int tot_v = 0;
+    // for(int x=0; x<taskset.tasks.size(); ++x){    
+    //     tot_v += taskset.tasks[x].getVertices().size();
+    // }
+
+    // std::cout<<"\ttot tasks: "<<taskset.tasks.size()<<" tot v: "<<tot_v<<std::endl;
+    
     //to give prios
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
     //algorithm 3
@@ -320,7 +328,7 @@ bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m){
         for(int x=0; x<taskset.tasks.size(); ++x)
             taskset.tasks[x].R = 0;
 
-        std::cout<<"\tit:"<<it++<<std::endl;
+        // std::cout<<"\t\tit:"<<it++<<std::endl;
         if(METHOD_VERBOSE) std::cout<<"NEW ITERATION-----------------------------------"<<std::endl;
         at_least_one_update = false;
 

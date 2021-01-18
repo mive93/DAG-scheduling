@@ -108,6 +108,9 @@ int main(int argc, char **argv){
         //partitioned
         std::cout<< "\tFonseca 2016 constrained (P-FP-FTP): "<<P_FP_FTP_Fonseca2016_C(taskset, n_proc)<<std::endl;
         std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
+        #ifdef ZAHAF2019
+        std::cout<< "\tZahaf: "<<P_LP_EDF_Zahaf2019_C(taskset, n_proc)<<std::endl;
+        #endif
     }
 
     std::cout<< "\tFonseca 2019 arbitrary (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc, false)<<std::endl;
