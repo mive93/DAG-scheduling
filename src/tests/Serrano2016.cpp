@@ -63,13 +63,17 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m){
     float blocking = 0;
     float SI = 0;
 
-    for(int i=0; i<taskset.tasks.size(); ++i){
+    bool at_least_one_update = true;
+    bool init = true;
 
-        if(R_old[i] > taskset.tasks[i].getDeadline())
-            return false;
+    while(at_least_one_update){
+        at_least_one_update = false;
 
-        bool init = true;
-        while(!areEqual<float>(R[i], R_old[i]) && R[i] <= taskset.tasks[i].getDeadline()){
+        for(int i=0; i<taskset.tasks.size(); ++i){
+
+            if(R_old[i] > taskset.tasks[i].getDeadline())
+                return false;
+
             if(!init){
                 R_old[i] = R[i];
                 R[i] = 0;
@@ -87,16 +91,17 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m){
             SI = (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
 
             //final response time
-            R[i] = taskset.tasks[i].getLength() + 1. / m * SI + std::floor(1. / m * (interf + blocking));
+            R[i] = taskset.tasks[i].getLength() + 1. / m * SI + std::floor(1. / m * (blocking + interf));
 
-            init = false;
-        }
-        if (R[i] > taskset.tasks[i].getDeadline())
-            return false;
-
-        if( areEqual<float>(R[i], R_old[i])){
             taskset.tasks[i].R = R[i];
+
+            if( !areEqual<float>(R[i], R_old[i]))
+                at_least_one_update = true;
+            
+            if (R[i] > taskset.tasks[i].getDeadline())
+                return false;
         }
+        init = false;
     }
     return true;
 }

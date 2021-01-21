@@ -33,6 +33,17 @@ bool test(std::istream &in,
 	// auto graph = std::ostringstream();
 	// auto rta = std::ostringstream();
 
+    if(space.is_schedulable() && METHOD_VERBOSE){
+
+        std::cout<<"\tBCRT: ";
+        for (const auto& j : problem.jobs) {
+            Interval<dtime_t> finish = space.get_finish_times(j);
+            std::cout<<"["<< j.get_task_id() << ", " << j.get_job_id() << "] ";
+            std::cout<<std::max<long long>(0,(finish.from() - j.earliest_arrival()))<<" ";
+            // std::cout<<(finish.until() - j.earliest_arrival())<<" ";
+        }
+        std::cout<<std::endl;
+    }
 
 	return space.is_schedulable(); 
 }
@@ -46,8 +57,6 @@ std::string convertTasksetToCsv(Taskset& taskset){
         // taskset.tasks[x].computeLSTs();
 
         for(int i=0; i<V.size(); ++i){
-
-            
             task_set += std::to_string(x) +  //Task ID
                         ", " + std::to_string(i) +  //Job ID
                         ", 0 " + //Release min

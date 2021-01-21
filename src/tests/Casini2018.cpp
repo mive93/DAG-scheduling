@@ -116,7 +116,7 @@ float Theorem1Casini2018(const SSTask& tau_ss,  const Taskset& taskset, const in
     std::vector<float> multiset_B;
 
     if(METHOD_VERBOSE) std::cout<<"base: "<<base<<std::endl;
-    while(R_prime_old != R_prime){
+    // while(R_prime_old != R_prime){
         R_prime_old = R_prime;
 
         //computing blocking from lp
@@ -135,7 +135,7 @@ float Theorem1Casini2018(const SSTask& tau_ss,  const Taskset& taskset, const in
 
         //equation 4
         R_prime = base + b + I + SI;
-    }
+    // }
 
     
     //equation 3
@@ -168,10 +168,10 @@ float Theorem2Casini2018(const int k, const SSTask& tau_ss, const std::vector<fl
         new_delta = B;
 
         //equation 6
-        while(new_delta != delta){
+        // while(new_delta != delta){
             delta = new_delta;
             new_delta = B + computeMaximumInterference(delta, taskset, task_idx, tau_ss.coreId) + SI;
-        }
+        // }
 
         bI += new_delta;
 

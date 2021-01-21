@@ -77,7 +77,7 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
         t.expandTaskSeriesParallel(nullptr, nullptr,gp.recDepth,0,false,gp);
         t.assignWCET(gp.Cmin, gp.Cmax);
         if( !(  gp.aType == AlgorithmType_t::FTP 
-                && gp.DAGType ==DAGType_t::DAG )    )
+                && gp.DAGType ==DAGType_t::DAG ) || gp.sType == SchedulingType_t::PARTITIONED )
             t.makeItDag(gp.addProb);
 
         t.transitiveReduction();
@@ -105,6 +105,7 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
             if(gp.dtype == DeadlinesType_t::IMPLICIT)
                 t.setDeadline(t.getPeriod());
             t.computeDensity();
+            t.computeUtilization();
             U += t.getWCW() / t.getPeriod();
         }
         else{
@@ -117,6 +118,7 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
                     t.setDeadline(t.getPeriod());
 
                 t.computeDensity();
+                t.computeUtilization();
                 U += t.getWCW() / t.getPeriod();
             }
             else{
@@ -126,9 +128,10 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
                     t.setDeadline(t.getPeriod());
 
                 t.computeDensity();
+                t.computeUtilization();
                 U += t.getWCW() / t.getPeriod();
 
-                if( U > U_tot){
+                if( U > U_tot || i == n_tasks - 1){
                     float U_prev = U - t.getWCW() / t.getPeriod();
                     float U_target = U_tot - U_prev;
                     float t_to_assign = std::floor(t.getWCW() / U_target);
@@ -137,6 +140,7 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
                         d_to_assign = t_to_assign;
                     t.assignFixedSchedParameters(t_to_assign, d_to_assign);
                     t.computeDensity();
+                    t.computeUtilization();
                     U = U_prev + t.getWCW() / t.getPeriod();
                     n_tasks = i;
                     tasks.push_back(t);

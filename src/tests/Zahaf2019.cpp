@@ -37,9 +37,9 @@ bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m){
     platform::Processor p(0, CPU, EDFFP);
     platform::Platform pl(m * p);
 
-    std::cout<<"Analysis Zahaf started"<<std::endl;
+    // std::cout<<"Analysis Zahaf started"<<std::endl;
     bool res = analysis::analyse(&pl, &ts, PARTIAL, FAIR, WF,  RANDOM);
-    std::cout<<"Analysis Zahaf concluded"<<std::endl;
+    // std::cout<<"Analysis Zahaf concluded"<<std::endl;
 
     //delete everything
 

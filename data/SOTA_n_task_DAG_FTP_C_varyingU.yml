@@ -1,4 +1,4 @@
-maxParBranches: 8
+maxParBranches: 6
 recDepth: 2
 pCond : 0
 pPar: 0.8
@@ -13,7 +13,7 @@ Umin: 0
 Umax: 7
 stepU : 0.25
 m : 8
-tasksetPerVarFactor : 50
+tasksetPerVarFactor : 100
 nTasks: 10000
 gType : 1
 dtype : 0
