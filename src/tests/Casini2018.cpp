@@ -378,42 +378,15 @@ bool P_LP_FTP_Casini2018_C(Taskset taskset, const int m){
     return false;
 }
 
-//TOTALLY TO TEST
-bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m){
-
-    // switch (t_order){
-    // case INC_DEAD:
-    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsDeadlineInc);
-    //     break;
-    // case DEC_DEAD:
-    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsDeadlineDec);
-    //     break;
-    // case INC_PRIO:
-    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsPeriodInc);
-    //     break;
-    // case DEC_PRIO:
-    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsPeriodDec);
-    //     break;
-    // case INC_UTIL:
-    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsUtilInc);
-    //     break;
-    // case DEC_UTIL:
-    //     std::sort(taskset.tasks.begin(), taskset.tasks.end(), compareDAGsUtilDec);
-    //     break;
-    // }    
-
-
+bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m, const PartitioningCoresOrder_t c_order){
+    //sorting for priorities
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
 
     std::vector<float> proc_util(m, 0);
     Taskset taskset_prime;
     float cur_subtask_util= 0;
 
-    PartitioningCoresOrder_t c_order = PartitioningCoresOrder_t::WORST_FIT;
-
     for(int x=0; x<taskset.tasks.size();++x){
-
-        
         DAGTask tau_x;
         tau_x.setDeadline(taskset.tasks[x].getDeadline());
         tau_x.setPeriod(taskset.tasks[x].getPeriod());
@@ -441,7 +414,7 @@ bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m){
             taskset_prime.tasks[x].computeUtilization();
 
 
-            std::vector<int> candidates_cores = getCandidatesProcInOrder(proc_util, taskset_prime.tasks[x].getUtilization(), c_order);
+            std::vector<int> candidates_cores = getCandidatesProcInOrder(proc_util, V[i]->c / taskset.tasks[x].getPeriod(), c_order);
             if(candidates_cores.empty()){
                 for(int y=0; y<taskset_prime.tasks.size();++y)
                     taskset_prime.tasks[y].destroyVerices();
@@ -455,6 +428,7 @@ bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m){
 
                 if(P_LP_FTP_Casini2018_C(taskset_prime, m)){
                     V[i]->core = candidates_cores[p];
+                    proc_util[p] += V[i]->c / taskset.tasks[x].getPeriod();
                     found = true;
                     break;
                 }

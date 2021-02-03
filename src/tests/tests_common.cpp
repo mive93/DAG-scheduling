@@ -35,7 +35,7 @@ std::vector<int> getCandidatesProcInOrder(const std::vector<float>& proc_util, c
         for(int p=0; p<proc_util.size(); ++p)
             if( 1 - proc_util[p] >= cur_util                            // can accomodate             
                 && 1 - proc_util[p] - cur_util < min_proc_util_diff )       // the difference is smaller than in other processor (best fit)
-                proc_val.push_back(std::make_pair(p, proc_util[p] - cur_util));
+                proc_val.push_back(std::make_pair(p, 1- proc_util[p] - cur_util));
         std::sort(proc_val.begin(), proc_val.end(), sortPairProcInc);   // sorting for increasing difference (best fit)
         for(const auto& pv:proc_val)
             candidates_cores.push_back(pv.first);

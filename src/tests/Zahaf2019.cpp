@@ -10,47 +10,40 @@
 
 bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m){
 
-    task::Taskset ts;
+    std::ofstream output_file;
+    std::string filename = "cur_zahaf2019.txt";
+    output_file.open (filename);
 
+    int prev_v = 0;
+  
     for(int x=0; x<taskset.tasks.size(); ++x){    
         std::vector<SubTask*> V = taskset.tasks[x].getVertices();
-        task::Task *tau = new task::Task(x);
-        tau->_D(taskset.tasks[x].getDeadline());
-        tau->_T(taskset.tasks[x].getPeriod());
         for(int i=0;i<V.size();++i)
-            task::Subtask *v1 = new task::Subtask(i, V[i]->c, COMPUTE, CPU, tau);
+            output_file<<"Node J"<<(V[i]->id+1)+prev_v<<" (C="<<V[i]->c<<", TAG=CPU);\n";
 
-        auto *subtask = tau->_subtasks();
+        output_file<<"Graph tau"<<x+1<<" (D="<<taskset.tasks[x].getDeadline()<<", T="<<taskset.tasks[x].getPeriod()<<");\n";
+        output_file<<"tau"<<x+1<<" = {\n";
 
         for(int i=0;i<V.size();++i)
             for(int j=0; j<V[i]->succ.size(); ++j)
-                tau->link_two_subtasks((*subtask)[i],(*subtask)[V[i]->succ[j]->id]);
+                output_file<<"precond( J"<<(V[i]->id+1)+prev_v<<", J"<<(V[i]->succ[j]->id+1)+prev_v<<");\n";
+        output_file<<"};\n";
 
-        tau->to_dot("zahaf_"+std::to_string(x)+".dot");
-        std::string dot_command = "dot -Tpng zahaf_"+std::to_string(x)+".dot > zahaf_"+std::to_string(x)+".png";
-        system(dot_command.c_str());
-
-        ts.add(tau);
+        prev_v +=  V.size();
     }
 
-    
-    platform::Processor p(0, CPU, EDFFP);
-    platform::Platform pl(m * p);
+    // output_file<<"generate(tau1,\"tau.dot\", BOTH);\n";
+    // system("dot -Tpng tau.dot > tau.png");
+    output_file<<"Platform((CPU,EDFFP)*"<<m<<");\n";
+    output_file<<"build();\n";
+    output_file<<"analyse(PARTIAL, FAIR, WF, RANDOM);\n";
 
-    // std::cout<<"Analysis Zahaf started"<<std::endl;
-    bool res = analysis::analyse(&pl, &ts, PARTIAL, FAIR, WF,  RANDOM);
-    // std::cout<<"Analysis Zahaf concluded"<<std::endl;
+    output_file.close();
 
-    //delete everything
+    hdag_driver *driver = new hdag_driver();
+    int res = driver->parse(filename);
 
-    auto tasks = *ts._list();
-    for(int x=0; x<tasks.size(); ++x){
-        auto subtask = *tasks[x]->_subtasks();
-        for(int i=0; i<subtask.size(); ++i)
-            delete subtask[i];
-
-        delete tasks[x];
-    }
+    delete driver;
 
     return res;
 }

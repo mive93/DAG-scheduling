@@ -1,6 +1,15 @@
 #include "Taskset.h"
 
 
+void Taskset::print() const{
+    for(int i=0; i<tasks.size();++i)
+        std::cout<<tasks[i]<<std::endl;
+    
+    std::cout<<"U: "<<U<<std::endl;
+    std::cout<<"HP: "<<HP<<std::endl;
+    std::cout<<"Max density: "<<maxDelta<<std::endl<<std::endl;
+}
+
 void Taskset::computeUtilization(){
     U = 0;
     for(const auto& task: tasks){
@@ -112,7 +121,6 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
             if(n_tasks == 1){
                 float t_to_assign = std::floor(t.getWCW() / U_tot);
                 float d_to_assign = floatRandMaxMin(std::min(t.getLength(), t_to_assign), t_to_assign);
-                std::cout<<t_to_assign<<" "<<d_to_assign<<" "<< t.getLength()<<std::endl;
                 t.assignFixedSchedParameters(t_to_assign, d_to_assign);
                 if(gp.dtype == DeadlinesType_t::IMPLICIT)
                     t.setDeadline(t.getPeriod());

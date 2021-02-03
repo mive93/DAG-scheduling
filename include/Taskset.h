@@ -29,8 +29,9 @@ class Taskset{
     void computeHyperPeriod();
     void computeMaxDensity();
 
-    //read taskset
+    //IO
     void readTasksetFromYaml(const std::string& params_path);
+    void print() const;
 
     //generate taskset 
     float UUniFast_Upart(float& sum_U, const int i, const int n_tasks, const DAGTask& t );

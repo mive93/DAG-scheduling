@@ -31,6 +31,9 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
     int test_idx = -1;
     SimpleTimer timer;
 
+    int min_V_all  = 100;
+    int max_V_all  = 0;
+
     for(int i=0; i<gp.nTasksets; ++i){
         if(gp.gType == GenerationType_t::VARYING_U && i % gp.tasksetPerVarFactor == 0){
             U_curr += gp.stepU;
@@ -51,7 +54,15 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
         Taskset task_set;
         task_set.generate_taskset_Melani(n_tasks, U_curr, m, gp);
 
-        std::cout<<"taskset: "<<i<<" U: "<<U_curr<<" ntasks: "<<task_set.tasks.size()<<" m:"<<m<< " test_idx: "<<test_idx<<std::endl;
+        int max_v_size = 0;
+        for(int ii=0; ii<task_set.tasks.size(); ++ii)
+            if(task_set.tasks[ii].getVertices().size() > max_v_size)
+                max_v_size = task_set.tasks[ii].getVertices().size();
+
+        if (max_v_size > max_V_all) max_V_all = max_v_size;
+        if (max_v_size < min_V_all) min_V_all = max_v_size;
+
+        std::cout<<"taskset: "<<i<<" U: "<<U_curr<<" ntasks: "<<task_set.tasks.size()<<" max|V|: "<<max_V_all<<" min|V|: "<<min_V_all<<" m:"<<m<< " test_idx: "<<test_idx<<std::endl;
 
         // for(int x=0; x<task_set.tasks.size();++x){
         //     task_set.tasks[x].saveAsDot("test"+std::to_string(x)+".dot");
@@ -228,8 +239,10 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                  if(i % gp.tasksetPerVarFactor == 0){
                     sched_res["Fonseca2016"].push_back(0);
                     sched_res["Casini2018"].push_back(0);
-                    // sched_res["Casini2018_a"].push_back(0);
-                    sched_res["Serrano2016"].push_back(0);
+                    // sched_res["Casini2018_W"].push_back(0);
+                    // sched_res["Casini2018_B"].push_back(0);
+                    // sched_res["Casini2018_F"].push_back(0);
+                    // sched_res["Casini2018_P"].push_back(0);
                     #ifdef ZAHAF2019
                     sched_res["Zahaf2019"].push_back(0);
                     #endif
@@ -244,10 +257,25 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                 timer.tic();
                 sched_res["Casini2018"][test_idx] += P_LP_FTP_Casini2018_C(task_set, m);
                 time_res["Casini2018"].push_back(timer.toc());
+                
+                // timer.tic();
+                // int worst = P_LP_FTP_Casini2018_C_withAssignment(task_set, m, PartitioningCoresOrder_t::WORST_FIT);
+                // sched_res["Casini2018_W"][test_idx] += worst;
+                // time_res["Casini2018_W"].push_back(timer.toc());
 
-                // timer.tic();`
-                // sched_res["Casini2018_a"][test_idx] += P_LP_FTP_Casini2018_C_withAssignment(task_set, m);
-                // time_res["Casini2018_a"].push_back(timer.toc());
+                // timer.tic();
+                // int best = P_LP_FTP_Casini2018_C_withAssignment(task_set, m, PartitioningCoresOrder_t::BEST_FIT);
+                // sched_res["Casini2018_B"][test_idx] += best;
+                // time_res["Casini2018_B"].push_back(timer.toc());
+
+                // timer.tic();
+                // int first = P_LP_FTP_Casini2018_C_withAssignment(task_set, m, PartitioningCoresOrder_t::FIRST_FIT);
+                // sched_res["Casini2018_F"][test_idx] += first;
+                // time_res["Casini2018_F"].push_back(timer.toc());
+
+                // std::cout<<"PARTITIONED: "<<(first || best || worst)<<std::endl;
+                // sched_res["Casini2018_P"][test_idx] += (int) (first || best || worst);
+                // time_res["Casini2018_P"].push_back(time_res["Casini2018_F"].back() + time_res["Casini2018_B"].back() + time_res["Casini2018_W"].back());
 
                 #ifdef ZAHAF2019
                 timer.tic();
@@ -262,7 +290,7 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                 if(i % gp.tasksetPerVarFactor == 0){
                     sched_res["Melani2015"].push_back(0);
                     sched_res["Fonseca2016"].push_back(0);
-                    sched_res["Serrano2016"].push_back(0);
+                    // sched_res["Serrano2016"].push_back(0);
                     sched_res["Casini2018"].push_back(0);
                     sched_res["Fonseca2019"].push_back(0);
                     sched_res["Nasri2019"].push_back(0);
@@ -275,9 +303,9 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                 sched_res["Melani2015"][test_idx] +=  GP_FP_FTP_Melani2015_C(task_set, m);
                 time_res["Mel2015"].push_back(timer.toc());
 
-                timer.tic();
-                sched_res["Serrano2016"][test_idx] += GP_LP_FTP_Serrano16_C(task_set, m);
-                time_res["Serrano2016"].push_back(timer.toc());
+                // timer.tic();
+                // sched_res["Serrano2016"][test_idx] += GP_LP_FTP_Serrano16_C(task_set, m);
+                // time_res["Serrano2016"].push_back(timer.toc());
 
                 timer.tic();
                 sched_res["Fonseca2016"][test_idx] += P_FP_FTP_Fonseca2016_C(task_set, m);
