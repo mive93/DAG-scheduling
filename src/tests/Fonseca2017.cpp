@@ -282,27 +282,28 @@ bool GP_FP_FTP_Fonseca2017_C(Taskset taskset, const int m){
 
         bool init = true;
         while(!areEqual<float>(R[i], R_old[i]) && R[i] <= taskset.tasks[i].getDeadline()){
-            if(!init){
+            
+            if(!init)
                 R_old[i] = R[i];
-                R[i] = 0;
-            }
 
-            if(i > 0){
-                for(int j=0; j<i; ++j)
-                    R[i] += interTaskWorkload(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j]); 
+            //higher prio tasks interference
+            float hp_int = 0;
+            for(int j=0; j<i; ++j)
+                hp_int += interTaskWorkload(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j]); 
+            hp_int *= (1. / m);
 
-                R[i] *= (1. / m);
-                R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
-            }
-            else
-                R[i] = R_old[i];
-
+            // length + self interference
+            R[i] = taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength()) + hp_int;
             init = false;
+
+            // std::cout<<"i: "<<i<<" old: "<<R_old[i]<<" new: "<<R[i]<<" int: "<<hp_int<<std::endl;
+            if(R[i] < R_old[i])
+                break;
         }
 
-        if( areEqual<float>(R[i], R_old[i]))
-            taskset.tasks[i].R = R[i];
-        else if (R[i] > taskset.tasks[i].getDeadline())
+        // if( areEqual<float>(R[i], R_old[i]))
+        taskset.tasks[i].R = R[i];
+        if (taskset.tasks[i].R > taskset.tasks[i].getDeadline())
             return false;
     }
 

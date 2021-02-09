@@ -36,13 +36,18 @@ void testMatplotlib(){
 }
 
 void plotResults(std::map<std::string,std::vector<float>> sched_res, const std::vector<float>& x, const std::string& x_axis, const std::string& y_axis, const std::string& output_fig_path, bool show_plots=true){
-    std::vector<std::string> line_style = {"ro--", "b+--", "g*--", "ko--", "c+--", "m*--", "yo--", "r*--", "bo--"};
+    std::vector<std::string> line_colors = {"#0072BD", "#D95319", "#7E2F8E", "#77AC30", "#4DBEEE", "#A2142F", "#EDB120", "k", "#0072BD", "#D95319"};
+    std::vector<std::string> line_styles = {"-", "--", ":", "-.", "--", ":", "-.","-", "--", ":", "-.","-", "--", ":", "-."};
+    std::vector<std::string> line_marker = {".", "v", "*", "o", "+", ".", "X", "<","", "v", "*", ".", "+", "X", "4", "<"};
 
     matplotlibcpp::figure();
 
     int i=0;
-    for(std::map<std::string,std::vector<float>>::iterator iter = sched_res.begin(); iter != sched_res.end(); ++iter)
-        matplotlibcpp::named_plot(iter->first, x, iter->second, line_style[i++]);
+    for(std::map<std::string,std::vector<float>>::iterator iter = sched_res.begin(); iter != sched_res.end(); ++iter){
+        // std::cout<<line_colors[i]<<" "<<line_marker[i]<<" "<<line_styles[i]<<std::endl;
+        matplotlibcpp::named_plot_styled(iter->first, x, iter->second, line_colors[i], line_marker[i], line_styles[i]);
+        i++;
+    }
     
     matplotlibcpp::xlabel(x_axis);
     matplotlibcpp::ylabel(y_axis);

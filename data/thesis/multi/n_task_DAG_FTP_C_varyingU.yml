@@ -5,18 +5,18 @@ pPar: 0.8
 pTerm : 0.2
 Cmin: 1
 Cmax: 100
-addProb : 0.1
+addProb : 0.2
 probSCond : 0
-beta: 0.1
+beta: 0.28
 saveRate: 25
 Umin: 0
 Umax: 8
 stepU : 0.25
 m : 8
-nTasks: 10000
 tasksetPerVarFactor : 500
+nTasks: 10000
 gType : 1
 dtype : 0
 aType : 0
 wType : 1
-DAGType : 1
+DAGType : 0

@@ -140,27 +140,27 @@ bool GP_FP_FTP_Fonseca2019(Taskset taskset, const int m, bool constrained_deadli
 
         bool init = true;
         while(!areEqual<float>(R[i], R_old[i]) && R[i] <= taskset.tasks[i].getDeadline()){
-            if(!init){
+            if(!init)
                 R_old[i] = R[i];
-                R[i] = 0;
-            }
 
-            if(i > 0){
-                for(int j=0; j<i; ++j)
-                    R[i] += interTaskWorkload_C(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j], m, constrained_deadlines); 
+            //higher prio tasks interference
+            R[i] = 0;
+            for(int j=0; j<i; ++j)
+                R[i] += interTaskWorkload_C(taskset.tasks[j], R_old[i],  WD_UCO[j], WD_UCI[j], m, constrained_deadlines); 
+            R[i] *= (1. / m);
 
-                R[i] *= (1. / m);
-                R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
-            }
-            else
-                R[i] = R_old[i];
+            // length + self interference
+            R[i] += taskset.tasks[i].getLength() + 1. / m * (taskset.tasks[i].getVolume() - taskset.tasks[i].getLength());
+
+            if(R[i] < R_old[i])
+                break;
 
             init = false;
         }
 
-        if( areEqual<float>(R[i], R_old[i]))
+        // if( areEqual<float>(R[i], R_old[i]))
             taskset.tasks[i].R = R[i];
-        else if (R[i] > taskset.tasks[i].getDeadline())
+        if (R[i] > taskset.tasks[i].getDeadline())
             return false;
     }
 

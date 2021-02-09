@@ -262,8 +262,8 @@ bool GP_FP_EDF_Melani2015_C(Taskset taskset, const int m){
                                                     interferringWorkload(taskset.tasks[i], taskset.tasks[j], R_old[i], m));
                     }
                 }
-                R[i] += mksp[i];
                 R[i] = std::floor(R[i]);
+                R[i] += mksp[i];
             }
             else
                 R[i] = R_old[i];

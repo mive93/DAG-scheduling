@@ -79,7 +79,7 @@ float computeWCRT(const float base, const std::vector<int>& self_ss, const std::
     
     //equation 7
     std::vector<SubTask*> V = taskset.tasks[task_idx].getVertices();
-    while(R_ss != new_R_ss){
+    // while(R_ss != new_R_ss){
         R_ss = new_R_ss;
         
         self_int = 0;
@@ -93,7 +93,7 @@ float computeWCRT(const float base, const std::vector<int>& self_ss, const std::
 
         if(METHOD_VERBOSE) std::cout<<"self_int: "<<self_int<<" high int: "<<high_int<<std::endl;
         new_R_ss = base + high_int + self_int;
-    }
+    // }
 
     return new_R_ss;
 }
@@ -120,7 +120,7 @@ float computeWCRTss(const SSTask& tau_ss, const std::vector<int>& self_ss, const
     return WCRT_ss;
 }
 
-void pathAnalysis(const std::vector<int>& path_ss, const std::vector<int>& self, const Taskset& taskset, const int task_idx, std::vector<std::vector<float>>& RTs, const bool joint ){
+void pathAnalysis(const std::vector<int>& path_ss, const std::vector<int>& self, const Taskset& taskset, const int task_idx, std::vector<std::vector<float>>& RTs, const bool joint, bool is_root ){
     //algorithm 1
     if(METHOD_VERBOSE) std::cout<<"starting path analysis"<<std::endl;
     if(METHOD_VERBOSE) printVector<int>(path_ss, "path ss");
@@ -163,7 +163,7 @@ void pathAnalysis(const std::vector<int>& path_ss, const std::vector<int>& self,
         if(first->core == last->core){
             std::vector<int> path_sub (path_ss.begin()+1, path_ss.end()-1);
             if(path_sub.size() > 0)
-                pathAnalysis(path_sub, self, taskset, task_idx, RTs, joint);
+                pathAnalysis(path_sub, self, taskset, task_idx, RTs, joint, false);
             SSTask task_ss = deriveSSTask(V, path_ss, first->core, RTs);
             float R_task_ss = computeWCRTss(task_ss, self_ss, hp_ss, first->core, taskset, task_idx, joint);
             if(R_task_ss > RTs[first->id][last->id])
@@ -178,10 +178,37 @@ void pathAnalysis(const std::vector<int>& path_ss, const std::vector<int>& self,
                     break;
             }
             std::vector<int> path_sub (path_ss.begin()+i, path_ss.end());
-            pathAnalysis(path_sub, self, taskset, task_idx, RTs, joint);
+            pathAnalysis(path_sub, self, taskset, task_idx, RTs, joint, false);
             std::vector<int> path_sub_2 (path_ss.begin(), path_ss.end()-1);
-            pathAnalysis(path_sub_2, self, taskset, task_idx, RTs, joint);
+            pathAnalysis(path_sub_2, self, taskset, task_idx, RTs, joint, false);
         }
+    }
+
+    if(is_root){
+        float RT = 0;
+        std::set<int> path_cores;
+        for(int i=0; i<path_ss.size(); ++i)
+            path_cores.insert(V[path_ss[i]]->core);
+        
+        if(METHOD_VERBOSE) printSet<int>(path_cores, "path_cores");
+
+        int first_ofc = 0, last_ofc = 0;
+        for(const auto& core:path_cores){
+            //first node allocate to core i
+            for(first_ofc=0; first_ofc<path_ss.size();++first_ofc)
+                if(V[path_ss[first_ofc]]->core == core)
+                    break;
+            //first node allocate to core j
+            for(last_ofc=path_ss.size()-1; last_ofc>=0;--last_ofc)
+                if(V[path_ss[last_ofc]]->core == core)
+                    break;
+
+            RT += RTs[path_ss[first_ofc]][path_ss[last_ofc]];
+        }
+        
+        if(METHOD_VERBOSE) std::cout<<"RT: "<<RT<<std::endl;
+        if(RT > RTs[first->id][last->id])
+            RTs[first->id][last->id] = RT;
     }
 
 }
@@ -196,7 +223,7 @@ float computeWCRTDAG(const Taskset& taskset, const int task_idx, const bool join
     std::vector<std::vector<int>> all_paths= taskset.tasks[task_idx].computeAllPaths();
     for(const auto& p:all_paths){
         auto self =  computeSelfOfPath(p,V);
-        pathAnalysis(p, self, taskset, task_idx, RTs, joint);
+        pathAnalysis(p, self, taskset, task_idx, RTs, joint, true);
     }
 
     // compute max response time of paths
@@ -215,19 +242,35 @@ float computeWCRTDAG(const Taskset& taskset, const int task_idx, const bool join
 
 bool P_FP_FTP_Fonseca2016_C(Taskset taskset, const int m, const bool joint){
     std::sort(taskset.tasks.begin(), taskset.tasks.end(), deadlineMonotonicSorting);
+    // std::vector<std::vector<float>> R(taskset.tasks.size());
 
     std::map<int, float> pVol;
     for(int i=0; i<taskset.tasks.size(); ++i){
         taskset.tasks[i].computepVolume();
         pVol = taskset.tasks[i].getpVolume();
+        taskset.tasks[i].R = 0;
 
         for(const auto& p:pVol)
             if(p.second > taskset.tasks[i].getDeadline())
                 return false;
+    }
 
-        float R = computeWCRTDAG(taskset, i, joint);
-        if(R > taskset.tasks[i].getDeadline())
-            return false;
+    bool at_least_one_update = true;
+    if(at_least_one_update){
+        at_least_one_update = false;
+
+        for(int i=0; i<taskset.tasks.size(); ++i){
+
+            float R = std::max ( computeWCRTDAG(taskset, i, joint), taskset.tasks[i].R) ;
+            if(R > taskset.tasks[i].getDeadline())
+                return false;
+
+            if(!areEqual<float>(R, taskset.tasks[i].R))
+                at_least_one_update = true;
+
+            if (R > taskset.tasks[i].R)
+                taskset.tasks[i].R = R;
+        }
     }
 
     return true;

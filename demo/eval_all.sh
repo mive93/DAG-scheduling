@@ -1,11 +1,11 @@
 #!/bin/bash
 
 cd build 
-target="../data/"
+target="../data/thesis/single"
 for f in "$target"/*
 do
-    # echo ./eval ../data/$(basename $f) 0
-    ./eval ../data/$(basename $f) 0
+    # echo ./eval "$target"/$(basename $f) 0
+    ./eval "$target"/$(basename $f) 0
     # break;
 
 done
