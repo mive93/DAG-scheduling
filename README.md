@@ -77,11 +77,15 @@ At the end of each evaluation two kinds of plots will be produced, one regarding
 | Baruah2014 [7]        | task set    | C        | DAG        | G          | FP         | EDF       |
 | Melani2015 [1]        | task set    | C        | DAG, C-DAG | G          | FP         | EDF, FTP  |
 | Serrano2016 [8]       | task set    | C        | DAG        | G          | LP         | FTP       |
+| Fonseca2016 [14]      | task set    | C        | DAG        | P          | FP         | FTP       |
 | Pathan2017 [9]        | task set    | C        | DAG        | G          | FP         | DM        |
 | Fonseca2017 [10]      | task set    | C        | DAG        | G          | FP         | DM        |
+| Casini2018 [15]       | task set    | C        | DAG        | P          | LP         | FTP       |
 | Han2019 [11]          | single task | C        | H-DAG      | G          | \-         | \-        |
 | He2019 [12]           | task set    | C        | DAG        | G          | FP         | EDF, FTP  |
 | Fonseca2019 [13]      | task set    | C, A     | DAG        | G          | FP         | EDF, FTP  |
+| Nasri2019 [16]        |task set     | C        | DAG        | G          | LP         | EDF       |
+| Zahaf2020 [17]        |task set     | C        | HC-DAG     | P          | FP, FNP    | EDF       |
 
  * [1] Alessandra Melani et al. “Response-time analysis of conditional dag tasks in multiprocessor systems”. (ECRTS 2015)
  * [2] https://retis.sssup.it/~d.casini/resources/DAG_Generator/cptasks.zip
@@ -96,5 +100,8 @@ At the end of each evaluation two kinds of plots will be produced, one regarding
  * [11] Meiling Han et al. “Response time bounds for typed dag parallel tasks on heterogeneous multi-cores”. (IEEE Transactions on Parallel and Distributed Systems 2019)
  * [12] Qingqiang He et al. “Intra-task priority assignment in real-time scheduling of dag tasks on multi-cores”. (IEEE Transactions on Parallel and Distributed Systems 2019)
  * [13] Fonseca et al. “Schedulability Analysis of DAG Tasks with Arbitrary Deadlines under Global Fixed-Priority Scheduling”.  (Real-Time Systems 2019) 
-
+ * [14] Fonseca et al. “Response time analysis of sporadic dag tasks under partitioned scheduling”. (SIES 2016)
+ * [15] Daniel Casini et al. “Partitioned fixed-priority scheduling of parallel tasks without preemptions”. (RTSS 2018).
+ * [16] Mitra Nasri, et al. “Response-time analysis of limited-preemptive parallel DAG tasks under global scheduling”. (ECRTS 2019)
+ * [17] Houssam-Eddine Zahaf et al. “The HPC-DAG Task Model for Heterogeneous Real-Time Systems”. (IEEE Transactions on Computers 2020)
 
