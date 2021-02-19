@@ -32,8 +32,12 @@ bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m){
         prev_v +=  V.size();
     }
 
-    // output_file<<"generate(tau1,\"tau.dot\", BOTH);\n";
-    // system("dot -Tpng tau.dot > tau.png");
+    
+    // for(int x=0; x<taskset.tasks.size(); ++x){    
+    //     output_file<<"generate(tau"+std::to_string(x+1)+",\"tau"+std::to_string(x+1)+".dot\", BOTH);\n";
+    //     std::cout<<"generate(tau"+std::to_string(x+1)+",\"tau"+std::to_string(x+1)+".dot\", BOTH);\n";
+    // }
+    
     output_file<<"Platform((CPU,EDFFP)*"<<m<<");\n";
     output_file<<"build();\n";
     output_file<<"analyse(PARTIAL, FAIR, WF, RANDOM);\n";
