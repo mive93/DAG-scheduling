@@ -54,6 +54,30 @@ void Taskset::readTasksetFromYaml(const std::string& params_path){
     computeMaxDensity();
 }
 
+void Taskset::readTasksetFromDOT(const std::string& dot_file_path){
+    std::ifstream dot_paths(dot_file_path);
+    std::string line;
+    while (std::getline(dot_paths, line)){
+        DAGTask t;
+        t.readTaskFromDOT(line);
+        t.transitiveReduction();
+
+        t.computeWorstCaseWorkload();
+        t.computeVolume();
+        t.computeLength();
+        t.computeUtilization();
+        t.computeDensity();
+
+        tasks.push_back(t);
+    }
+
+    dot_paths.close();
+
+    computeUtilization();
+    computeHyperPeriod();
+    computeMaxDensity();
+}
+
 float Taskset::UUniFast_Upart(float& sum_U, const int i, const int n_tasks, const DAGTask& t ){
     float next_sum_U=0, U_part = 0;
     double r;

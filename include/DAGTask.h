@@ -43,6 +43,7 @@ class DAGTask{
 
     //input - output
     void readTaskFromYamlNode(YAML::Node tasks, const int i);
+    void readTaskFromDOT(const std::string &filename);
     void saveAsDot(const std::string &filename);
     friend std::ostream& operator<<(std::ostream& os, const DAGTask& t);
 

@@ -75,6 +75,49 @@ void DAGTask::readTaskFromYamlNode(YAML::Node tasks, const int i){
     
 }
 
+void DAGTask::readTaskFromDOT(const std::string &filename){
+    std::ifstream dot_dag(filename);
+    std::string line;
+    int node_count = 0;
+    int form_id, to_id;
+
+    std::map<int, int> id_pos;
+    while (std::getline(dot_dag, line)){
+        dot_info di = parseDOTLine(line);
+
+        if (di.lineType == DOTLine_t::DAG_INFO){
+            t = di.period;
+            d = di.deadline;
+        }
+        else if (di.lineType == DOTLine_t::DOT_NODE){
+
+            SubTask *v = new SubTask;
+            v->id = node_count;
+            v->c = di.wcet;
+            id_pos[di.id] = node_count;
+
+            if(di.s != -1)
+                v->gamma = di.s;
+
+            if(di.p != -1)
+                v->core = di.p;
+
+            V.push_back(v);
+            node_count++;
+        }
+        else if (di.lineType == DOTLine_t::DOT_EDGE){
+
+            form_id = id_pos[di.id_from];
+            to_id = id_pos[di.id_to];
+
+            V[form_id]->succ.push_back(V[to_id]);
+            V[to_id]->pred.push_back(V[form_id]);
+        }
+
+    }
+    dot_dag.close();
+}
+
 void DAGTask::saveAsDot(const std::string &filename){
     std::ofstream of(filename);
 

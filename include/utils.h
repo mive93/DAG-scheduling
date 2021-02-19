@@ -119,4 +119,22 @@ float floatRandMaxMin(const float v_min, const float v_max);
 
 void removePathAndExtension(const std::string &full_string, std::string &name);
 
+
+enum DOTLine_t {DOT_BEGIN, DOT_END, DOT_NODE, DOT_EDGE, DAG_INFO, VOID_LINE};
+
+struct dot_info{
+    DOTLine_t lineType;
+    int p           = -1;
+    int s           = -1;
+    int id          = -1;
+    int id_from     = -1;
+    int id_to       = -1;
+    float wcet      = 0;
+    float period    = 0;
+    float deadline  = 0;
+};
+
+std::vector<std::pair<std::string, std::string>> separateOnComma(const std::string& line);
+dot_info parseDOTLine(const std::string& line);
+
 #endif /*UTILS_H*/

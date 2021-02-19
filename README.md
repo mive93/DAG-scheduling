@@ -32,6 +32,41 @@ This library reads and outputs DAG in DOT format as shown in the image.
 
 ![dot](img/dot_format.png "DAG with DOT") 
 
+### Input
+
+The library accept two input formats for taskse: yaml or DOT.
+
+#### YAML format
+
+A taskset is specified as an array of task, which has the following params
+ * ```t``` the period
+ * ```d``` the deadline
+ * ```vertices``` array of nodes of the DAG, defined by: 
+    * ```id``` id of the node
+    * ```c``` WCET of the node
+    * ```p``` core to which the node is assigned to [optional]
+    * ```s``` gamma, the kind of engine the node is assigned to [optional]
+
+An example is given with demo/taskset.yaml.
+#### DOT format
+
+Each DAG is defined via a DOT file, and each path of dot file belonging to the taskset should be written (line by line) in a txt file.
+An example is given in demo/dot_files.txt
+
+Each DOT file is the defined with this convention.
+At the begninning there is an initial node with the info of the DAG Task, where the deadline ```D``` and the period ```T``` should be specified. For example: 
+```i [shape=box, D=603.859, T=1605.45]; ```
+
+Then each node is secified by an ID, a label which represent the WCET and additional optional parameters, as ```p``` and ```s```. For example:
+``` 0 [label="57", p=7];```
+
+Finally the edges are discribed only via nodes IDs. For example: 
+``` 0 -> 2;```
+
+A complete example is given in demo/test0.dot.
+
+### Output
+
 To convert a dot file into a png image use the following command: 
 
 ```

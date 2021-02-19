@@ -31,6 +31,7 @@ class Taskset{
 
     //IO
     void readTasksetFromYaml(const std::string& params_path);
+    void readTasksetFromDOT(const std::string& dot_file_path);
     void print() const;
 
     //generate taskset 

@@ -31,8 +31,13 @@ int main(int argc, char **argv){
 
         taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc, gp);
     }
-    else
-        taskset.readTasksetFromYaml(taskset_filename);
+    else{
+        size_t ext  = taskset_filename.find("yaml");
+        if( ext != std::string::npos)
+            taskset.readTasksetFromYaml(taskset_filename);
+        else
+            taskset.readTasksetFromDOT(taskset_filename);
+    }
 
     std::cout<<"Assignment: "<< WorstFitProcessorsAssignment(taskset, n_proc)<<std::endl;
     
