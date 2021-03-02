@@ -1,0 +1,21 @@
+maxParBranches: 6
+recDepth: 2
+pCond : 0
+pPar: 0.8
+pTerm : 0.2
+Cmin: 1
+Cmax: 100
+addProb : 0.1
+probSCond : 0
+beta: 0.1
+Umin: 0 #utilization starting value
+Umax: 4 #utilization final value
+stepU : 0.25 #step of utilization
+m : 8 #number of cores
+nTasks: 10000
+tasksetPerVarFactor : 1 #number of created task set for each U value
+gType : 1 #varying utilization
+dtype : 0 #constrained deadline
+wType : 1 # 0:single dag, 1:multi-dag
+aType : 1 # 0:NFJ , 1:DAG
+DAGType : 0 #classical DAG type

@@ -64,3 +64,6 @@ target_link_libraries(demo dag-sched)
 
 add_executable(eval demo/evaluate.cpp)
 target_link_libraries(eval dag-sched)
+
+add_executable(DAGgenerator demo/dag_gen.cpp)
+target_link_libraries(DAGgenerator dag-sched)
