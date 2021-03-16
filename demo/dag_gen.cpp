@@ -25,12 +25,14 @@ void saveTransactionsInfo(std::ofstream& out_file, const int n_tasks){
 
 void saveDAG(std::ofstream& out_file, const DAGTask task){
     auto V = task.getVertices();
+    auto ordIDs = task.getTopologicalOrder();
 
     out_file << "[Periodo	N_Tareas	]\n";
-    out_file << task.getDeadline()<<"\t"<< V.size() << "\n";
+    out_file << task.getPeriod()<<"\t"<< V.size() << "\n";
 
     out_file << "[Cij	Cbij   	Offset	Prio		Deadlineij	   	   Bij		Particion   	Sincronizada(0=False)	   M_entrada		M_salida		NTin	TaskIn		NTout	TaskOut]  \n";
-    for(int i=0; i<V.size(); ++i){
+    for(int idx_to = 0, i; idx_to < ordIDs.size(); ++idx_to ){
+        i = ordIDs[idx_to];
         out_file    << V[i]->c << "\t"
                     << V[i]->c << "\t"
                     << 0 << "\t"
@@ -45,7 +47,7 @@ void saveDAG(std::ofstream& out_file, const DAGTask task){
 
                 
         for(auto p:V[i]->pred)
-            out_file<< p->id << " ";
+            out_file<< std::distance(ordIDs.begin(), std::find(ordIDs.begin(), ordIDs.end(), p->id)) + 1 << " ";
 
         if(V[i]->pred.size() == 0)
             out_file<< 0;
@@ -53,7 +55,7 @@ void saveDAG(std::ofstream& out_file, const DAGTask task){
         out_file << "\t" << V[i]->succ.size() << "\t";
 
         for(auto s:V[i]->succ)
-            out_file<< s->id << " ";
+            out_file<< std::distance(ordIDs.begin(), std::find(ordIDs.begin(), ordIDs.end(), s->id)) + 1 << " ";
 
         if(V[i]->succ.size() == 0)
             out_file<< 0;
@@ -74,7 +76,7 @@ void saveMessagesInfo(std::ofstream& out_file, const int n_proc){
 
 void saveInTxt(const int test_idx, const Taskset& task_set, const int n_proc){
 
-    std::string out_file_path = "test_"+std::to_string(test_idx)+".txt";
+    std::string out_file_path = "test_"+std::to_string(test_idx)+"_"+std::to_string(n_proc)+".txt";
     std::ofstream out_file;
     out_file.open (out_file_path);
 
