@@ -10,7 +10,7 @@ class Taskset{
 
     float U         = 0;    // utilization
     float maxDelta  = 0;    // maximum density
-    int HP          = 1;    // hyper-period
+    long int HP          = 1;    // hyper-period
 
     public:
 

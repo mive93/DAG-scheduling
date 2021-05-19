@@ -202,6 +202,7 @@ void DAGTask::computeTypedVolume(){
 }
 
 void DAGTask::computepVolume(){
+    pVol.clear();
     for(size_t i=0; i<V.size();++i){
         if ( pVol.find(V[i]->core) == pVol.end() ) 
             pVol[V[i]->core] = V[i]->c;

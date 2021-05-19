@@ -14,6 +14,7 @@ int main(int argc, char *argv[]) {
     std::string o_file;
     removePathAndExtension(gp_file, o_file);
 
+    system("mkdir -p res");
     evaluate(gp_file, "res/" + o_file, show_plots);
     return 0;
 }
