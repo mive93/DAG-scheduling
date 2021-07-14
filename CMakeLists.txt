@@ -8,6 +8,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fPIC -Wno-deprecated-declara
 #-------------------------------------------------------------------------------
 
 option(WITH_ZAHAF "Compiling also for Zahaf2019 test (if you have the rights to access the repo)" OFF)
+option(WITH_BARUAH "Compiling also for Baruah2020 test (if you have the rights to access the repo)" OFF)
 
 #-------------------------------------------------------------------------------
 # External Libraries
@@ -35,6 +36,11 @@ if(WITH_ZAHAF)
     add_subdirectory(rt_compiler)
     include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rt_compiler /home/micaela/repos/rt_compiler/build)
 endif()
+
+if(WITH_BARUAH)
+    add_compile_definitions(BARUAH2020)
+endif()
+
 
 #-------------------------------------------------------------------------------
 # Build libraries

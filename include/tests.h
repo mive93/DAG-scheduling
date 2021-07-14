@@ -84,6 +84,10 @@ bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m, const Pa
 
 bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m);
 
+#ifdef BARUAH2020
+bool G_LP_FTP_Baruah2020_C_exact(const DAGTask& task, const int m);
+#endif
+
 #ifdef ZAHAF2019
 bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m);
 #endif

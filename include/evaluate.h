@@ -246,6 +246,11 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                     #ifdef ZAHAF2019
                     sched_res["Zahaf2019"].push_back(0);
                     #endif
+
+                    #ifdef BARUAH2020
+                    if(gp.wType == workloadType_t::SINGLE_DAG)
+                        sched_res["Baruah2020"].push_back(0);
+                    #endif
                  }
                 
                 WorstFitProcessorsAssignment(task_set, m);
@@ -257,7 +262,15 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                 timer.tic();
                 sched_res["Casini2018"][test_idx] += P_LP_FTP_Casini2018_C(task_set, m);
                 time_res["Casini2018"].push_back(timer.toc());
-                
+
+                #ifdef BARUAH2020
+                if(gp.wType == workloadType_t::SINGLE_DAG){
+                    timer.tic();
+                    sched_res["Baruah2020"][test_idx] += G_LP_FTP_Baruah2020_C_exact(task_set.tasks[0], m);
+                    time_res["Baruah2020"].push_back(timer.toc());
+                }
+                #endif
+
                 // timer.tic();
                 // int worst = P_LP_FTP_Casini2018_C_withAssignment(task_set, m, PartitioningCoresOrder_t::WORST_FIT);
                 // sched_res["Casini2018_W"][test_idx] += worst;
@@ -294,6 +307,11 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                     sched_res["Casini2018"].push_back(0);
                     sched_res["Fonseca2019"].push_back(0);
                     sched_res["Nasri2019"].push_back(0);
+
+                    #ifdef BARUAH2020
+                    if(gp.wType == workloadType_t::SINGLE_DAG)
+                        sched_res["Baruah2020"].push_back(0);
+                    #endif
                     
                 }
 
@@ -322,6 +340,14 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                 timer.tic();
                 sched_res["Nasri2019"][test_idx] +=  G_LP_FTP_Nasri2019_C(task_set, m);
                 time_res["Nasri2019"].push_back(timer.toc());
+
+                #ifdef BARUAH2020
+                if(gp.wType == workloadType_t::SINGLE_DAG){
+                    timer.tic();
+                    sched_res["Baruah2020"][test_idx] += G_LP_FTP_Baruah2020_C_exact(task_set.tasks[0], m);
+                    time_res["Baruah2020"].push_back(timer.toc());
+                }
+                #endif
 
             }
         }
