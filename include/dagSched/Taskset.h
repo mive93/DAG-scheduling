@@ -4,7 +4,9 @@
 #include <vector>
 #include <yaml-cpp/yaml.h>
 #include <numeric>
-#include "DAGTask.h"
+#include "dagSched/DAGTask.h"
+
+namespace dagSched{
 
 class Taskset{
 
@@ -39,5 +41,6 @@ class Taskset{
     void generate_taskset_Melani(int n_tasks, const float U_tot, const int n_proc, GeneratorParams& gp);
 };
 
+}
 
 #endif /* TASKSET_H */

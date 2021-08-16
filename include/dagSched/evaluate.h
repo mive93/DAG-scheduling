@@ -1,11 +1,13 @@
 #ifndef EVALUATE_H
 #define EVALUATE_H
 
-#include "utils.h"
-#include "GeneratorParams.h"
-#include "Taskset.h"
-#include "tests.h"
-#include "plot_utils.h"
+#include "dagSched/utils.h"
+#include "dagSched/GeneratorParams.h"
+#include "dagSched/Taskset.h"
+#include "dagSched/tests.h"
+#include "dagSched/plot_utils.h"
+
+namespace dagSched{
 
 void evaluate(const std::string& genparams_path, const std::string& output_fig_path, const bool show_plots){
     GeneratorParams gp;
@@ -344,7 +346,7 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
 
 }
 
-
+}
 
 
 #endif /* EVALUATE_H */

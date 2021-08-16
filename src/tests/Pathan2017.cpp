@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 //Risat Pathan et al.  “Scheduling parallel real-time recurrent tasks on multicore platforms”. (IEEE Transactions on Parallel and Distributed Systems 2017)
+
+namespace dagSched{
 
 std::vector<int> computeSxi(const DAGTask& tau_x, const int k ){
     //topological order to priorities nodes
@@ -163,4 +165,6 @@ bool GP_FP_DM_Pathan2017_C(Taskset taskset, const int m){
     }
     return true;
     
+}
+
 }

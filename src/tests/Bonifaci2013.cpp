@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 // "Feasibility Analysis in the Sporadic DAG Task Model" Bonifaci et al. (ECRTS 2013)
+
+namespace dagSched{
 
 /* Theorem 21 in the paper */
 bool GP_FP_EDF_Bonifaci2013_A(const Taskset& taskset, const int m){
@@ -59,4 +61,6 @@ bool GP_FP_DM_Bonifaci2013_C(const Taskset& taskset, const int m){
     if(unconstr_contrib + constr_contrib < (m+1./3.)/4.)
         return true;
     return false;
+}
+
 }

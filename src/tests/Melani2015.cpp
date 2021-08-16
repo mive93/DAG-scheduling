@@ -1,5 +1,7 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 // Alessandra Melani et al. “Response-time analysis of conditional dag tasks in multiprocessor systems”. (ECRTS 2015)
+
+namespace dagSched{
 
 float computeZk(DAGTask task, const int n_proc){
     // Algorithm 2
@@ -332,4 +334,6 @@ bool GP_FP_FTP_Melani2015_C(Taskset taskset, const int m){
     }
 
     return true;
+}
+
 }

@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 // "A generalized parallel task model for recurrent real-time processes" Baruah et al. (RTSS 2012)
+
+namespace dagSched{
 
 /* Theorem 1 in the paper */
 bool GP_FP_EDF_Baruah2012_C(const DAGTask& task, const int m){
@@ -22,6 +24,8 @@ bool GP_FP_EDF_Baruah2012_A(const DAGTask& task, const int m){
         task.getVolume() <= 2./5. * m * task.getPeriod()   )
         return true;
     return false;
+
+}
 
 }
 

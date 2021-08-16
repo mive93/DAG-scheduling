@@ -1,5 +1,6 @@
-#include "Taskset.h"
+#include "dagSched/Taskset.h"
 
+namespace dagSched{
 
 void Taskset::print() const{
     for(int i=0; i<tasks.size();++i)
@@ -187,4 +188,6 @@ void Taskset::generate_taskset_Melani(int n_tasks, const float U_tot, const int 
     // computeUtilization();
     computeHyperPeriod();
     computeMaxDensity();
+}
+
 }

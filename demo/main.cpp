@@ -1,8 +1,8 @@
 #include <iostream>
-#include "DAGTask.h"
-#include "Taskset.h"
-#include "tests.h"
-#include "plot_utils.h"
+#include "dagSched/DAGTask.h"
+#include "dagSched/Taskset.h"
+#include "dagSched/tests.h"
+#include "dagSched/plot_utils.h"
 
 #include <ctime>    
 
@@ -22,12 +22,12 @@ int main(int argc, char **argv){
 
     int n_proc = 4;
     std::vector<int> typed_proc = {4,4};
-    Taskset taskset;
+    dagSched::Taskset taskset;
     if(random_creation){
         int n_tasks = 4;
         float U_tot = 1;
-        GeneratorParams gp;
-        gp.configureParams(GenerationType_t::VARYING_N);
+        dagSched::GeneratorParams gp;
+        gp.configureParams(dagSched::GenerationType_t::VARYING_N);
 
         taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc, gp);
     }
@@ -39,7 +39,7 @@ int main(int argc, char **argv){
             taskset.readTasksetFromDOT(taskset_filename);
     }
 
-    std::cout<<"Assignment: "<< WorstFitProcessorsAssignment(taskset, n_proc)<<std::endl;
+    std::cout<<"Assignment: "<< dagSched::WorstFitProcessorsAssignment(taskset, n_proc)<<std::endl;
     
     std::string dot_command = "";
     for(int i=0; i<taskset.tasks.size();++i){
@@ -62,16 +62,16 @@ int main(int argc, char **argv){
         std::cout<<"\tTask "<<i<<std::endl;
         //constrained
         if(taskset.tasks[i].getDeadline() < taskset.tasks[i].getPeriod()){
-            std::cout<< "\t\tBaruah 2012 constrained (GP-FP-EDF): " <<GP_FP_EDF_Baruah2012_C(taskset.tasks[i], n_proc)<<std::endl;
+            std::cout<< "\t\tBaruah 2012 constrained (GP-FP-EDF): " <<dagSched::GP_FP_EDF_Baruah2012_C(taskset.tasks[i], n_proc)<<std::endl;
             implicit_taskset = false;
         }
 
         if(taskset.tasks[i].getDeadline() <= taskset.tasks[i].getPeriod()){
-            std::cout<< "\t\tHan 2019 constrained typed(GP-FP): " <<GP_FP_Han2019_C_1(taskset.tasks[i], typed_proc)<<std::endl;
-            std::cout<< "\t\tHe 2019 constrained typed(GP-FP): " <<GP_FP_He2019_C(taskset.tasks[i], n_proc)<<std::endl;
+            std::cout<< "\t\tHan 2019 constrained typed(GP-FP): " <<dagSched::GP_FP_Han2019_C_1(taskset.tasks[i], typed_proc)<<std::endl;
+            std::cout<< "\t\tHe 2019 constrained typed(GP-FP): " <<dagSched::GP_FP_He2019_C(taskset.tasks[i], n_proc)<<std::endl;
         }
-        std::cout<< "\t\tBaruah 2012 arbitrary (GP-FP-EDF): "   <<GP_FP_EDF_Baruah2012_A(taskset.tasks[i], n_proc)<<std::endl;
-        std::cout<< "\t\tGraham 1969 : "   <<Graham1969(taskset.tasks[i], n_proc)<<std::endl;
+        std::cout<< "\t\tBaruah 2012 arbitrary (GP-FP-EDF): "   <<dagSched::GP_FP_EDF_Baruah2012_A(taskset.tasks[i], n_proc)<<std::endl;
+        std::cout<< "\t\tGraham 1969 : "   <<dagSched::Graham1969(taskset.tasks[i], n_proc)<<std::endl;
 
         if(taskset.tasks[i].getDeadline() > taskset.tasks[i].getPeriod()){
             constrained_taskset = false;
@@ -85,39 +85,39 @@ int main(int argc, char **argv){
 
 
     //arbitrary
-    std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-EDF): "   <<GP_FP_EDF_Bonifaci2013_A(taskset, n_proc)<<std::endl;
-    std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-DM): "   <<GP_FP_DM_Bonifaci2013_A(taskset, n_proc)<<std::endl;
+    std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-EDF): "   <<dagSched::GP_FP_EDF_Bonifaci2013_A(taskset, n_proc)<<std::endl;
+    std::cout<< "\tBonifaci 2013 arbitrary (GP-FP-DM): "   <<dagSched::GP_FP_DM_Bonifaci2013_A(taskset, n_proc)<<std::endl;
 
     //implicit
     if(implicit_taskset){
-        std::cout<< "\tLi 2013 implicit (GP-FP-EDF): "   <<GP_FP_EDF_Li2013_I(taskset, n_proc)<<std::endl;
+        std::cout<< "\tLi 2013 implicit (GP-FP-EDF): "   <<dagSched::GP_FP_EDF_Li2013_I(taskset, n_proc)<<std::endl;
     }
 
     //constrained
     if(constrained_taskset){
         //global
-        std::cout<< "\tBonifaci 2013 constrained (GP-FP-DM): "   <<GP_FP_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tQamhieh 2013 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Qamhieh2013_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tBaruah 2014 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Baruah2014_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tMelani 2015 constrained (GP-FP-FTP): "   <<GP_FP_FTP_Melani2015_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tMelani 2015 constrained (GP-FP-EDF): "   <<GP_FP_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tPathan 2017 constrained (GP-FP-DM): "   <<GP_FP_DM_Pathan2017_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tFonseca 2017 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2017_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tFonseca 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc)<<std::endl;
-        std::cout<< "\tHe 2019 constrained (GP-FP-FTP): "<<GP_FP_FTP_He2019_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tBonifaci 2013 constrained (GP-FP-DM): "   <<dagSched::GP_FP_DM_Bonifaci2013_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tQamhieh 2013 constrained (GP-FP-EDF): "   <<dagSched::GP_FP_EDF_Qamhieh2013_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tBaruah 2014 constrained (GP-FP-EDF): "   <<dagSched::GP_FP_EDF_Baruah2014_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tMelani 2015 constrained (GP-FP-FTP): "   <<dagSched::GP_FP_FTP_Melani2015_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tMelani 2015 constrained (GP-FP-EDF): "   <<dagSched::GP_FP_EDF_Melani2015_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tPathan 2017 constrained (GP-FP-DM): "   <<dagSched::GP_FP_DM_Pathan2017_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tFonseca 2017 constrained (GP-FP-FTP): "<<dagSched::GP_FP_FTP_Fonseca2017_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tFonseca 2019 constrained (GP-FP-FTP): "<<dagSched::GP_FP_FTP_Fonseca2019(taskset, n_proc)<<std::endl;
+        std::cout<< "\tHe 2019 constrained (GP-FP-FTP): "<<dagSched::GP_FP_FTP_He2019_C(taskset, n_proc)<<std::endl;
 
         // limited preemption        
-        std::cout<< "\tSerrano 2016 constrained (GP-LP-FTP): "   <<GP_LP_FTP_Serrano16_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tNasri 2019 constrained (G-LP-FTP): "<<G_LP_FTP_Nasri2019_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tSerrano 2016 constrained (GP-LP-FTP): "   <<dagSched::GP_LP_FTP_Serrano16_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tNasri 2019 constrained (G-LP-FTP): "<<dagSched::G_LP_FTP_Nasri2019_C(taskset, n_proc)<<std::endl;
 
         //partitioned
-        std::cout<< "\tFonseca 2016 constrained (P-FP-FTP): "<<P_FP_FTP_Fonseca2016_C(taskset, n_proc)<<std::endl;
-        std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tFonseca 2016 constrained (P-FP-FTP): "<<dagSched::P_FP_FTP_Fonseca2016_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<dagSched::P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
         #ifdef ZAHAF2019
-        std::cout<< "\tZahaf 2020 constrained (P-LP-EDF): "<<P_LP_EDF_Zahaf2019_C(taskset, n_proc)<<std::endl;
+        std::cout<< "\tZahaf 2020 constrained (P-LP-EDF): "<<dagSched::P_LP_EDF_Zahaf2019_C(taskset, n_proc)<<std::endl;
         #endif
     }
 
-    std::cout<< "\tFonseca 2019 arbitrary (GP-FP-FTP): "<<GP_FP_FTP_Fonseca2019(taskset, n_proc, false)<<std::endl;
+    std::cout<< "\tFonseca 2019 arbitrary (GP-FP-FTP): "<<dagSched::GP_FP_FTP_Fonseca2019(taskset, n_proc, false)<<std::endl;
 
 }

@@ -1,4 +1,6 @@
-#include "DAGTask.h"
+#include "dagSched/DAGTask.h"
+
+namespace dagSched{
 
 std::ostream& operator<<(std::ostream& os, const DAGTask& t)
 {
@@ -140,3 +142,4 @@ void DAGTask::saveAsDot(const std::string &filename){
     of.close();
 }
 
+}

@@ -1,4 +1,6 @@
-#include "DAGTask.h"
+#include "dagSched/DAGTask.h"
+
+namespace dagSched{
 
 void DAGTask::cloneVertices(const std::vector<SubTask*>& to_clone_V){
     V.clear();
@@ -328,4 +330,6 @@ bool compareDAGsUtilInc(const DAGTask& a, const DAGTask& b){
 
 bool compareDAGsUtilDec(const DAGTask& a, const DAGTask& b){
     return a.getUtilization() > b.getUtilization();
+}
+
 }

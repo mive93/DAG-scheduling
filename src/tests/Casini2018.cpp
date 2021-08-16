@@ -1,5 +1,6 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
+namespace dagSched{
 
 float computeSI(const std::vector<int>& path, const DAGTask& task){
     // lemma 8
@@ -445,4 +446,6 @@ bool P_LP_FTP_Casini2018_C_withAssignment(Taskset taskset, const int m, const Pa
     for(int y=0; y<taskset_prime.tasks.size();++y)
         taskset_prime.tasks[y].destroyVerices();
     return true;
+}
+
 }

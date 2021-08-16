@@ -11,9 +11,11 @@
 #include <fstream>
 
 #include <yaml-cpp/yaml.h>
-#include "SubTask.h"
-#include "utils.h"
-#include "GeneratorParams.h"
+#include "dagSched/SubTask.h"
+#include "dagSched/utils.h"
+#include "dagSched/GeneratorParams.h"
+
+namespace dagSched{
    
 enum creationStates {CONDITIONAL_T=0, PARALLEL_T=1, TERMINAL_T=2};
 
@@ -113,5 +115,7 @@ bool compareDAGsPeriodInc(const DAGTask& a, const DAGTask& b);
 bool compareDAGsPeriodDec(const DAGTask& a, const DAGTask& b);
 bool compareDAGsUtilInc(const DAGTask& a, const DAGTask& b);
 bool compareDAGsUtilDec(const DAGTask& a, const DAGTask& b);
+
+} 
 
 #endif /* DAGTASK_H */

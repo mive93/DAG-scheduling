@@ -1,4 +1,4 @@
-#include "evaluate.h"
+#include "dagSched/evaluate.h"
 int main(int argc, char *argv[]) {
 
     if(REPRODUCIBLE) srand (1);
@@ -15,6 +15,6 @@ int main(int argc, char *argv[]) {
     removePathAndExtension(gp_file, o_file);
 
     system("mkdir -p res");
-    evaluate(gp_file, "res/" + o_file, show_plots);
+    dagSched::evaluate(gp_file, "res/" + o_file, show_plots);
     return 0;
 }

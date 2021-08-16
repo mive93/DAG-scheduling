@@ -1,7 +1,9 @@
-#include "tests.h"
-#include "scheduling_utils.h"
+#include "dagSched/tests.h"
+#include "dagSched/scheduling_utils.h"
 
 // "Global EDF scheduling of directed acyclic graphs on multiprocessor systems", Qamhieh et al. (RTNS 2013)
+
+namespace dagSched{
 
 /* Theorem 6 in the paper */
 bool GP_FP_EDF_Qamhieh2013_C(Taskset taskset, const int m){
@@ -36,4 +38,6 @@ bool GP_FP_EDF_Qamhieh2013_C(Taskset taskset, const int m){
     }
 
     return true;
+}
+
 }

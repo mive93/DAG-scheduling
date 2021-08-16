@@ -1,5 +1,6 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
+namespace dagSched{
 
 std::vector<int> computeSelfOfPath(const std::vector<int>& path, std::vector<SubTask*> V){
     //equation 4
@@ -274,4 +275,6 @@ bool P_FP_FTP_Fonseca2016_C(Taskset taskset, const int m, const bool joint){
     }
 
     return true;
+}
+
 }

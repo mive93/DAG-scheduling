@@ -1,4 +1,4 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 #ifdef ZAHAF2019
 
@@ -7,6 +7,8 @@
 #include "code_gen/taskset_code.hpp"
 #include "platform/platform.hpp"
 #include "analysis/hpc_dag/analysis.hpp"
+
+namespace dagSched{
 
 bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m){
 
@@ -50,6 +52,8 @@ bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m){
     delete driver;
 
     return res;
+}
+
 }
 
 #endif
