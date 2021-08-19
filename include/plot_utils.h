@@ -40,7 +40,7 @@ void plotResults(std::map<std::string,std::vector<float>> sched_res, const std::
     std::vector<std::string> line_styles = {"-", "--", ":", "-.", "--", ":", "-.","-", "--", ":", "-.","-", "--", ":", "-."};
     std::vector<std::string> line_marker = {".", "v", "*", "o", "+", ".", "X", "<","", "v", "*", ".", "+", "X", "4", "<"};
 
-    matplotlibcpp::figure();
+    matplotlibcpp::figure_size(1280,720);
 
     int i=0;
     for(std::map<std::string,std::vector<float>>::iterator iter = sched_res.begin(); iter != sched_res.end(); ++iter){
@@ -61,7 +61,7 @@ void plotTimes(std::map<std::string,std::vector<double>> time_res, const std::st
     std::vector<std::vector<double>> data;
     std::vector<std::string> names;
     
-    matplotlibcpp::figure();
+    matplotlibcpp::figure_size(1280,720);
 
     for(std::map<std::string,std::vector<double>>::iterator iter = time_res.begin(); iter != time_res.end(); ++iter){
         names.push_back(iter->first);

@@ -21,3 +21,7 @@ aType : 0
 sType : 3
 wType : 1
 DAGType : 0
+methods: ["Melani2015", "Fonseca2016", "Casini2018" , "Fonseca2019", "Nasri2019", "Baruah2020"]
+names: ["Melani2015", "Fonseca2016", "Casini2018" , "Fonseca2019", "Nasri2019", "Baruah2020"]
+core_orders : [2]
+node_orders : [5]

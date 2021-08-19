@@ -62,9 +62,10 @@ class node_infos{
     int v_id = 0;
     float utilization = 0;
     float density = 0;
+    float rem_util = 0;
 
     void print(){
-        std::cout<<"x: "<<task_id<<" i: "<<v_id<<" U: "<<utilization<<" dens: "<<density<<std::endl;
+        std::cout<<"x: "<<task_id<<" i: "<<v_id<<" U: "<<utilization<<" dens: "<<density<<" remaining util: "<<rem_util<<std::endl;
     }
 };
 
@@ -74,6 +75,10 @@ bool sortUtilDec(const node_infos& a, const node_infos& b){
 
 bool sortDensDec(const node_infos& a, const node_infos& b){
     return a.density > b.density; 
+}
+
+bool sortRemUtilDec(const node_infos& a, const node_infos& b){
+    return a.rem_util > b.rem_util; 
 }
 
 bool sortUtilDecDensDec(const node_infos& a, const node_infos& b){
@@ -88,14 +93,12 @@ bool sortDensDecUtilDec(const node_infos& a, const node_infos& b){
     return a.density > b.density ;
 }
 
-bool WorstFitProcessorsAssignment(Taskset& taskset, const int m){
+bool processorsAssignment(Taskset& taskset, const int m, const PartitioningCoresOrder_t& c_order, const PartitioningNodeOrder_t& n_order){
 
-    std::vector<float> proc_util (m,0);
-    float min_proc_util = 1;
-    int min_idx = -1;
-
+    //collect all the nodes of the tasks in a compact way and compute density and utilization
     std::vector<node_infos> taskset_nodes;
-
+    std::vector<SubTask*> desc;
+    
     for(int x=0; x<taskset.tasks.size();++x){
         std::vector<SubTask*> V = taskset.tasks[x].getVertices();
         for(int i=0; i<V.size(); ++i){
@@ -104,22 +107,85 @@ bool WorstFitProcessorsAssignment(Taskset& taskset, const int m){
             n.v_id = i;
             n.density = taskset.tasks[x].getLength() / taskset.tasks[x].getDeadline();
             n.utilization = V[i]->c / taskset.tasks[x].getPeriod();
+            n.rem_util = 0;
+            
+            if(PartitioningNodeOrder_t::REM_UTIL){
+                desc = taskset.tasks[x].getSubTaskDescendants(i);
+                float acc_util = 0;
+                for(int j=0; j<desc.size(); ++j)
+                    acc_util += desc[j]->c;
+                n.rem_util = acc_util / taskset.tasks[x].getPeriod();
+
+            }
 
             taskset_nodes.push_back(n);
         }
     }
 
-    std::sort(taskset_nodes.begin(), taskset_nodes.end(), sortUtilDecDensDec);
+    //sort the nodes according the node order given
+    switch (n_order){
+    case PartitioningNodeOrder_t::DEC_UTIL:
+        std::sort(taskset_nodes.begin(), taskset_nodes.end(), sortUtilDec);
+        break;
+    
+    case PartitioningNodeOrder_t::DEC_DENS:
+        std::sort(taskset_nodes.begin(), taskset_nodes.end(), sortDensDec);
+        break;
+    
+    case PartitioningNodeOrder_t::DEC_DENS_DEC_UTIL:
+        std::sort(taskset_nodes.begin(), taskset_nodes.end(), sortDensDecUtilDec);
+        break;
+    
+    case PartitioningNodeOrder_t::DEC_UTIL_DEC_DENS:
+        std::sort(taskset_nodes.begin(), taskset_nodes.end(), sortUtilDecDensDec);
+        break;
+    
+    case PartitioningNodeOrder_t::REM_UTIL:
+        std::sort(taskset_nodes.begin(), taskset_nodes.end(), sortRemUtilDec);
+        break;
+    
+    case PartitioningNodeOrder_t::NONE: default: // no sorting
+        break;
+    }
+
+    //assign each node to a core w.r.t. the given core order
+    std::vector<float> proc_util (m,0);
+    float min_proc_util = 1;
+    int min_idx = -1;
 
     for(int i=0; i<taskset_nodes.size(); ++i){
 
+        min_idx = -1;
         min_proc_util = 1;
-        for(int p=0; p<proc_util.size(); ++p){
-            if( 1 - proc_util[p] >= taskset_nodes[i].utilization                // can accomodate
-                && proc_util[p] < min_proc_util){           // is the one with least used utilization (worst-fit)
-                min_proc_util = proc_util[p];
-                min_idx = p;
-            }
+
+        switch (c_order){
+        case PartitioningCoresOrder_t::FIRST_FIT:
+            //first processor that can accomodate the current util
+            for(int p=0; p<proc_util.size(); ++p)
+                if( 1 - proc_util[p] >= taskset_nodes[i].utilization ) // can accomodate 
+                    min_idx = p;
+            break;
+        case PartitioningCoresOrder_t::BEST_FIT:
+            //processor that has the free slot most similar to the current util
+            for(int p=0; p<proc_util.size(); ++p)
+                if( 1 - proc_util[p] >= taskset_nodes[i].utilization                            // can accomodate             
+                    && 1 - proc_util[p] - taskset_nodes[i].utilization < min_proc_util ){       // the difference is smaller than in other processor (best fit)
+                    min_proc_util = 1 - proc_util[p] - taskset_nodes[i].utilization;
+                    min_idx = p;
+                }
+            break;
+
+        case PartitioningCoresOrder_t::WORST_FIT:
+            //processor that has the biggest free slot
+            for(int p=0; p<proc_util.size(); ++p)
+                if( 1 - proc_util[p] >= taskset_nodes[i].utilization                            // can accomodate
+                    && proc_util[p] < min_proc_util ){                       // is the one with least used utilization (worst-fit)
+                    min_proc_util = proc_util[p];
+                    min_idx = p;
+                }
+            break;
+        default:
+            FatalError("Core order not valid");
         }
 
         if(min_idx == -1)
@@ -128,46 +194,7 @@ bool WorstFitProcessorsAssignment(Taskset& taskset, const int m){
         SubTask *v = taskset.tasks[taskset_nodes[i].task_id].getVertices()[taskset_nodes[i].v_id];
         v->core = min_idx;
         proc_util[min_idx] += taskset_nodes[i].utilization;    
-
     }
-
-    return true;
-}
-
-bool BestFitProcessorsAssignment(Taskset& taskset, const int m){
-
-    std::vector<float> proc_util (m,0);
-    float min_proc_util = 1;
-    int min_idx = -1;
-
-    float cur_util;
-    for(int x=0; x<taskset.tasks.size();++x){
-        std::vector<SubTask*> V = taskset.tasks[x].getVertices();
-        for(int i=0; i<V.size(); ++i){
-            cur_util = V[i]->c / taskset.tasks[x].getPeriod();
-
-            min_proc_util = 1;
-            min_idx = -1;
-            for(int p=0; p<proc_util.size(); ++p){
-                // std::cout<<"proc: "<<p<<" u: "<<proc_util[p]<<" cur_util: "<<cur_util<<std::endl;
-                if( 1 - proc_util[p] >= cur_util                // can accomodate
-                    && 1 - proc_util[p] - cur_util < min_proc_util){           // is the one with least used utilization (worst-fit)
-                    min_proc_util = 1 - proc_util[p] - cur_util;
-                    min_idx = p;
-                }
-            }
-
-            if(min_idx == -1)
-                return false;
-
-            V[i]->core = min_idx;
-            proc_util[min_idx] += cur_util;            
-        }
-
-        // std::cout<<taskset.tasks[x];
-    }
-
-
 
     return true;
 }

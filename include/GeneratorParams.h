@@ -62,6 +62,11 @@ class GeneratorParams{
 
     std::vector<int> typedProc;
 
+    std::vector<std::string> methods;
+    std::vector<std::string> names;
+    std::vector<int> coresOrders;
+    std::vector<int> nodesOrders;
+
     GenerationType_t gType  = GenerationType_t::VARYING_N;
     DeadlinesType_t dtype   = DeadlinesType_t::CONSTRAINED;
     SchedulingType_t sType  = SchedulingType_t::GLOBAL;
@@ -108,6 +113,9 @@ class GeneratorParams{
 
         if(wType == workloadType_t::SINGLE_DAG)
             nTasks = 1;
+
+        if(names.size() != methods.size())
+            FatalError("The number of names should be the same of number of methods");
         
         if(REPRODUCIBLE) gen.seed(1);
         else gen.seed(time(0));
@@ -151,6 +159,11 @@ class GeneratorParams{
         if(config["aType"]) aType = (AlgorithmType_t) config["aType"].as<int>();
         if(config["wType"]) wType = (workloadType_t) config["wType"].as<int>();
         if(config["DAGType"]) DAGType = (DAGType_t) config["DAGType"].as<int>();
+        if(config["methods"]) methods = config["methods"].as<std::vector<std::string>>();
+        if(config["names"]) names = config["names"].as<std::vector<std::string>>();
+        if(config["core_orders"]) coresOrders = config["core_orders"].as<std::vector<int>>();
+        if(config["node_orders"]) nodesOrders = config["node_orders"].as<std::vector<int>>();
+
     }
 
     void print(){
@@ -189,6 +202,10 @@ class GeneratorParams{
         std::cout<<"aType: "<<aType<<std::endl;
         std::cout<<"wType: "<<wType<<std::endl;
         std::cout<<"DAGType: "<<DAGType<<std::endl;
+        std::cout<<"methods: "; for(const auto& m:methods) std::cout<<m<<", "; std::cout<<std::endl;
+        std::cout<<"names: "; for(const auto& n:names) std::cout<<n<<", "; std::cout<<std::endl;
+        std::cout<<"coreOrder: "; for(const auto& c:coresOrders) std::cout<<c<<", "; std::cout<<std::endl;
+        std::cout<<"nodeOrder: "; for(const auto& n:nodesOrders) std::cout<<n<<", "; std::cout<<std::endl;
     }
 
 };

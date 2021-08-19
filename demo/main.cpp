@@ -39,7 +39,7 @@ int main(int argc, char **argv){
             taskset.readTasksetFromDOT(taskset_filename);
     }
 
-    std::cout<<"Assignment: "<< WorstFitProcessorsAssignment(taskset, n_proc)<<std::endl;
+    std::cout<<"Assignment: "<< processorsAssignment(taskset, n_proc, PartitioningCoresOrder_t::WORST_FIT, PartitioningNodeOrder_t::REM_UTIL);
     
     std::string dot_command = "";
     for(int i=0; i<taskset.tasks.size();++i){

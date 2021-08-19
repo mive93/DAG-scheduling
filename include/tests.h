@@ -6,15 +6,13 @@
 #include "Taskset.h"
 
 //common
-enum PartitioningTaskOrder_t {INC_DEAD, DEC_DEAD, INC_PRIO, DEC_PRIO, INC_UTIL, DEC_UTIL};
+enum PartitioningNodeOrder_t {NONE, DEC_UTIL, DEC_DENS, DEC_UTIL_DEC_DENS, DEC_DENS_DEC_UTIL, REM_UTIL};
 enum PartitioningCoresOrder_t {FIRST_FIT, BEST_FIT, WORST_FIT};
 
 bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y);
 std::vector<int> getCandidatesProcInOrder(const std::vector<float>& proc_util, const float cur_util, const PartitioningCoresOrder_t& c_order);
 
-bool WorstFitProcessorsAssignment(Taskset& taskset, const int m);
-bool BestFitProcessorsAssignment(Taskset& taskset, const int m);
-
+bool processorsAssignment(Taskset& taskset, const int m, const PartitioningCoresOrder_t& c_order, const PartitioningNodeOrder_t& n_order);
 
 //methods from here
 bool Graham1969(const DAGTask& task, const int m); 
