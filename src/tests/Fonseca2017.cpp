@@ -1,6 +1,7 @@
-#include "tests.h"
+#include "dagSched/tests.h"
+#include "dagSched/SP-Tree.h"
 
-#include "SP-Tree.h"
+namespace dagSched{
 
 //Fonseca et al. “Improved response time analysis of sporadic dag tasks for global fp scheduling”.  (RTNS 2017) 
 
@@ -308,4 +309,6 @@ bool GP_FP_FTP_Fonseca2017_C(Taskset taskset, const int m){
     }
 
     return true;
+}
+
 }

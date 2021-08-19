@@ -1,4 +1,6 @@
-#include "DAGTask.h"
+#include "dagSched/DAGTask.h"
+
+namespace dagSched{
 
 void DAGTask::cloneVertices(const std::vector<SubTask*>& to_clone_V){
     V.clear();
@@ -202,6 +204,7 @@ void DAGTask::computeTypedVolume(){
 }
 
 void DAGTask::computepVolume(){
+    pVol.clear();
     for(size_t i=0; i<V.size();++i){
         if ( pVol.find(V[i]->core) == pVol.end() ) 
             pVol[V[i]->core] = V[i]->c;
@@ -327,4 +330,6 @@ bool compareDAGsUtilInc(const DAGTask& a, const DAGTask& b){
 
 bool compareDAGsUtilDec(const DAGTask& a, const DAGTask& b){
     return a.getUtilization() > b.getUtilization();
+}
+
 }

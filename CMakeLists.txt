@@ -34,7 +34,7 @@ add_subdirectory(np-schedulability-analysis)
 if(WITH_ZAHAF)
     add_compile_definitions(ZAHAF2019)
     add_subdirectory(rt_compiler)
-    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rt_compiler /home/micaela/repos/rt_compiler/build)
+    include_directories(${CMAKE_CURRENT_SOURCE_DIR}/rt_compiler ${CMAKE_CURRENT_SOURCE_DIR}/rt_compiler/build)
 endif()
 
 if(WITH_BARUAH)

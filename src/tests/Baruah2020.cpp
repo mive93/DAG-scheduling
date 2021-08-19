@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 #ifdef BARUAH2020
+
+namespace dagSched{
 //  Baruah, Sanjoy. "Scheduling DAGs When Processor Assignments Are Specified." RTNS 2020.
 
 bool G_LP_FTP_Baruah2020_C_exact(const DAGTask& task, const int m){
@@ -49,4 +51,5 @@ bool G_LP_FTP_Baruah2020_C_exact(const DAGTask& task, const int m){
     return true; // when WEXITSTATUS(status) == 1
 }
 
+}
 #endif

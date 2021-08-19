@@ -2,8 +2,10 @@
 #define TESTS_H
 
 #include <iostream>
-#include "DAGTask.h"
-#include "Taskset.h"
+#include "dagSched/DAGTask.h"
+#include "dagSched/Taskset.h"
+
+namespace dagSched{
 
 //common
 enum PartitioningNodeOrder_t {NONE, DEC_UTIL, DEC_DENS, DEC_UTIL_DEC_DENS, DEC_DENS_DEC_UTIL, REM_UTIL};
@@ -89,5 +91,7 @@ bool G_LP_FTP_Baruah2020_C_exact(const DAGTask& task, const int m);
 #ifdef ZAHAF2019
 bool P_LP_EDF_Zahaf2019_C(const Taskset& taskset, const int m);
 #endif
+
+}
 
 #endif /*TESTS_H*/

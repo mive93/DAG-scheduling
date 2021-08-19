@@ -2,8 +2,10 @@
 #define SPTREE_H
 
 #include <vector>
-#include "utils.h"
-#include "DAGTask.h"
+#include "dagSched/utils.h"
+#include "dagSched/DAGTask.h"
+
+namespace dagSched{
 
 enum NodeType_t{ S, P, L}; 
 
@@ -93,6 +95,8 @@ class SPTree{
     /* Equation 8 Fonseca 2017*/
     std::vector<int> computeP(  SPNode * node, const std::vector<SubTask*>& V);
 };
+
+}
 
 
 #endif /* SPTREE_H */

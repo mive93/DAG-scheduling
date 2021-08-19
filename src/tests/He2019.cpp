@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 // Qingqiang He et al. “Intra-task priority assignmentin real-time scheduling of dag tasks on multi-cores”. (IEEE Transactions on Parallel and Distributed Systems 2019)
+
+namespace dagSched{
 
 std::set<int> computeInferenceSet( const DAGTask & task, const int i){
     // definition 3
@@ -145,5 +147,7 @@ bool GP_FP_FTP_He2019_C(Taskset taskset, const int m){
     }
 
     return true;
+
+}
 
 }

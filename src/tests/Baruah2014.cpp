@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 // Improved Multiprocessor Global Schedulability Analysis of Sporadic DAG Task Systems (ECRTS 2014)
+
+namespace dagSched{
 
 float work(const DAGTask& t, const float interval, const float sigma){
     DAGTask t1 = t;
@@ -214,4 +216,6 @@ bool GP_FP_EDF_Baruah2014_C(Taskset taskset, const int m){
         if(sched) return true;
         sigma_tmp += sigma_inc;
     }
+}
+
 }

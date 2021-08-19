@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 //  Meiling Han et al. “Response time bounds for typed dag parallel tasks on heterogeneous multi-cores”. (IEEE Transactions on Parallel and DistributedSystems 2019)
+
+namespace dagSched{
 
 bool GP_FP_Han2019_C_1(const DAGTask& task, const std::vector<int> m){
     //theorem 3.1
@@ -41,4 +43,5 @@ bool GP_FP_Han2019_C_1(const DAGTask& task, const std::vector<int> m){
     return false;
 }
 
+}
 // bool GP_FP_Han2019_C_2(DAGTask task, const std::vector<int> m){ } //TODO

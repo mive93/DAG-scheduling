@@ -1,4 +1,6 @@
-#include "tests.h"
+#include "dagSched/tests.h"
+
+namespace dagSched{
 
 bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y) { 
     return (tau_x.getDeadline() < tau_y.getDeadline()); 
@@ -197,4 +199,6 @@ bool processorsAssignment(Taskset& taskset, const int m, const PartitioningCores
     }
 
     return true;
+}
+
 }

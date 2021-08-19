@@ -1,4 +1,6 @@
-#include "DAGTask.h"
+#include "dagSched/DAGTask.h"
+
+namespace dagSched{
 
 void DAGTask::assignWCET(const int minC, const int maxC){
     for(auto &v: V)
@@ -148,4 +150,6 @@ void DAGTask::assignSchedParameters(const float beta){
 void DAGTask::assignFixedSchedParameters(const float period, const float deadline){
     t = period;
     d = deadline;
+}
+
 }

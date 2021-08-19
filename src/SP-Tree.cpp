@@ -1,4 +1,6 @@
-#include "SP-Tree.h"
+#include "dagSched/SP-Tree.h"
+
+namespace dagSched{
 
 bool compareSTempNode(const STempNode& a, const STempNode& b){
     return a.right_ordids < b.right_ordids;
@@ -584,4 +586,6 @@ SPNode * SPTree::freeNode(SPNode *&node){
         node = nullptr;
         return nullptr;
     }
+}
+
 }

@@ -2,7 +2,9 @@
 #define SUBTASK_H
 
 #include <vector>
-#include "utils.h"
+#include "dagSched/utils.h"
+
+namespace dagSched{
 
 enum subTaskMode {NORMAL_T, C_INTERN_T, C_SOURCE_T, C_SINK_T};
 
@@ -38,5 +40,6 @@ class SubTask{
     void LatestStartingTime();
 };
 
+}
 
 #endif /* SUBTASK_H */

@@ -8,7 +8,7 @@
 #include<set>
 #include<utility>
 #include<algorithm>
-#include <iomanip>
+#include<iomanip>
 
 #define REPRODUCIBLE 1
 

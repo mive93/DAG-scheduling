@@ -1,10 +1,12 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 #include"problem.hpp"
 #include "io.hpp"
 #include "global/space.hpp"
 
 #include "tbb/task_scheduler_init.h"
+
+namespace dagSched{
 
 bool test(std::istream &in,
 	std::istream &dag_in,
@@ -126,3 +128,4 @@ bool G_LP_FTP_Nasri2019_C(Taskset taskset, const int m){
     return test(in, dag_in, aborts_in, m);
 }
 
+}

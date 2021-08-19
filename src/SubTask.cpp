@@ -1,4 +1,6 @@
-#include "SubTask.h"
+#include "dagSched/SubTask.h"
+
+namespace dagSched{
 
 std::vector<int> SubTask::getCondPred(){
     std::vector<int> cond_pred;
@@ -47,3 +49,4 @@ void SubTask::LatestStartingTime(){
     LST = localD - c;
 }
    
+}

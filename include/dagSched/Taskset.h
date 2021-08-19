@@ -4,13 +4,15 @@
 #include <vector>
 #include <yaml-cpp/yaml.h>
 #include <numeric>
-#include "DAGTask.h"
+#include "dagSched/DAGTask.h"
+
+namespace dagSched{
 
 class Taskset{
 
     float U         = 0;    // utilization
     float maxDelta  = 0;    // maximum density
-    int HP          = 1;    // hyper-period
+    long int HP          = 1;    // hyper-period
 
     public:
 
@@ -39,5 +41,6 @@ class Taskset{
     void generate_taskset_Melani(int n_tasks, const float U_tot, const int n_proc, GeneratorParams& gp);
 };
 
+}
 
 #endif /* TASKSET_H */

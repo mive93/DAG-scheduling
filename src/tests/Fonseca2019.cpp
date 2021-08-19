@@ -1,7 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 //Fonseca et al. “Schedulability Analysis of DAG Tasks with Arbitrary Deadlines under Global Fixed-Priority Scheduling”.  (Real-Time Systems 2019) 
 
+namespace dagSched{
 
 float computeCarryWorkload_C(const DAGTask& task, const float interval, const std::vector<std::pair<float, float>>& WD_UCO_y, const std::vector<std::pair<float, float>>& WD_UCI_y, const int m){
     // Algorithm 2
@@ -165,4 +166,6 @@ bool GP_FP_FTP_Fonseca2019(Taskset taskset, const int m, bool constrained_deadli
     }
 
     return true;
+}
+
 }

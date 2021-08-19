@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 //Maria A Serrano et al. “Response-time analysis of DAG tasks under fixed priority scheduling with limited preemptions” (DATE 2016)
+
+namespace dagSched{
 
 float computePreemptionNumberUpperBound(const Taskset& taskset, const int x, const float interval){
     float h = 0;
@@ -104,4 +106,6 @@ bool GP_LP_FTP_Serrano16_C(Taskset taskset, const int m){
         init = false;
     }
     return true;
+}
+
 }

@@ -8,8 +8,9 @@
 #include <random>
 #include <yaml-cpp/yaml.h>
 
-#include "utils.h"
+#include "dagSched/utils.h"
 
+namespace dagSched{
 
 enum GenerationType_t {VARYING_N, VARYING_U, VARYING_M};
 enum DeadlinesType_t {CONSTRAINED, IMPLICIT, ARBITRARY};
@@ -210,6 +211,6 @@ class GeneratorParams{
 
 };
 
-
+}
 
 #endif /* GENERATORPARAMS_H */

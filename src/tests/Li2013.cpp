@@ -1,6 +1,8 @@
-#include "tests.h"
+#include "dagSched/tests.h"
 
 // "Outstanding Paper Award: Analysis of Global EDF for Parallel Tasks" Li et al. (ECRTS 2013) 
+
+namespace dagSched{
 
 /* Corollary 6 in the paper*/
 bool GP_FP_EDF_Li2013_I(const Taskset& taskset, const int m){
@@ -15,4 +17,6 @@ bool GP_FP_EDF_Li2013_I(const Taskset& taskset, const int m){
     if(taskset.getUtilization() <= m / (4. - 2. / m ))
         return true;
     return false;
+}
+
 }
