@@ -67,6 +67,7 @@ class GeneratorParams{
     std::vector<std::string> names;
     std::vector<int> coresOrders;
     std::vector<int> nodesOrders;
+    std::vector<int> iterative;
 
     GenerationType_t gType  = GenerationType_t::VARYING_N;
     DeadlinesType_t dtype   = DeadlinesType_t::CONSTRAINED;
@@ -117,6 +118,9 @@ class GeneratorParams{
 
         if(names.size() != methods.size())
             FatalError("The number of names should be the same of number of methods");
+
+        if(!iterative.empty() && iterative.size() != methods.size())
+            FatalError("If iterative is not empty, it should have the same size as methods");
         
         if(REPRODUCIBLE) gen.seed(1);
         else gen.seed(time(0));
@@ -164,6 +168,7 @@ class GeneratorParams{
         if(config["names"]) names = config["names"].as<std::vector<std::string>>();
         if(config["core_orders"]) coresOrders = config["core_orders"].as<std::vector<int>>();
         if(config["node_orders"]) nodesOrders = config["node_orders"].as<std::vector<int>>();
+        if(config["iterative"]) iterative = config["iterative"].as<std::vector<int>>();
 
     }
 
@@ -207,6 +212,7 @@ class GeneratorParams{
         std::cout<<"names: "; for(const auto& n:names) std::cout<<n<<", "; std::cout<<std::endl;
         std::cout<<"coreOrder: "; for(const auto& c:coresOrders) std::cout<<c<<", "; std::cout<<std::endl;
         std::cout<<"nodeOrder: "; for(const auto& n:nodesOrders) std::cout<<n<<", "; std::cout<<std::endl;
+        std::cout<<"iterative: "; for(const auto& i:iterative) std::cout<<i<<", "; std::cout<<std::endl;
     }
 
 };

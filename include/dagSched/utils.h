@@ -50,7 +50,7 @@ class SimpleTimer{
         clock_gettime(CLOCK_MONOTONIC, &tStart);
     }
 
-    double toc(TimeUnit_t time_unit=TimeUnit_t::MICROSECOND){
+    double toc(TimeUnit_t time_unit=TimeUnit_t::MILLISECOND){
         clock_gettime(CLOCK_MONOTONIC, &tEnd);
         double t_ns = ((double)(tEnd.tv_sec - tStart.tv_sec) * 1.0e9 + (double)(tEnd.tv_nsec - tStart.tv_nsec));
         switch (time_unit){

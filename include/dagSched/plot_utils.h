@@ -57,7 +57,7 @@ void plotResults(std::map<std::string,std::vector<float>> sched_res, const std::
         matplotlibcpp::show();
 }
 
-void plotTimes(std::map<std::string,std::vector<double>> time_res, const std::string& output_fig_path, bool show_plots=true){
+void plotTimes(std::map<std::string,std::vector<double>> time_res, const std::string& output_fig_path, const std::string& y_axis, bool show_plots=true){
     std::vector<std::vector<double>> data;
     std::vector<std::string> names;
     
@@ -70,8 +70,8 @@ void plotTimes(std::map<std::string,std::vector<double>> time_res, const std::st
     }
     matplotlibcpp::boxplot(data, names);
 
-    matplotlibcpp::ylabel("Latency (us)");
-    matplotlibcpp::save(output_fig_path + "_times.pdf");
+    matplotlibcpp::ylabel(y_axis);
+    matplotlibcpp::save(output_fig_path + ".pdf");
     if(show_plots) 
         matplotlibcpp::show();
 }

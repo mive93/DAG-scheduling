@@ -45,7 +45,7 @@ bool isPartitioned(const std::string& name){
     return false;
 }
 
-bool callMethod(const std::string& name, const GeneratorParams& gp,  Taskset& task_set, const int m, std::vector<int>& typedProc){
+bool callMethod(const std::string& name, const GeneratorParams& gp,  Taskset& task_set, const int m, const std::vector<int>& typedProc){
     
     if(name == "Melani2015"){
         if(gp.aType == AlgorithmType_t::EDF)
@@ -109,6 +109,27 @@ bool callMethod(const std::string& name, const GeneratorParams& gp,  Taskset& ta
     #endif
 
     FatalError(name + " is not supported!");
+}
+
+bool callMethodIterative(const std::string& name, const GeneratorParams& gp,  Taskset& task_set, const int m, const std::vector<int>& typedProc, int& used_proc, PartitioningCoresOrder_t core_order, PartitioningNodeOrder_t node_order){
+
+    used_proc = m;
+    bool sched = false;
+    bool allocated = false;
+    for(int nproc=1; nproc<=m; ++nproc){
+        if(isPartitioned(name)){
+            allocated = processorsAssignment(task_set, nproc, core_order , node_order);
+            if(!allocated)
+                continue;
+        }
+
+        sched = callMethod(name, gp,  task_set, m, gp.typedProc);
+        if(sched){
+            used_proc=nproc;
+            break;
+        }
+    }
+    return sched;
 }
 
 std::vector<std::string> getMethods(SchedulingType_t sched_type, DeadlinesType_t d_type, workloadType_t w_type, AlgorithmType_t a_type, DAGType_t dag_type){
@@ -202,6 +223,9 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
 
     std::map<std::string,std::vector<float>> sched_res;
     std::map<std::string,std::vector<double>> time_res;
+    std::map<std::string,std::vector<float>> cores_res;
+    std::map<std::string,int> test_done;
+
     std::vector<float> x;
 
     int test_idx = -1;
@@ -209,6 +233,12 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
 
     int min_V_all  = 100;
     int max_V_all  = 0;
+
+    int used_proc = 0;
+    bool partitioned = false;
+    bool iterative = false;
+    bool allocated = false;
+    std::string complete_name;
 
     for(int i=0; i<gp.nTasksets; ++i){
         if(gp.gType == GenerationType_t::VARYING_U && i % gp.tasksetPerVarFactor == 0){
@@ -259,32 +289,43 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
             for(int no=0; no<gp.nodesOrders.size(); ++no){
 
                 // allocate nodes to cores
-                bool allocated = processorsAssignment(task_set, m, (PartitioningCoresOrder_t) gp.coresOrders[co], (PartitioningNodeOrder_t) gp.nodesOrders[no]);
-                if (!allocated) continue;
+                allocated = processorsAssignment(task_set, m, (PartitioningCoresOrder_t) gp.coresOrders[co], (PartitioningNodeOrder_t) gp.nodesOrders[no]);
 
                 for(int j=0; j<gp.methods.size(); ++j){
-                    if(isPartitioned(gp.methods[j])){
-                        std::string complete_name = gp.names[j] + "_" + getSuffixCoreOrder((PartitioningCoresOrder_t) gp.coresOrders[co]) + "_" + getSuffixNodeOrder((PartitioningNodeOrder_t) gp.nodesOrders[no]);
-                        if(i % gp.tasksetPerVarFactor == 0)
-                            sched_res[complete_name].push_back(0);
+                    partitioned = isPartitioned(gp.methods[j]);
+                    iterative = (!gp.iterative.empty() && gp.iterative[j]);
 
-                        timer.tic();
-                        sched_res[complete_name][test_idx] += callMethod(gp.names[j], gp,  task_set, m, gp.typedProc);
-                        time_res[complete_name].push_back(timer.toc());
+                    // set name for the plot
+                    if(isPartitioned(gp.methods[j]))
+                        complete_name = gp.names[j] + "_" + getSuffixCoreOrder((PartitioningCoresOrder_t) gp.coresOrders[co]) + "_" + getSuffixNodeOrder((PartitioningNodeOrder_t) gp.nodesOrders[no]);
+                    else
+                        complete_name = gp.names[j];
+                    if(iterative)
+                        complete_name += "_it";
+
+                    if(i % gp.tasksetPerVarFactor == 0){
+                        sched_res[complete_name].push_back(0);
+                        cores_res[complete_name].push_back(0);
+                        test_done[complete_name] = 0;
+                    }
+
+                    if (partitioned || (!partitioned && co==0 && no==0)){
+                        // run partitioned method only when allocation works, and run global method only one time
+                        if((partitioned && allocated) || (!partitioned && co==0 && no==0)){
+                            timer.tic();
+                            if(iterative)
+                                sched_res[complete_name][test_idx] += callMethodIterative(gp.methods[j], gp,  task_set, m, gp.typedProc, used_proc, (PartitioningCoresOrder_t) gp.coresOrders[co], (PartitioningNodeOrder_t) gp.nodesOrders[no]);
+                            else{
+                                sched_res[complete_name][test_idx] += callMethod(gp.methods[j], gp,  task_set, m, gp.typedProc);
+                                used_proc = m;
+                            }
+                            time_res[complete_name].push_back(timer.toc());
+                        }
+                        
+                        cores_res[complete_name][test_idx] += used_proc;
+                        test_done[complete_name]++;
                     }
                 }
-            }
-        }
-
-        // global methods, not affected by allocation
-        for(int j=0; j<gp.methods.size(); ++j){
-            if(!isPartitioned(gp.methods[j])){
-                if(i % gp.tasksetPerVarFactor == 0)
-                    sched_res[gp.names[j]].push_back(0);
-
-                timer.tic();
-                sched_res[gp.names[j]][test_idx] += callMethod(gp.names[j], gp,  task_set, m, gp.typedProc);
-                time_res[gp.names[j]].push_back(timer.toc());
             }
         }
 
@@ -301,8 +342,16 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
     else if(gp.gType == GenerationType_t::VARYING_U)
         x_axis_label = "Taskset utilization";
 
+    for(std::map<std::string,std::vector<float>>::iterator iter = cores_res.begin(); iter != cores_res.end(); ++iter){
+        for(int j=0; j<iter->second.size();++j)
+            iter->second[j] = iter->second[j] / test_done[iter->first];
+    }
+        
+
     plotResults(sched_res, x, x_axis_label, "Taskset scheduled", output_fig_path, show_plots);
-    plotTimes(time_res, output_fig_path, show_plots);
+    plotTimes(time_res, output_fig_path + "_times", "Latency [ms]",  show_plots);
+    if(!gp.iterative.empty())
+        plotResults(cores_res, x, x_axis_label, "Cores used (avg)", output_fig_path  + "_cores", show_plots);
 
 }
 

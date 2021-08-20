@@ -18,7 +18,7 @@ bool test(std::istream &in,
 		NP::parse_file<dtime_t>(in),
 		NP::parse_dag_file(dag_in),
 		NP::parse_abort_file<dtime_t>(aborts_in),
-		m};
+		(unsigned int) m};
 
     // Set common analysis options
 	NP::Analysis_options opts;
