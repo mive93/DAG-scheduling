@@ -45,6 +45,12 @@ bool isPartitioned(const std::string& name){
     return false;
 }
 
+bool isForSingleDAG(const std::string& name){
+    if(name == "Baruah2012" || name == "Baruah2020" || name == "Graham1969" || name == "Han2019" )
+        return true;
+    return false;
+}
+
 bool callMethod(const std::string& name, const GeneratorParams& gp,  Taskset& task_set, const int m, const std::vector<int>& typedProc){
     
     if(name == "Melani2015"){
@@ -59,7 +65,7 @@ bool callMethod(const std::string& name, const GeneratorParams& gp,  Taskset& ta
         if (gp.aType == AlgorithmType_t::FTP ){
             if(gp.dtype ==  DeadlinesType_t::ARBITRARY)
                 return GP_FP_DM_Bonifaci2013_A(task_set, m);
-            if(gp.dtype ==  DeadlinesType_t::CONSTRAINED)
+            if(gp.dtype ==  DeadlinesType_t::CONSTRAINED || gp.dtype ==  DeadlinesType_t::IMPLICIT)
                 return GP_FP_DM_Bonifaci2013_C(task_set, m);
         }
     }
@@ -117,6 +123,7 @@ bool callMethodIterative(const std::string& name, const GeneratorParams& gp,  Ta
     bool sched = false;
     bool allocated = false;
     for(int nproc=1; nproc<=m; ++nproc){
+        sched = false;
         if(isPartitioned(name)){
             allocated = processorsAssignment(task_set, nproc, core_order , node_order);
             if(!allocated)
@@ -129,6 +136,34 @@ bool callMethodIterative(const std::string& name, const GeneratorParams& gp,  Ta
             break;
         }
     }
+    return sched;
+}
+
+bool partitionTasksAndApplySingleDAGMethod(const std::string& name, const GeneratorParams& gp,  Taskset task_set, const int m, const std::vector<int>& typedProc, int& used_proc, PartitioningCoresOrder_t core_order, PartitioningNodeOrder_t node_order){
+
+    int available_proc = m;
+    used_proc = 0;
+    bool sched = false;
+
+    std::sort(task_set.tasks.begin(), task_set.tasks.end(), decreasingUtilizationSorting);
+    for(int i=0; i<task_set.tasks.size();++i){
+        Taskset cur_task_set;
+        cur_task_set.tasks.push_back(task_set.tasks[i]);
+        cur_task_set.tasks[0].cloneVertices(task_set.tasks[i].getVertices());
+
+        sched = callMethodIterative(name, gp, cur_task_set, available_proc, typedProc, used_proc, core_order, node_order);
+        available_proc -= used_proc;
+
+        // std::cout<<"sched: "<<sched<<" us_proc: "<<used_proc<<" av_proc: "<<available_proc<<std::endl;
+        
+        cur_task_set.tasks[0].destroyVerices();
+        cur_task_set.tasks.clear();
+
+        if(!sched || available_proc < 0)
+            break;
+    }
+
+    used_proc = m - available_proc;
     return sched;
 }
 
@@ -146,7 +181,6 @@ std::vector<std::string> getMethods(SchedulingType_t sched_type, DeadlinesType_t
                 if(d_type != DeadlinesType_t::CONSTRAINED) methods.push_back("Li2013");
             }
             else if(a_type == AlgorithmType_t::FTP && dag_type ==DAGType_t::DAG){
-                methods.push_back("Bonifaci2013");
                 methods.push_back("Bonifaci2013");
                 methods.push_back("Melani2015");
                 methods.push_back("Serrano2016");
@@ -195,7 +229,7 @@ std::vector<std::string> getMethods(SchedulingType_t sched_type, DeadlinesType_t
             #endif
 
             #ifdef BARUAH2020
-            methods.push_back("Baruah2020");
+            if(w_type == workloadType_t::SINGLE_DAG) methods.push_back("Baruah2020");
             #endif
 
         }
@@ -238,6 +272,7 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
     bool partitioned = false;
     bool iterative = false;
     bool allocated = false;
+    bool single_used_as_multi = false;
     std::string complete_name;
 
     for(int i=0; i<gp.nTasksets; ++i){
@@ -294,6 +329,7 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                 for(int j=0; j<gp.methods.size(); ++j){
                     partitioned = isPartitioned(gp.methods[j]);
                     iterative = (!gp.iterative.empty() && gp.iterative[j]);
+                    single_used_as_multi = (isForSingleDAG(gp.methods[j]) && gp.wType == workloadType_t::TASKSET);
 
                     // set name for the plot
                     if(isPartitioned(gp.methods[j]))
@@ -313,11 +349,16 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
                         // run partitioned method only when allocation works, and run global method only one time
                         if((partitioned && allocated) || (!partitioned && co==0 && no==0)){
                             timer.tic();
-                            if(iterative)
-                                sched_res[complete_name][test_idx] += callMethodIterative(gp.methods[j], gp,  task_set, m, gp.typedProc, used_proc, (PartitioningCoresOrder_t) gp.coresOrders[co], (PartitioningNodeOrder_t) gp.nodesOrders[no]);
+                            sched_res[complete_name][test_idx] += 0;
+                            if(single_used_as_multi)
+                                sched_res[complete_name][test_idx] += partitionTasksAndApplySingleDAGMethod(gp.methods[j], gp,  task_set, m, gp.typedProc, used_proc, (PartitioningCoresOrder_t) gp.coresOrders[co], (PartitioningNodeOrder_t) gp.nodesOrders[no]);
                             else{
-                                sched_res[complete_name][test_idx] += callMethod(gp.methods[j], gp,  task_set, m, gp.typedProc);
-                                used_proc = m;
+                                if(iterative)
+                                    sched_res[complete_name][test_idx] += callMethodIterative(gp.methods[j], gp,  task_set, m, gp.typedProc, used_proc, (PartitioningCoresOrder_t) gp.coresOrders[co], (PartitioningNodeOrder_t) gp.nodesOrders[no]);
+                                else{
+                                    sched_res[complete_name][test_idx] += callMethod(gp.methods[j], gp,  task_set, m, gp.typedProc);
+                                    used_proc = m;
+                                }
                             }
                             time_res[complete_name].push_back(timer.toc());
                         }
@@ -350,8 +391,7 @@ void evaluate(const std::string& genparams_path, const std::string& output_fig_p
 
     plotResults(sched_res, x, x_axis_label, "Taskset scheduled", output_fig_path, show_plots);
     plotTimes(time_res, output_fig_path + "_times", "Latency [ms]",  show_plots);
-    if(!gp.iterative.empty())
-        plotResults(cores_res, x, x_axis_label, "Cores used (avg)", output_fig_path  + "_cores", show_plots);
+    plotResults(cores_res, x, x_axis_label, "Cores used (avg)", output_fig_path  + "_cores", show_plots);
 
 }
 

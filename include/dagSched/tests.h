@@ -12,6 +12,7 @@ enum PartitioningNodeOrder_t {NONE, DEC_UTIL, DEC_DENS, DEC_UTIL_DEC_DENS, DEC_D
 enum PartitioningCoresOrder_t {FIRST_FIT, BEST_FIT, WORST_FIT};
 
 bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y);
+bool decreasingUtilizationSorting (const DAGTask& tau_x, const DAGTask& tau_y);
 std::vector<int> getCandidatesProcInOrder(const std::vector<float>& proc_util, const float cur_util, const PartitioningCoresOrder_t& c_order);
 
 bool processorsAssignment(Taskset& taskset, const int m, const PartitioningCoresOrder_t& c_order, const PartitioningNodeOrder_t& n_order);

@@ -43,12 +43,12 @@ bool G_LP_FTP_Baruah2020_C_exact(const DAGTask& task, const int m){
     DAG_file.close();
 
     int status = system("python ../ExactSchedDAG/exactDAG_partitioned_general.py curDAG.txt");
-    if (status < 0 || (WEXITSTATUS(status) != 1 && WEXITSTATUS(status) != 2))
+    if (status < 0 || (WEXITSTATUS(status) != 1 && WEXITSTATUS(status) != 2 && WEXITSTATUS(status) != 42))
         FatalError("Problem with Python. Maybe you need to activate the correct environment (conda activate exactDAG)");
-    
-    if(WEXITSTATUS(status) == 2)
-        return false;
-    return true; // when WEXITSTATUS(status) == 1
+
+    if(WEXITSTATUS(status) == 42)
+        return true;
+    return false;
 }
 
 }

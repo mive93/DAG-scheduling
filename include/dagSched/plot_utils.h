@@ -1,3 +1,4 @@
+#pragma once
 #include "matplotlibcpp.h"
 
 void testMatplotlibBoxplot(){
@@ -36,9 +37,9 @@ void testMatplotlib(){
 }
 
 void plotResults(std::map<std::string,std::vector<float>> sched_res, const std::vector<float>& x, const std::string& x_axis, const std::string& y_axis, const std::string& output_fig_path, bool show_plots=true){
-    std::vector<std::string> line_colors = {"#0072BD", "#D95319", "#7E2F8E", "#77AC30", "#4DBEEE", "#A2142F", "#EDB120", "k", "#0072BD", "#D95319"};
-    std::vector<std::string> line_styles = {"-", "--", ":", "-.", "--", ":", "-.","-", "--", ":", "-.","-", "--", ":", "-."};
-    std::vector<std::string> line_marker = {".", "v", "*", "o", "+", ".", "X", "<","", "v", "*", ".", "+", "X", "4", "<"};
+    std::vector<std::string> line_colors = {"#0072BD", "#D95319", "#7E2F8E", "#77AC30", "#4DBEEE", "#A2142F", "#EDB120", "k", "#0072BD", "#D95319","#A2142F", "#EDB120", "k", "#0072BD", "#D95319","#0072BD", "#D95319", "#7E2F8E", "#77AC30", "#4DBEEE"};
+    std::vector<std::string> line_styles = {"-", "--", ":", "-.", "--", ":", "-.","-", "--", ":", "-.","-", "--", ":", "-.", "-.","-", "--", ":", "-.","-", "--", ":", "-.", "--"};
+    std::vector<std::string> line_marker = {".", "v", "*", "o", "+", ".", "X", "<","", "v", "*", ".", "+", "X", "4", "<", ".", "+", "X", "4", "<",".", "v", "*", "o", "+"};
 
     matplotlibcpp::figure_size(1280,720);
 

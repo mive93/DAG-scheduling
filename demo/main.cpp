@@ -3,6 +3,7 @@
 #include "dagSched/Taskset.h"
 #include "dagSched/tests.h"
 #include "dagSched/plot_utils.h"
+#include "dagSched/evaluate.h"
 
 #include <ctime>    
 
@@ -23,10 +24,10 @@ int main(int argc, char **argv){
     int n_proc = 4;
     std::vector<int> typed_proc = {4,4};
     dagSched::Taskset taskset;
+    dagSched::GeneratorParams gp;
     if(random_creation){
         int n_tasks = 4;
         float U_tot = 1;
-        dagSched::GeneratorParams gp;
         gp.configureParams(dagSched::GenerationType_t::VARYING_N);
 
         taskset.generate_taskset_Melani(n_tasks, U_tot, n_proc, gp);
@@ -58,6 +59,7 @@ int main(int argc, char **argv){
     std::cout<<"Single task tests: \n";
     bool constrained_taskset = true;
     bool implicit_taskset = true;
+    int used_proc=0;
     for(int i=0; i<taskset.tasks.size();++i){
         std::cout<<"\tTask "<<i<<std::endl;
         //constrained
@@ -118,6 +120,9 @@ int main(int argc, char **argv){
         std::cout<< "\tCasini 2018 constrained (P-LP-FTP): "<<dagSched::P_LP_FTP_Casini2018_C(taskset, n_proc)<<std::endl;
         #ifdef ZAHAF2019
         std::cout<< "\tZahaf 2020 constrained (P-LP-EDF): "<<dagSched::P_LP_EDF_Zahaf2019_C(taskset, n_proc)<<std::endl;
+        #endif
+        #ifdef BARUAH2020
+        std::cout<< "\tBaruah 2020 constrained for taskset(P-LP-EDF): " <<dagSched::partitionTasksAndApplySingleDAGMethod("Baruah2020", gp,  taskset, n_proc, typed_proc, used_proc, dagSched::PartitioningCoresOrder_t::WORST_FIT, dagSched::PartitioningNodeOrder_t::REM_UTIL )<<std::endl;
         #endif
     }
 

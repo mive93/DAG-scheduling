@@ -6,6 +6,10 @@ bool deadlineMonotonicSorting (const DAGTask& tau_x, const DAGTask& tau_y) {
     return (tau_x.getDeadline() < tau_y.getDeadline()); 
 }
 
+bool decreasingUtilizationSorting (const DAGTask& tau_x, const DAGTask& tau_y) { 
+    return (tau_x.getUtilization() > tau_y.getUtilization()); 
+}
+
 bool sortPairProcInc(const std::pair<int, float>& a, const std::pair<int, float>& b){
     return a.second < b.second; 
 }

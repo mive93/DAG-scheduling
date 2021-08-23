@@ -1,0 +1,27 @@
+maxParBranches: 6
+recDepth: 2
+pCond : 0
+pPar: 0.8
+pTerm : 0.2
+Cmin: 1
+Cmax: 100
+addProb : 0.2
+probSCond : 0
+beta: 0.28
+saveRate: 25
+Umin: 0
+Umax: 5
+stepU : 0.25
+m : 8
+tasksetPerVarFactor : 500
+nTasks: 1
+gType : 1
+dtype : 0
+aType : 0
+sType : 1
+wType : 0
+DAGType : 0
+methods: ["Baruah2020"]
+names: ["Baruah2020"]
+core_orders : [2]
+node_orders : [0,1,2,3,4,5]
