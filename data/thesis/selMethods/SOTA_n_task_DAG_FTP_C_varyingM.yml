@@ -1,4 +1,4 @@
-maxParBranches: 6
+maxParBranches: 4
 recDepth: 2
 pCond : 0
 pPar: 0.8

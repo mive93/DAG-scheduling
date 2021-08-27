@@ -124,6 +124,10 @@ bool callMethodIterative(const std::string& name, const GeneratorParams& gp,  Ta
     bool allocated = false;
     for(int nproc=1; nproc<=m; ++nproc){
         sched = false;
+        
+        if(task_set.getUtilization() > nproc)
+            continue;
+        
         if(isPartitioned(name)){
             allocated = processorsAssignment(task_set, nproc, core_order , node_order);
             if(!allocated)
