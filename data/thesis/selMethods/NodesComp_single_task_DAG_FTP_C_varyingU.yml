@@ -22,6 +22,6 @@ sType : 1
 wType : 0
 DAGType : 0
 methods: ["Baruah2020"]
-names: ["Baruah2020"]
+names: ["Bar2020"]
 core_orders : [2]
 node_orders : [0,1,2,3,4,5]

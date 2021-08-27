@@ -22,6 +22,6 @@ sType : 3
 wType : 1
 DAGType : 0
 methods: ["Melani2015", "Fonseca2016", "Casini2018" , "Fonseca2019", "Nasri2019", "Baruah2020"]
-names: ["Melani2015", "Fonseca2016", "Casini2018" , "Fonseca2019", "Nasri2019", "Baruah2020"]
+names: ["Mel2015", "Fon2016", "Cas2018" , "Fon2019", "Nas2019", "Bar2020"]
 core_orders : [2]
 node_orders : [5]

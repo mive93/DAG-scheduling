@@ -20,3 +20,5 @@ dtype : 1
 aType : 0
 wType : 0
 DAGType : 0
+methods : ["Bonifaci2013", "Melani2015", "Fonseca2017", "Pathan2017", "Fonseca2019", "He2019"]
+names : ["Bon2013", "Mel2015", "Fon2017", "Pat2017", "Fon2019", "He2019"]

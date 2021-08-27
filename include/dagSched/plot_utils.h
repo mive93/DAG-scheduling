@@ -50,9 +50,10 @@ void plotResults(std::map<std::string,std::vector<float>> sched_res, const std::
         i++;
     }
     
-    matplotlibcpp::xlabel(x_axis);
-    matplotlibcpp::ylabel(y_axis);
-    matplotlibcpp::legend();
+    matplotlibcpp::xlabel(x_axis, {{"fontsize","18"}});
+    matplotlibcpp::ylabel(y_axis, {{"fontsize","18"}});
+    matplotlibcpp::tick_params({{"labelsize","18"}});
+    matplotlibcpp::legend( {{"fontsize","18"}});
     matplotlibcpp::save(output_fig_path + ".pdf");
     if(show_plots) 
         matplotlibcpp::show();
@@ -71,7 +72,8 @@ void plotTimes(std::map<std::string,std::vector<double>> time_res, const std::st
     }
     matplotlibcpp::boxplot(data, names);
 
-    matplotlibcpp::ylabel(y_axis);
+    matplotlibcpp::ylabel(y_axis, {{"fontsize","18"}});
+    matplotlibcpp::tick_params({{"labelsize","18"}});
     matplotlibcpp::save(output_fig_path + ".pdf");
     if(show_plots) 
         matplotlibcpp::show();

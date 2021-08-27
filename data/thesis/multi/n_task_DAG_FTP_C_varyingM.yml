@@ -20,3 +20,5 @@ dtype : 0
 aType : 0
 wType : 1
 DAGType : 0
+methods : ["Nasri2019", "Serrano2016"]
+names : ["Nasri2019", "Serrano2016"]
