@@ -10,7 +10,9 @@ For this repo the following libraries are needed: graphviz (for dot), libyaml-cp
 On Linux, install the dependencies in this way:
 
 ```
-sudo apt-get install graphviz libyaml-cpp-dev python3-matplotlib
+sudo apt-get install graphviz libyaml-cpp-dev python3-matplotlib libtbb-dev libeigen3-dev python3-dev
+
+
 ```
 
 ## How to compile this repo
