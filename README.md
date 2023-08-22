@@ -4,6 +4,19 @@ This repo offers a library to handle the real-time Directed Acyclic Graph (DAG) 
 Moreover, several methods from real-time literature have been implemented. 
 It's one of the contributions of Micaela Verucchi's Ph.D. thesis "A comprehensive analysis of DAG tasks: solutions for modern real-time embedded systems".
 
+If you use this code in your research, please cite the following paper.
+
+```
+@article{verucchi2023survey,
+  title={A survey on real-time DAG scheduling, revisiting the Global-Partitioned Infinity War},
+  author={Verucchi, Micaela and Olmedo, Ignacio Sa{\~n}udo and Bertogna, Marko},
+  journal={Real-Time Systems},
+  pages={1--52},
+  year={2023},
+  publisher={Springer}
+}
+```
+
 ## Dependencies
 
 For this repo the following libraries are needed: graphviz (for dot), libyaml-cpp-dev (to read yaml confi files) and python3-matplotlib (to plot the charts).
